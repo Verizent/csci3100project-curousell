@@ -29,10 +29,32 @@ class AccountController < ApplicationController
 
   # GET /account/verify => page to input OTP
   def verify
+    @user = User.find_by(id: session[:pending_user_id])
+    redirect_to account_signup_path, alert: "Session expired. Please sign up again." unless @user
   end
 
   # POST /account/verify => verify otp
   def verify_signup_otp
+    @user = User.find_by(id: session[:pending_user_id])
+    unless @user
+      redirect_to account_signup_path, alert: "Session expired. Please sign up again." and return
+    end
+
+    if @user.otp_valid?(params[:otp_code])
+      @user.update!(verified_at: Time.current, otp_code: nil)
+      session.delete(:pending_user_id)
+      redirect_to account_login_path, notice: "Email verified! You can now log in."
+    else
+      @user.increment!(:otp_attempts)
+      if @user.otp_attempts >= User::MAX_OTP_ATTEMPTS
+        session.delete(:pending_user_id)
+        @user.destroy
+        redirect_to account_signup_path, alert: "Maximum attempts reached. Please sign up again." and return
+      end
+      remaining = User::MAX_OTP_ATTEMPTS - @user.otp_attempts
+      flash.now[:alert] = "Incorrect code. #{remaining} attempt#{'s' if remaining != 1} remaining."
+      render :verify, status: :unprocessable_entity
+    end
   end
 
   # GET /account/login

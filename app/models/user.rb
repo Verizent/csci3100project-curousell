@@ -24,8 +24,7 @@ class User < ApplicationRecord
   def otp_valid?(submitted_code)
     return false if otp_code.blank? || otp_sent_at.blank?
     return false if otp_sent_at < OTP_EXPIRY_MINUTES.minutes.ago
-    return false if otp_attempts >= MAX_OTP_ATTEMPTS
-    otp_code == submitted_code
+    otp_code == submitted_code.to_s.strip
   end
 
   def verified?
