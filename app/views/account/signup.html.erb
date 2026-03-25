@@ -1,0 +1,228 @@
+<div class="bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 min-h-screen flex items-center justify-center px-3 sm:px-6 lg:px-8 py-12"
+     data-controller="signup">
+  <div class="max-w-lg w-full bg-white rounded-xl shadow-2xl p-6 sm:p-8 space-y-6 transform transition duration-300">
+    <div class="text-center">
+      <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+        Register
+      </h2>
+      <p class="text-gray-600 text-lg">
+        Create your account and trade!
+      </p>
+    </div>
+    <%= form_with url: account_signup_path, method: :post, class: "space-y-6" do |form| %>
+      <div class="grid grid-cols-1 gap-6">
+        <div>
+          <%= form.label :name, "Full Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.text_field :name, placeholder: "Enter your full name", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :email, "Email Address", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.email_field :email, placeholder: "Enter your email", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :college, "College", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.select :college, [["Chung Chi College", "Chung Chi College"], ["New Asia College", "New Asia College"], ["United College", "United College"], ["Shaw College", "Shaw College"], ["Morningside College", "Morningside College"], ["S.H. Ho College", "S.H. Ho College"], ["Wu Yee Sun College", "Wu Yee Sun College"], ["Lee Woo Sing College", "Lee Woo Sing College"], ["C.W. Chu College", "C.W. Chu College"]], { include_blank: "Select College" }, class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :faculty, "Faculty (hold Ctrl/Cmd to select multiple)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.select :faculty, [
+            "Faculty of Arts",
+            "Faculty of Business Administration",
+            "Faculty of Education",
+            "Faculty of Engineering",
+            "Faculty of Law",
+            "Faculty of Medicine",
+            "Faculty of Science",
+            "Faculty of Social Sciences",
+            "Zhizhen School of Interdisciplinary Mathematical Sciences",
+            "Other Academic Units"
+          ], {}, multiple: true, size: 5, class: "relative block w-full px-4 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :department, "Department/Role (hold Ctrl/Cmd to select multiple)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.select :department, grouped_options_for_select([
+            ["Faculty of Arts", [
+              "Department of Anthropology",
+              "Department of Chinese Language and Literature",
+              "Department of Cultural and Religious Studies",
+              "Department of English",
+              "Department of Fine Arts",
+              "Department of History",
+              "Department of Japanese Studies",
+              "Department of Linguistics and Modern Languages",
+              "Department of Music",
+              "Department of Philosophy",
+              "Department of Translation"
+            ]],
+            ["Faculty of Business Administration", [
+              "The School of Accountancy",
+              "Department of Decisions, Operations and Technology",
+              "Department of Finance",
+              "School of Hotel and Tourism Management",
+              "Department of Management",
+              "Department of Marketing"
+            ]],
+            ["Faculty of Education", [
+              "Department of Curriculum and Instruction",
+              "Department of Educational Administration and Policy",
+              "Department of Educational Psychology",
+              "Department of Sports Science and Physical Education"
+            ]],
+            ["Faculty of Engineering", [
+              "Department of Biomedical Engineering",
+              "Department of Computer Science and Engineering",
+              "Department of Electronic Engineering",
+              "Department of Information Engineering",
+              "Department of Mechanical and Automation Engineering",
+              "Department of Systems Engineering and Engineering Management"
+            ]],
+            ["Faculty of Law", [
+              "Faculty of Law"
+            ]],
+            ["Faculty of Medicine", [
+              "Department of Anaesthesia and Intensive Care",
+              "Department of Anatomical and Cellular Pathology",
+              "School of Biomedical Sciences",
+              "Department of Chemical Pathology",
+              "School of Chinese Medicine",
+              "Department of Clinical Oncology",
+              "Department of Imaging and Interventional Radiology",
+              "Department of Medicine and Therapeutics",
+              "Department of Microbiology",
+              "The Nethersole School of Nursing",
+              "Department of Obstetrics and Gynaecology",
+              "Department of Ophthalmology and Visual Sciences",
+              "Department of Orthopaedics and Traumatology",
+              "Department of Otorhinolaryngology, Head and Neck Surgery",
+              "Department of Paediatrics",
+              "School of Pharmacy",
+              "Department of Psychiatry",
+              "The Jockey Club School of Public Health and Primary Care",
+              "Department of Surgery"
+            ]],
+            ["Faculty of Science", [
+              "Department of Chemistry",
+              "Department of Earth and Environmental Sciences",
+              "School of Life Sciences",
+              "Department of Mathematics",
+              "Department of Physics",
+              "Department of Statistics and Data Science"
+            ]],
+            ["Faculty of Social Sciences", [
+              "School of Architecture",
+              "Department of Economics",
+              "Department of Geography and Resource Management",
+              "School of Governance and Policy Science",
+              "School of Journalism and Communication",
+              "Department of Psychology",
+              "Department of Social Work",
+              "Department of Sociology"
+            ]],
+            ["Zhizhen School of Interdisciplinary Mathematical Sciences", [
+              "Zhizhen School of Interdisciplinary Mathematical Sciences"
+            ]],
+            ["Other Academic Units", [
+              "Postgraduate",
+              "Teacher/Lecturer",
+              "Researcher",
+              "Staff",
+              "Other"
+            ]]
+          ]), {}, multiple: true, size: 7, class: "relative block w-full px-4 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :password, "Password", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.password_field :password, placeholder: "Create a password", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+
+        <div>
+          <%= form.label :password_confirmation, "Confirm Password", class: "block text-sm font-medium text-gray-700 mb-2" %>
+          <%= form.password_field :password_confirmation, placeholder: "Confirm your password", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-3">
+        <input type="checkbox" id="terms_checkbox" name="terms_accepted"
+               class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
+               data-signup-target="termsCheckbox"
+               data-action="change->signup#toggleSubmit">
+        <label for="terms_checkbox" class="text-sm text-gray-600">
+          I agree to the
+          <button type="button"
+                  class="font-semibold text-indigo-600 hover:text-indigo-500 underline transition duration-200"
+                  data-action="click->signup#openModal">
+            Terms & Conditions
+          </button>
+        </label>
+      </div>
+
+      <div>
+        <%= form.submit "Create Account",
+              disabled: true,
+              data: { signup_target: "submitBtn" },
+              class: "group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:hover:scale-100" %>
+      </div>
+    <% end %>
+
+    <%# Terms & Conditions Modal %>
+    <div id="terms_modal"
+         class="hidden fixed inset-0 z-50 flex items-center justify-center p-4"
+         data-signup-target="modal">
+      <div class="absolute inset-0 bg-black/50" data-action="click->signup#closeModal"></div>
+      <div class="relative bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] flex flex-col z-10">
+        <div class="flex items-center justify-between p-5 border-b">
+          <h3 class="text-lg font-bold text-gray-900">Terms & Conditions</h3>
+          <button type="button"
+                  class="text-gray-400 hover:text-gray-600 transition"
+                  data-action="click->signup#closeModal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="overflow-y-auto p-5 space-y-4 text-sm text-gray-700 leading-relaxed">
+          <p class="font-semibold text-gray-900">Last updated: March 2026</p>
+
+          <p>Welcome to <strong>Curousell</strong>, a peer-to-peer marketplace for students and staff of The Chinese University of Hong Kong (CUHK). By registering, you agree to the following terms.</p>
+
+          <h4 class="font-semibold text-gray-900 mt-4">1. Eligibility</h4>
+          <p>You must be a current student, faculty, or staff member of CUHK to use this platform. You are responsible for keeping your account credentials secure.</p>
+
+          <h4 class="font-semibold text-gray-900 mt-4">2. User Conduct</h4>
+          <p>You agree not to post illegal, counterfeit, or prohibited items. All listings must be accurate and honest. Harassment, fraud, or misuse of the platform will result in account suspension.</p>
+
+          <h4 class="font-semibold text-gray-900 mt-4">3. Transactions</h4>
+          <p>Curousell facilitates connections between buyers and sellers but is not a party to any transaction. You are solely responsible for completing transactions safely and honestly.</p>
+
+          <h4 class="font-semibold text-gray-900 mt-4">4. Privacy</h4>
+          <p>Your personal information is used solely to operate this platform and will not be shared with third parties without your consent, except as required by law.</p>
+
+          <h4 class="font-semibold text-gray-900 mt-4">5. Disclaimer</h4>
+          <p>Curousell is provided "as is". We make no warranties regarding the availability, accuracy, or reliability of the service.</p>
+
+          <h4 class="font-semibold text-gray-900 mt-4">6. Changes</h4>
+          <p>We reserve the right to update these terms at any time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+        </div>
+        <div class="p-5 border-t flex justify-end">
+          <button type="button"
+                  class="px-5 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition"
+                  data-action="click->signup#closeModal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <p class="text-gray-600">
+        Already have an account?
+        <%= link_to "Sign in here", "/", class: "font-semibold text-indigo-600 hover:text-indigo-500 transition duration-200" %>
+      </p>
+    </div>
+  </div>
+</div>
