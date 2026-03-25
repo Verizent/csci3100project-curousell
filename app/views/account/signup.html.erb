@@ -9,21 +9,43 @@
         Create your account and trade!
       </p>
     </div>
-    <%= form_with url: account_signup_path, method: :post, class: "space-y-6" do |form| %>
+    <%# Validation errors %>
+    <% if flash[:alert].present? || @user&.errors&.any? %>
+      <div class="rounded-lg bg-red-50 border border-red-200 p-4">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-4.75a.75.75 0 001.5 0V9.25a.75.75 0 00-1.5 0v4zm.75-7.5a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+          </svg>
+          <div>
+            <p class="text-sm font-semibold text-red-700 mb-1">Please fix the following before continuing:</p>
+            <ul class="list-disc list-inside text-sm text-red-600 space-y-0.5">
+              <% if flash[:alert].present? %>
+                <li><%= flash[:alert] %></li>
+              <% end %>
+              <% @user&.errors&.full_messages&.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @user, url: account_signup_path, method: :post, class: "space-y-6" do |form| %>
       <div class="grid grid-cols-1 gap-6">
         <div>
           <%= form.label :name, "Full Name", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.text_field :name, placeholder: "Enter your full name", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          <%= form.text_field :name, placeholder: "Enter your full name", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true %>
         </div>
 
         <div>
           <%= form.label :email, "Email Address", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.email_field :email, placeholder: "Enter your email", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          <%= form.email_field :email, placeholder: "Enter your email", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true %>
         </div>
 
         <div>
           <%= form.label :college, "College", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.select :college, [["Chung Chi College", "Chung Chi College"], ["New Asia College", "New Asia College"], ["United College", "United College"], ["Shaw College", "Shaw College"], ["Morningside College", "Morningside College"], ["S.H. Ho College", "S.H. Ho College"], ["Wu Yee Sun College", "Wu Yee Sun College"], ["Lee Woo Sing College", "Lee Woo Sing College"], ["C.W. Chu College", "C.W. Chu College"]], { include_blank: "Select College" }, class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          <%= form.select :college, [["Chung Chi College", "Chung Chi College"], ["New Asia College", "New Asia College"], ["United College", "United College"], ["Shaw College", "Shaw College"], ["Morningside College", "Morningside College"], ["S.H. Ho College", "S.H. Ho College"], ["Wu Yee Sun College", "Wu Yee Sun College"], ["Lee Woo Sing College", "Lee Woo Sing College"], ["C.W. Chu College", "C.W. Chu College"]], { include_blank: "Select College" }, class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true %>
         </div>
 
         <div>
@@ -39,7 +61,7 @@
             "Faculty of Social Sciences",
             "Zhizhen School of Interdisciplinary Mathematical Sciences",
             "Other Academic Units"
-          ], {}, multiple: true, size: 5, class: "relative block w-full px-4 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          ], {}, multiple: true, size: 5, class: "relative block w-full px-4 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true%>
         </div>
 
         <div>
@@ -132,17 +154,17 @@
               "Staff",
               "Other"
             ]]
-          ]), {}, multiple: true, size: 7, class: "relative block w-full px-4 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          ]), {}, multiple: true, size: 7, class: "relative block w-full px-4 py-2 border border-gray-300 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true %>
         </div>
 
         <div>
           <%= form.label :password, "Password", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.password_field :password, placeholder: "Create a password", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          <%= form.password_field :password, placeholder: "Create a password", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true %>
         </div>
 
         <div>
           <%= form.label :password_confirmation, "Confirm Password", class: "block text-sm font-medium text-gray-700 mb-2" %>
-          <%= form.password_field :password_confirmation, placeholder: "Confirm your password", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm" %>
+          <%= form.password_field :password_confirmation, placeholder: "Confirm your password", class: "appearance-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-400 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200 sm:text-sm", required: true %>
         </div>
       </div>
 
@@ -150,7 +172,8 @@
         <input type="checkbox" id="terms_checkbox" name="terms_accepted"
                class="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer"
                data-signup-target="termsCheckbox"
-               data-action="change->signup#toggleSubmit">
+               data-action="change->signup#toggleSubmit"
+               required>
         <label for="terms_checkbox" class="text-sm text-gray-600">
           I agree to the
           <button type="button"
