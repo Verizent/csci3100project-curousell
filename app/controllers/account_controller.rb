@@ -17,8 +17,7 @@ class AccountController < ApplicationController
 
     if @user.save
       raw_code = @user.generate_otp!
-      # OtpMailer.send_code(@user, raw_code).deliver_later
-      puts raw_code
+      OtpMailer.send_code(@user, raw_code).deliver_later
       session[:pending_user_id] = @user.id
       CleanupUnverifiedUserJob.set(wait: User::OTP_EXPIRY_MINUTES.minutes).perform_later(@user.id)
       redirect_to signup_verify_path, notice: "Check your CUHK email for a 6-digit verification code."
