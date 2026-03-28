@@ -9,10 +9,10 @@ Rails.application.routes.draw do
   post "/account/signup" => "account#create_user"
   get "/account/verify" => "account#verify", as: :signup_verify
   post "/account/verify" => "account#verify_signup_otp"
-  get "/account/login" => "account#login", as: :account_login
-  post "/account/login" => "account#authenticate"
-  # get "/account/2fa" => 
-  # post "/account/2fa" =>
+  get "/account/signin" => "account#signin", as: :account_signin
+  post "/account/signin" => "account#authenticate"
+  get "/account/2fa" => "account#two_factor", as: :signin_2fa
+  post "/account/2fa" => "account#verify_2fa"
 
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

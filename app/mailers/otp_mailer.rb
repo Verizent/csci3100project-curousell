@@ -4,10 +4,17 @@ class OtpMailer < ApplicationMailer
   #
   #   en.otp_mailer.send_code.subject
   #
-  def send_code(user, code)
+  def send_code(user, code) # For sign up
     @user = user
     @code = code
 
     mail(to: @user.email, subject: "Your verification code for Curousell!")
+  end
+
+  def send_2fa(user, code) # For sign in
+    @user = user
+    @code = code
+
+    mail(to: @user.email, subject: "Your sign-in code for Curousell!")
   end
 end
