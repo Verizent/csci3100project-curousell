@@ -71,7 +71,7 @@ class AccountController < ApplicationController
     unless @user.verified?
       redirect_to signup_verify_path, alert: "Your email is not verified. Please check your inbox and try again." and return
     end
-    
+
     raw_code = @user.generate_otp!
     OtpMailer.send_2fa(@user, raw_code).deliver_later
     session[:pending_2fa_user_id] = @user.id
