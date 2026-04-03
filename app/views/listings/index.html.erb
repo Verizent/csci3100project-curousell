@@ -1,0 +1,175 @@
+<% content_for :title, "CUrousell — Home" %>
+
+<%
+  # Active filter params — used to build bubble links and preserve filters across search/pagination
+  active_filters = {
+    category:  @filter_category,
+    college:   @filter_college,
+    free:      (@filter_free ? "1" : nil),
+    max_price: @filter_max_price
+  }.compact
+
+  # Returns a path that toggles a single filter on/off, preserving all others + the search query
+  toggle_filter = ->(key, val) {
+    f = active_filters.dup
+    f[key].to_s == val.to_s ? f.delete(key) : f[key] = val
+    listings_path(f.merge(q: @query.presence).compact)
+  }
+
+  # Helper: is a given filter currently active?
+  filter_active = ->(key, val) { active_filters[key].to_s == val.to_s }
+
+  bubble_base    = "flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap cursor-pointer"
+  bubble_on      = "#{bubble_base} bg-cuhk-purple text-white"
+  bubble_off     = "#{bubble_base} bg-white text-gray-700 border border-gray-200 hover:border-cuhk-gold hover:text-cuhk-purple"
+
+  filters = [
+    { key: :free,      val: "1",              label: "🆓 Free",          icon: nil },
+    { key: :category,  val: "tech",           label: "💻 Tech",          icon: nil },
+    { key: :category,  val: "books",          label: "📚 Books",         icon: nil },
+    { key: :category,  val: "furniture",      label: "🪑 Furniture",     icon: nil },
+    { key: :category,  val: "accessories",    label: "👜 Accessories",   icon: nil },
+    { key: :category,  val: "miscellaneous",  label: "📦 Misc",          icon: nil },
+    { key: :max_price, val: "50",             label: "Under HK$50",     icon: nil },
+    { key: :max_price, val: "100",            label: "Under HK$100",    icon: nil },
+    { key: :max_price, val: "500",            label: "Under HK$500",    icon: nil },
+    { key: :max_price, val: "1000",           label: "Under HK$1000",   icon: nil },
+  ]
+
+  # College filter — always shown; value is the signed-in user's college (or nil for guests)
+  my_college = current_user&.college
+%>
+
+<%# Search bar + filter toggle — sticky below navbar %>
+<div class="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-30"
+     data-controller="filter">
+
+  <%# Search row %>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+    <div data-controller="search" class="flex items-center gap-2">
+
+      <%# Search form — hidden inputs carry active filters so they survive a search %>
+      <%= form_with url: listings_path, method: :get,
+            data: { turbo_frame: "listings_frame", search_target: "form" },
+            class: "relative flex-1" do %>
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg class="w-5 h-5 text-cuhk-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <input
+          type="search"
+          name="q"
+          value="<%= @query %>"
+          placeholder="Search for furniture, books, tech, and more..."
+          autocomplete="off"
+          data-search-target="input"
+          data-action="input->search#search"
+          class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200
+                 focus:outline-none focus:border-cuhk-gold text-gray-800 bg-gray-50
+                 placeholder-gray-400 text-sm transition-colors"
+        />
+        <%# Preserve active filters when searching %>
+        <% active_filters.each do |k, v| %>
+          <input type="hidden" name="<%= k %>" value="<%= v %>">
+        <% end %>
+      <% end %>
+
+      <%# Filter toggle button %>
+      <button type="button"
+              data-action="filter#toggle"
+              data-filter-target="icon"
+              title="Show filters"
+              class="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-xl
+                     border-2 border-gray-200 text-gray-400 bg-transparent
+                     hover:border-cuhk-gold hover:text-cuhk-purple transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+        </svg>
+        <% if active_filters.any? %>
+          <span class="ml-1 text-xs font-bold text-cuhk-gold"><%= active_filters.size %></span>
+        <% end %>
+      </button>
+
+    </div>
+  </div>
+
+  <%# Filter bubbles panel — hidden by default, toggled by filter#toggle %>
+  <div data-filter-target="panel"
+       class="<%= active_filters.any? ? '' : 'hidden' %> border-t border-gray-100 pb-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-2 overflow-x-auto pt-3 pb-1 scroll-smooth"
+           style="-webkit-overflow-scrolling: touch; scrollbar-width: none;">
+        <% filters.each do |f| %>
+          <%
+            on = filter_active.call(f[:key], f[:val])
+            path = toggle_filter.call(f[:key], f[:val])
+          %>
+          <%= link_to path,
+                class: on ? bubble_on : bubble_off,
+                data: { turbo_frame: "listings_frame" } do %>
+            <%= f[:label] %>
+            <% if on %>
+              <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <%# Clear all filters (only shown when any filter is active) %>
+        <% if active_filters.any? %>
+          <%= link_to listings_path(q: @query.presence),
+                class: "#{bubble_base} border border-red-200 text-red-500 hover:bg-red-50",
+                data: { turbo_frame: "listings_frame" } do %>
+            Clear all
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<%# Listings Turbo Frame %>
+<turbo-frame id="listings_frame" class="block">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <%# Result count + active filter tags %>
+    <div class="flex flex-wrap items-center gap-2 mb-6">
+      <p class="text-gray-500 text-sm">
+        <% if @query.present? %>
+          <%= @listings.total_count %> result<%= @listings.total_count == 1 ? "" : "s" %> for
+          <span class="font-semibold text-cuhk-purple">&ldquo;<%= @query %>&rdquo;</span>
+        <% else %>
+          <%= @listings.total_count %> listing<%= @listings.total_count == 1 ? "" : "s" %> available
+        <% end %>
+      </p>
+    </div>
+
+    <% if @listings.empty? %>
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-xl font-semibold text-gray-700 mb-2">No listings found</h2>
+        <p class="text-gray-400 text-sm">Try different keywords or remove some filters.</p>
+        <%= link_to "Clear everything", listings_path,
+              class: "mt-6 text-cuhk-purple hover:text-cuhk-purple-light font-medium text-sm underline" %>
+      </div>
+    <% else %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <% @listings.each do |listing| %>
+          <%= render "listing", listing: listing %>
+        <% end %>
+      </div>
+
+      <% if @listings.total_pages > 1 %>
+        <div class="mt-10">
+          <%= render "pagination", listings: @listings, query: @query, filters: active_filters %>
+        </div>
+      <% end %>
+    <% end %>
+
+  </div>
+</turbo-frame>
