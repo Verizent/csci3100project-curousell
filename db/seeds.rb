@@ -14,7 +14,7 @@ seed_users = [
   { name: "Wong Siu Ling",   email: "siuling.wong@cuhk.edu.hk", college: "New Asia College" },
   { name: "Lee Ka Wai",      email: "kawai.lee@cuhk.edu.hk",    college: "Chung Chi College" },
   { name: "Lam Ho Yin",      email: "hoyin.lam@cuhk.edu.hk",    college: "United College" },
-  { name: "Ng Mei Yee",      email: "meiyee.ng@cuhk.edu.hk",    college: "Morningside College" },
+  { name: "Ng Mei Yee",      email: "meiyee.ng@cuhk.edu.hk",    college: "Morningside College" }
 ].freeze
 
 users = seed_users.map do |attrs|
@@ -91,7 +91,7 @@ listings_data = [
   { title: "Foam Roller (60cm)",                  category: "miscellaneous", price: 45,   location: "Sports Complex",    status: "unsold",     college: nil,                  description: "High-density foam roller, 60cm. Great for post-workout recovery. Hardly used." },
   { title: "Playing Cards Bundle (3 decks)",      category: "miscellaneous", price: 25,   location: "Lee Woo Sing College", status: "unsold",  college: nil,                  description: "Three standard decks of playing cards. All complete. Good for card nights." },
   { title: "Portable Bluetooth Speaker (JBL Clip 4)", category: "miscellaneous", price: 280, location: "Shaw College",  status: "unsold",     college: nil,                  description: "JBL Clip 4 waterproof portable speaker. Red colour. Great sound, long battery life." },
-  { title: "Indoor Plant (Pothos, with pot)",     category: "miscellaneous", price: 40,   location: "Chung Chi College", status: "unsold",     college: nil,                  description: "Easy-care pothos plant in a white ceramic pot. About 30cm tall. Self-watering not included." },
+  { title: "Indoor Plant (Pothos, with pot)",     category: "miscellaneous", price: 40,   location: "Chung Chi College", status: "unsold",     college: nil,                  description: "Easy-care pothos plant in a white ceramic pot. About 30cm tall. Self-watering not included." }
 ].freeze
 
 created = 0
