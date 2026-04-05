@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_172055) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_05_175731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -44,16 +44,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_172055) do
   end
 
   create_table "listings", force: :cascade do |t|
-    t.integer "category", default: 0, null: false
+    t.string "category", default: "miscellaneous", null: false
+    t.string "college"
     t.datetime "created_at", null: false
     t.text "description"
     t.string "location"
     t.decimal "price", precision: 10, scale: 2, default: "0.0", null: false
-    t.integer "status", default: 0, null: false
+    t.string "status", default: "unsold", null: false
     t.string "title"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["category"], name: "index_listings_on_category"
+    t.index ["college"], name: "index_listings_on_college"
+    t.index ["created_at"], name: "index_listings_on_created_at"
     t.index ["description"], name: "listings_description_trgm_idx", opclass: :gin_trgm_ops, using: :gin
+    t.index ["status"], name: "index_listings_on_status"
     t.index ["title"], name: "listings_title_trgm_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["user_id"], name: "index_listings_on_user_id"
   end

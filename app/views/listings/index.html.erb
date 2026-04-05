@@ -1,153 +1,206 @@
-<% content_for :title, "CUrousell \u2014 Home" %>
+<% content_for :title, "CUrousell — Home" %>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<%
+  my_college = current_user&.college
 
-  <%# ── Search + Filter ── %>
-  <div data-controller="filters" class="mb-4">
+  active_filters = {
+    categories: @filter_categories.presence,
+    free:       (@filter_free ? "1" : nil),
+    max_price:  @filter_max_price,
+    college:    (@filter_college ? "1" : nil)
+  }.compact
 
-    <%# Search row %>
-    <div class="flex items-center gap-2">
-      <%= form_with url: listings_path, method: :get, data: { turbo_frame: "_top" }, class: "flex-1" do |f| %>
-        <%= f.hidden_field :filter, value: @filter.presence %>
-        <div class="flex items-center gap-2 bg-white rounded-2xl shadow-sm border border-cuhk-gold-light/60 px-4 py-2.5 focus-within:border-cuhk-gold focus-within:ring-2 focus-within:ring-cuhk-gold/20 transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cuhk-purple/40 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  # Count total active filters for the badge
+  active_count = Array(active_filters[:categories]).size +
+                 (active_filters[:free]     ? 1 : 0) +
+                 (active_filters[:max_price] ? 1 : 0) +
+                 (active_filters[:college]   ? 1 : 0)
+
+  # Build a path toggling one filter on/off, preserving all others + search query
+  toggle_filter = ->(key, val) {
+    f = active_filters.dup
+    if key == :categories
+      cats = Array(f[:categories]).dup
+      cats.include?(val.to_s) ? cats.delete(val.to_s) : cats << val.to_s
+      cats.empty? ? f.delete(:categories) : f[:categories] = cats
+    else
+      f[key].to_s == val.to_s ? f.delete(key) : f[key] = val
+    end
+    listings_path(f.merge(q: @query.presence).compact)
+  }
+
+  filter_active = ->(key, val) {
+    key == :categories ?
+      Array(active_filters[:categories]).include?(val.to_s) :
+      active_filters[key].to_s == val.to_s
+  }
+
+  bubble_base = "flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors whitespace-nowrap cursor-pointer"
+  bubble_on   = "#{bubble_base} bg-cuhk-purple text-white"
+  bubble_off  = "#{bubble_base} bg-white text-gray-700 border border-gray-200 hover:border-cuhk-gold hover:text-cuhk-purple"
+
+  filters = [
+    { key: :free,       val: "1",             label: "🆓 Free"          },
+    { key: :categories, val: "tech",          label: "💻 Tech"          },
+    { key: :categories, val: "books",         label: "📚 Books"         },
+    { key: :categories, val: "furniture",     label: "🪑 Furniture"     },
+    { key: :categories, val: "accessories",   label: "👜 Accessories"   },
+    { key: :categories, val: "miscellaneous", label: "📦 Misc"          },
+    { key: :max_price,  val: "50",            label: "Under HK$50"      },
+    { key: :max_price,  val: "100",           label: "Under HK$100"     },
+    { key: :max_price,  val: "500",           label: "Under HK$500"     },
+    { key: :max_price,  val: "1000",          label: "Under HK$1000"    },
+  ]
+%>
+
+<%# Search bar + filter toggle — sticky below navbar %>
+<div class="bg-white border-b border-gray-200 shadow-sm sticky top-16 z-30"
+     data-controller="filter">
+
+  <%# Search row %>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-3">
+    <div data-controller="search" class="flex items-center gap-2">
+
+      <%= form_with url: listings_path, method: :get,
+            data: { turbo_frame: "listings_frame", search_target: "form" },
+            class: "relative flex-1" do %>
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg class="w-5 h-5 text-cuhk-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
-          <%= f.search_field :q,
-                value: @query,
-                placeholder: "Search listings…",
-                autocomplete: "off",
-                class: "flex-1 bg-transparent text-cuhk-text placeholder-cuhk-text/30 text-sm focus:outline-none" %>
-          <% if @query.present? %>
-            <%= link_to listings_path(filter: @filter.presence), class: "text-cuhk-text/30 hover:text-cuhk-purple transition-colors" do %>
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </div>
+        <input
+          type="search"
+          name="q"
+          value="<%= @query %>"
+          placeholder="Search for furniture, books, tech, and more..."
+          autocomplete="off"
+          data-search-target="input"
+          data-action="input->search#search"
+          class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200
+                 focus:outline-none focus:border-cuhk-gold text-gray-800 bg-gray-50
+                 placeholder-gray-400 text-sm transition-colors"
+        />
+        <%# Carry active categories as array params %>
+        <% Array(active_filters[:categories]).each do |cat| %>
+          <input type="hidden" name="categories[]" value="<%= cat %>">
+        <% end %>
+        <% active_filters.except(:categories).each do |k, v| %>
+          <input type="hidden" name="<%= k %>" value="<%= v %>">
+        <% end %>
+      <% end %>
+
+      <button type="button"
+              data-action="filter#toggle"
+              data-filter-target="icon"
+              title="Show filters"
+              class="flex-shrink-0 flex items-center justify-center w-11 h-11 rounded-xl
+                     border-2 border-gray-200 text-gray-400 bg-transparent
+                     hover:border-cuhk-gold hover:text-cuhk-purple transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+        </svg>
+        <% if active_count > 0 %>
+          <span class="ml-1 text-xs font-bold text-cuhk-gold"><%= active_count %></span>
+        <% end %>
+      </button>
+
+    </div>
+  </div>
+
+  <%# Filter bubbles panel %>
+  <div data-filter-target="panel"
+       class="<%= active_count > 0 ? '' : 'hidden' %> border-t border-gray-100 pb-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex gap-2 overflow-x-auto pt-3 pb-1 scroll-smooth"
+           style="-webkit-overflow-scrolling: touch; scrollbar-width: none;">
+
+        <%# College bubble — only shown when logged in %>
+        <% if my_college.present? %>
+          <%
+            college_on   = active_filters[:college].present?
+            college_path = toggle_filter.call(:college, "1")
+          %>
+          <%= link_to college_path,
+                class: college_on ? bubble_on : bubble_off,
+                data: { turbo_frame: "listings_frame" } do %>
+            🏫 My College
+            <% if college_on %>
+              <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
               </svg>
             <% end %>
           <% end %>
-        </div>
-      <% end %>
+        <% end %>
 
-      <%# Filter toggle button %>
-      <button type="button"
-              data-action="filters#toggle"
-              data-filters-target="icon"
-              class="shrink-0 p-2.5 rounded-2xl bg-white shadow-sm border border-cuhk-gold-light/60 text-white/60 hover:text-cuhk-gold transition-colors <%= @filter.present? ? 'text-cuhk-gold border-cuhk-gold' : 'text-cuhk-purple/50' %>"
-              title="Filter listings">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
-        </svg>
-      </button>
-    </div>
+        <% filters.each do |f| %>
+          <%
+            on   = filter_active.call(f[:key], f[:val])
+            path = toggle_filter.call(f[:key], f[:val])
+          %>
+          <%= link_to path,
+                class: on ? bubble_on : bubble_off,
+                data: { turbo_frame: "listings_frame" } do %>
+            <%= f[:label] %>
+            <% if on %>
+              <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            <% end %>
+          <% end %>
+        <% end %>
 
-    <%# Filter bubbles panel (hidden by default) %>
-    <div data-filters-target="panel" class="<%= @filter.present? ? '' : 'hidden' %> mt-3 overflow-x-auto pb-1">
-      <div class="flex items-center gap-2 w-max">
-        <% filters = [
-          ["Free",        "free"],
-          ["College",     "college"],
-          ["Tech",        "tech"],
-          ["Furniture",   "furniture"],
-          ["Books",       "books"],
-          ["Accessories", "accessories"],
-          ["Misc",        "misc"],
-          ["Under $50",   "under50"],
-          ["Under $100",  "under100"],
-          ["New Arrival", "new"]
-        ] %>
-        <% filters.each do |label, key| %>
-          <% active = @filter == key %>
-          <% dest = active ? listings_path(q: @query.presence) : listings_path(q: @query.presence, filter: key) %>
-          <%= link_to dest,
-                class: "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition-colors
-                        #{active ? 'bg-cuhk-purple text-white border-cuhk-purple shadow-sm' : 'bg-white text-cuhk-text border-cuhk-gold-light hover:border-cuhk-purple hover:text-cuhk-purple'}" do %>
-            <%= label %>
+        <% if active_count > 0 %>
+          <%= link_to listings_path(q: @query.presence),
+                class: "#{bubble_base} border border-red-200 text-red-500 hover:bg-red-50",
+                data: { turbo_frame: "listings_frame" } do %>
+            Clear all
           <% end %>
         <% end %>
       </div>
     </div>
-
   </div>
 
-  <%# Active filter / search label %>
-  <% if @query.present? || @filter.present? %>
-    <p class="mb-4 text-sm text-cuhk-text/50">
-      <%= @listings.total_count %> result<%= @listings.total_count == 1 ? "" : "s" %>
-      <% if @query.present? %>
-        for <span class="font-semibold text-cuhk-purple">"<%= @query %>"</span>
-      <% end %>
-      <% if @filter.present? %>
-        <span class="ml-1 px-2 py-0.5 rounded-full bg-cuhk-purple/10 text-cuhk-purple text-xs font-medium"><%= @filter %></span>
-      <% end %>
-    </p>
-  <% end %>
+</div>
 
-  <%# ── Listings grid ── %>
-  <% if @listings.any? %>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      <%= render @listings %>
+<%# Listings Turbo Frame %>
+<turbo-frame id="listings_frame" class="block">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <div class="flex flex-wrap items-center gap-2 mb-6">
+      <p class="text-gray-500 text-sm">
+        <% if @query.present? %>
+          <%= @listings.total_count %> result<%= @listings.total_count == 1 ? "" : "s" %> for
+          <span class="font-semibold text-cuhk-purple">&ldquo;<%= @query %>&rdquo;</span>
+        <% else %>
+          <%= @listings.total_count %> listing<%= @listings.total_count == 1 ? "" : "s" %> available
+        <% end %>
+      </p>
     </div>
 
-    <%# ── Pagination ── %>
-    <% if @listings.total_pages > 1 %>
-      <nav class="mt-10 flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
-
-        <%# First %>
-        <% unless @listings.first_page? %>
-          <%= link_to "First", listings_path(page: 1, q: @query.presence),
-                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
+    <% if @listings.empty? %>
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="text-6xl mb-4">🔍</div>
+        <h2 class="text-xl font-semibold text-gray-700 mb-2">No listings found</h2>
+        <p class="text-gray-400 text-sm">Try different keywords or remove some filters.</p>
+        <%= link_to "Clear everything", listings_path,
+              class: "mt-6 text-cuhk-purple hover:text-cuhk-purple-light font-medium text-sm underline" %>
+      </div>
+    <% else %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <% @listings.each do |listing| %>
+          <%= render "listing", listing: listing %>
         <% end %>
+      </div>
 
-        <%# Prev %>
-        <% unless @listings.first_page? %>
-          <%= link_to "← Prev", listings_path(page: @listings.prev_page, q: @query.presence),
-                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
-        <% end %>
-
-        <%# Page numbers %>
-        <% pages = (1..@listings.total_pages).to_a %>
-        <% current = @listings.current_page %>
-        <% visible = pages.select { |p| p == 1 || p == @listings.total_pages || (p - current).abs <= 2 } %>
-
-        <% prev_p = nil %>
-        <% visible.each do |p| %>
-          <% if prev_p && p - prev_p > 1 %>
-            <span class="px-2 text-cuhk-text/40 text-sm">…</span>
-          <% end %>
-          <% if p == current %>
-            <span class="px-3 py-1.5 rounded-lg text-sm font-bold bg-cuhk-purple text-white shadow-sm"><%= p %></span>
-          <% else %>
-            <%= link_to p, listings_path(page: p, q: @query.presence),
-                  class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
-          <% end %>
-          <% prev_p = p %>
-        <% end %>
-
-        <%# Next %>
-        <% unless @listings.last_page? %>
-          <%= link_to "Next →", listings_path(page: @listings.next_page, q: @query.presence),
-                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
-        <% end %>
-
-        <%# Last %>
-        <% unless @listings.last_page? %>
-          <%= link_to "Last", listings_path(page: @listings.total_pages, q: @query.presence),
-                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
-        <% end %>
-
-      </nav>
+      <% if @listings.total_pages > 1 %>
+        <div class="mt-10">
+          <%= render "pagination", listings: @listings, query: @query, filters: active_filters %>
+        </div>
+      <% end %>
     <% end %>
 
-  <% else %>
-    <div class="flex flex-col items-center justify-center py-32 text-center">
-      <div class="w-20 h-20 rounded-full bg-cuhk-purple/10 flex items-center justify-center mb-4">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-cuhk-purple/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
-        </svg>
-      </div>
-      <h2 class="text-xl font-semibold text-cuhk-text/60">No listings yet</h2>
-      <p class="text-cuhk-text/40 mt-1 text-sm">Be the first to post something!</p>
-    </div>
-  <% end %>
-
-</div>
+  </div>
+</turbo-frame>

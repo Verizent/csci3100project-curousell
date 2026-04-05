@@ -1,0 +1,44 @@
+<nav class="fixed top-0 left-0 right-0 z-50 bg-cuhk-purple border-b-2 border-cuhk-gold shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <%# Logo / Home %>
+      <%= link_to root_path, class: "group" do %>
+        <span class="font-bold text-xl tracking-wide">
+          <span class="text-cuhk-gold group-hover:text-cuhk-gold-light transition-colors">CU</span><span class="text-white group-hover:text-cuhk-gold-light transition-colors">rousell</span>
+        </span>
+      <% end %>
+
+      <%# Right nav links %>
+      <div class="flex items-center gap-6">
+        <%= link_to chats_path,
+              class: "flex items-center gap-1.5 text-white hover:text-cuhk-gold transition-colors font-medium text-sm" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+          </svg>
+          Chats
+        <% end %>
+
+        <%= link_to orders_path,
+              class: "flex items-center gap-1.5 text-white hover:text-cuhk-gold transition-colors font-medium text-sm" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          Orders
+        <% end %>
+
+        <%= link_to profile_path,
+              class: "flex items-center gap-1.5 text-white hover:text-cuhk-gold transition-colors font-medium text-sm" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          Profile
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</nav>

@@ -1,47 +1,38 @@
 class Listing < ApplicationRecord
   belongs_to :user
-  has_many_attached :images
+  has_one_attached :image
 
-  enum :category, {
-    furniture:    0,
-    accessories:  1,
-    tech:         2,
-    books:        3,
-    misc:         4
+  CATEGORIES = %w[furniture accessories tech books miscellaneous].freeze
+  STATUSES   = %w[unsold in_process sold].freeze
+  COLLEGES   = [
+    "Shaw College",
+    "United College",
+    "New Asia College",
+    "Chung Chi College",
+    "Morningside College",
+    "CW Chu College",
+    "S.H. Ho College",
+    "Lee Woo Sing College",
+    "Wu Yee Sun College"
+  ].freeze
+
+  validates :title,    presence: true, length: { maximum: 100 }
+  validates :price,    presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :category, inclusion: { in: CATEGORIES }
+  validates :status,   inclusion: { in: STATUSES }
+  validates :college,  inclusion: { in: COLLEGES }, allow_nil: true
+
+  scope :by_category, ->(cat) { where(category: cat) if cat.present? }
+  scope :by_status,   ->(s)   { where(status: s) if s.present? }
+  scope :visible_to,  ->(college) {
+    college.present? ? where(college: [ nil, college ]) : where(college: nil)
   }
 
-  enum :status, {
-    unsold:         0,
-    in_transaction: 1,
-    sold:           2
-  }
-
-  validates :title, presence: true
-  validates :price, numericality: { greater_than_or_equal_to: 0 }
-  validates :category, presence: true
-  validates :status, presence: true
-
-  scope :search, ->(query) {
+  def self.search(query)
     return all if query.blank?
     where(
       "title % :q OR description % :q OR title ILIKE :like OR description ILIKE :like",
       q: query, like: "%#{sanitize_sql_like(query)}%"
     )
-  }
-
-  scope :apply_filter, ->(filter, college) {
-    case filter
-    when "free"        then where(price: 0)
-    when "college"     then joins(:user).where(users: { college: college })
-    when "tech"        then tech
-    when "furniture"   then furniture
-    when "books"       then books
-    when "accessories" then accessories
-    when "misc"        then misc
-    when "under50"     then where("price > 0 AND price <= 50")
-    when "under100"    then where("price > 0 AND price <= 100")
-    when "new"         then where("listings.created_at >= ?", 7.days.ago)
-    else all
-    end
-  }
+  end
 end

@@ -1,52 +1,96 @@
-<article class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-cuhk-gold-light/40 group cursor-pointer">
-  <%# Image %>
-  <div class="aspect-square bg-cuhk-bg overflow-hidden">
-    <% if listing.images.attached? %>
-      <%= image_tag listing.images.first.variant(resize_to_fill: [400, 400]),
-            class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300",
-            alt: listing.title %>
-    <% else %>
-      <div class="w-full h-full flex items-center justify-center text-cuhk-purple/20">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
+<%
+  status_classes = {
+    "unsold"     => "bg-green-100 text-green-700 border border-green-200",
+    "in_process" => "bg-amber-100 text-amber-700 border border-amber-200",
+    "sold"       => "bg-gray-100 text-gray-500 border border-gray-200"
+  }
+  status_labels = {
+    "unsold"     => "Available",
+    "in_process" => "In Process",
+    "sold"       => "Sold"
+  }
+  category_icons = {
+    "furniture"     => "🪑",
+    "accessories"   => "👜",
+    "tech"          => "💻",
+    "books"         => "📚",
+    "miscellaneous" => "📦"
+  }
+%>
+<%= link_to listing_path(listing), class: "block group" do %>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100
+              hover:shadow-md hover:border-cuhk-gold transition-all duration-200
+              overflow-hidden flex flex-col h-full">
+
+    <%# Image %>
+    <div class="relative bg-gray-50 aspect-square overflow-hidden">
+      <% if listing.image.attached? %>
+        <%= image_tag listing.image.variant(resize_to_fill: [320, 320]),
+              class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300",
+              alt: listing.title %>
+      <% else %>
+        <div class="w-full h-full flex items-center justify-center text-5xl">
+          <%= category_icons[listing.category] || "📦" %>
+        </div>
+      <% end %>
+
+      <%# Status badge %>
+      <span class="absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded-full
+                   <%= status_classes[listing.status] %>">
+        <%= status_labels[listing.status] %>
+      </span>
+
+      <%# College badge %>
+      <% if listing.college.present? %>
+        <span class="absolute top-2 left-2 text-xs font-medium px-2 py-0.5 rounded-full
+                     bg-cuhk-purple text-cuhk-gold border border-cuhk-gold truncate max-w-[120px]">
+          <%= listing.college.sub(" College", "") %>
+        </span>
+      <% end %>
+    </div>
+
+    <%# Card body %>
+    <div class="p-4 flex flex-col flex-1">
+      <div class="flex items-center gap-1.5 mb-2">
+        <span class="text-xs font-medium text-cuhk-purple border border-cuhk-purple-light
+                     rounded-full px-2 py-0.5 capitalize">
+          <%= listing.category %>
+        </span>
       </div>
-    <% end %>
-  </div>
 
-  <%# Info %>
-  <div class="p-3">
-    <%# Status badge %>
-    <% if listing.in_transaction? || listing.sold? %>
-      <span class="inline-block mb-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide
-        <%= listing.sold? ? 'bg-gray-200 text-gray-500' : 'bg-amber-100 text-amber-700' %>">
-        <%= listing.sold? ? "Sold" : "In Transaction" %>
-      </span>
-    <% end %>
+      <h3 class="text-gray-800 font-semibold text-sm leading-snug mb-1 line-clamp-2 flex-1">
+        <%= listing.title %>
+      </h3>
 
-    <h3 class="font-semibold text-cuhk-text text-sm leading-snug line-clamp-2 group-hover:text-cuhk-purple transition-colors">
-      <%= listing.title %>
-    </h3>
+      <% if listing.price.zero? %>
+        <p class="text-green-600 font-bold text-lg mt-1">Free</p>
+      <% else %>
+        <p class="text-cuhk-gold font-bold text-lg mt-1">
+          HK$<%= number_with_precision(listing.price, precision: 0, delimiter: ",") %>
+        </p>
+      <% end %>
 
-    <div class="mt-2 flex items-center justify-between">
-      <span class="text-cuhk-purple font-bold text-base">
-        <% if listing.price.zero? %>
-          <span class="text-emerald-600">Free</span>
-        <% else %>
-          $<%= number_with_precision(listing.price, precision: 0) %>
-        <% end %>
-      </span>
-      <span class="text-[10px] text-cuhk-text/40 uppercase tracking-wide">
-        <%= listing.category.humanize %>
-      </span>
+      <div class="flex items-center justify-between mt-2 text-xs text-gray-400">
+        <span class="flex items-center gap-1 truncate">
+          <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span class="truncate"><%= listing.location.presence || "CUHK" %></span>
+        </span>
+        <span class="flex-shrink-0 ml-2"><%= time_ago_in_words(listing.created_at) %> ago</span>
+      </div>
+
+      <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+        <div class="w-6 h-6 rounded-full bg-cuhk-purple-light flex items-center justify-center
+                    text-white text-xs font-bold flex-shrink-0">
+          <%= listing.user.name&.first&.upcase || "?" %>
+        </div>
+        <span class="text-xs text-gray-500 truncate"><%= listing.user.name %></span>
+      </div>
     </div>
 
-    <div class="mt-1.5 flex items-center gap-1 text-cuhk-text/50 text-xs">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-      <span class="truncate"><%= listing.location.presence || "No location" %></span>
-    </div>
   </div>
-</article>
+<% end %>
