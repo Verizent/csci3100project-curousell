@@ -124,7 +124,7 @@ LISTING_DATA = [
   { title: "Old Phone Cables Bundle",             description: "Mix of Lightning and USB-C. Some may work. Free.",                  category: "tech",          price: 0,    location: "Morningside College" },
   { title: "Noise-Cancelling Earplugs (10 pairs)", description: "SNR 35dB, ideal for library or exam season. Sealed. Free.",       category: "accessories",   price: 0,    location: "Morningside College" },
   { title: "Instant Noodle Stockpile (50 packs)", description: "Various flavours. Moving out sale. Free.",                         category: "miscellaneous", price: 0,    location: "Wu Yee Sun College" },
-  { title: "Cable Management Kit",               description: "Velcro ties, clips, and sleeves. Clean up your desk setup.",        category: "accessories",   price: 35,   location: "S.H. Ho College" },
+  { title: "Cable Management Kit",               description: "Velcro ties, clips, and sleeves. Clean up your desk setup.",        category: "accessories",   price: 35,   location: "S.H. Ho College" }
 ].freeze
 
 # ── Create listings ───────────────────────────────────────────────────────────
