@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
-  root "listings#index"
+  root to: redirect("/home")
 
+  get "/home" => "listings#index", as: :home
   resources :listings, only: [ :index, :show ]
   resources :feedback, only: [ :create ]
 
