@@ -31,7 +31,7 @@ class Listing < ApplicationRecord
   def self.search(query)
     return all if query.blank?
     where(
-      "word_similarity(:q, title) > 0.75 OR word_similarity(:q, description) > 0.65 " \
+      "word_similarity(:q, title) > 0.55 OR word_similarity(:q, description) > 0.45 " \
       "OR title ILIKE :like OR description ILIKE :like",
       q: query, like: "%#{sanitize_sql_like(query)}%"
     )
