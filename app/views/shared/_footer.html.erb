@@ -1,0 +1,71 @@
+<footer class="bg-cuhk-purple border-t-2 border-cuhk-gold mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+      <%# Credits %>
+      <div>
+        <h2 class="font-bold text-2xl mb-2 tracking-wide">
+          <span class="text-cuhk-gold">CU</span><span class="text-white">rousell</span>
+        </h2>
+        <p class="text-purple-200 text-sm mb-4 leading-relaxed">
+          The second-hand marketplace for CUHK students.<br>
+          Buy, sell, and trade within your campus community.
+        </p>
+        <p class="text-purple-300 text-xs">
+          &copy; 2026 CUrousell Team &mdash; CSCI3100 Project<br>
+          The Chinese University of Hong Kong
+        </p>
+
+        <div class="mt-6 flex gap-3">
+          <%= link_to account_signup_path,
+                class: "text-xs bg-cuhk-gold text-cuhk-purple px-4 py-2 rounded-lg font-semibold
+                        hover:bg-cuhk-gold-light transition-colors" do %>
+            Sign Up
+          <% end %>
+          <%= link_to account_signin_path,
+                class: "text-xs border border-cuhk-gold text-cuhk-gold px-4 py-2 rounded-lg font-semibold
+                        hover:bg-cuhk-gold hover:text-cuhk-purple transition-colors" do %>
+            Sign In
+          <% end %>
+        </div>
+      </div>
+
+      <%# Feedback form %>
+      <div>
+        <h3 class="text-cuhk-gold font-semibold text-lg mb-4">Send us Feedback</h3>
+        <%= form_with url: feedback_index_path, method: :post,
+              class: "space-y-3",
+              data: { turbo: false } do |f| %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <%= f.label :name, "Your Name", class: "block text-purple-200 text-xs font-medium mb-1" %>
+              <%= f.text_field :name,
+                    required: true,
+                    class: "w-full bg-cuhk-purple-dark border border-purple-500 text-white placeholder-purple-400
+                            rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cuhk-gold transition-colors" %>
+            </div>
+            <div>
+              <%= f.label :email, "Your Email", class: "block text-purple-200 text-xs font-medium mb-1" %>
+              <%= f.email_field :email,
+                    required: true,
+                    class: "w-full bg-cuhk-purple-dark border border-purple-500 text-white placeholder-purple-400
+                            rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cuhk-gold transition-colors" %>
+            </div>
+          </div>
+          <div>
+            <%= f.label :message, "Message", class: "block text-purple-200 text-xs font-medium mb-1" %>
+            <%= f.text_area :message,
+                  rows: 4,
+                  required: true,
+                  class: "w-full bg-cuhk-purple-dark border border-purple-500 text-white placeholder-purple-400
+                          rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-cuhk-gold transition-colors resize-none" %>
+          </div>
+          <%= f.submit "Send Feedback",
+                class: "w-full bg-cuhk-gold text-cuhk-purple font-semibold py-2.5 rounded-lg text-sm
+                        hover:bg-cuhk-gold-light transition-colors cursor-pointer" %>
+        <% end %>
+      </div>
+
+    </div>
+  </div>
+</footer>

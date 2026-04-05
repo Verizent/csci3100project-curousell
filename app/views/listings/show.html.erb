@@ -1,0 +1,137 @@
+<%
+  status_classes = {
+    "unsold"     => "bg-green-100 text-green-700 border border-green-200",
+    "in_process" => "bg-amber-100 text-amber-700 border border-amber-200",
+    "sold"       => "bg-gray-100 text-gray-500 border border-gray-200"
+  }
+  status_labels = {
+    "unsold"     => "Available",
+    "in_process" => "In Process",
+    "sold"       => "Sold"
+  }
+  category_icons = {
+    "furniture"     => "🪑",
+    "accessories"   => "👜",
+    "tech"          => "💻",
+    "books"         => "📚",
+    "miscellaneous" => "📦"
+  }
+%>
+<% content_for :title, "CUrousell — #{@listing.title}" %>
+
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <%= link_to home_path,
+        class: "inline-flex items-center gap-1.5 text-cuhk-purple hover:text-cuhk-purple-light
+                text-sm font-medium mb-6 group" do %>
+    <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none"
+         stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to listings
+  <% end %>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="grid grid-cols-1 md:grid-cols-2">
+
+      <%# Image %>
+      <div class="bg-gray-50 flex items-center justify-center min-h-72 md:min-h-96">
+        <% if @listing.image.attached? %>
+          <%= image_tag @listing.image.variant(resize_to_limit: [600, 600]),
+                class: "max-h-96 w-full object-contain",
+                alt: @listing.title %>
+        <% else %>
+          <div class="text-8xl">
+            <%= category_icons[@listing.category] || "📦" %>
+          </div>
+        <% end %>
+      </div>
+
+      <%# Details %>
+      <div class="p-8 flex flex-col">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <span class="text-xs font-medium text-cuhk-purple border border-cuhk-purple-light
+                       rounded-full px-3 py-1 capitalize">
+            <%= @listing.category %>
+          </span>
+          <span class="text-xs font-semibold px-3 py-1 rounded-full
+                       <%= status_classes[@listing.status] %>">
+            <%= status_labels[@listing.status] %>
+          </span>
+          <% if @listing.college.present? %>
+            <span class="text-xs font-medium px-3 py-1 rounded-full
+                         bg-cuhk-purple text-cuhk-gold border border-cuhk-gold">
+              <%= @listing.college %>
+            </span>
+          <% end %>
+        </div>
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-3 leading-snug">
+          <%= @listing.title %>
+        </h1>
+
+        <% if @listing.price.zero? %>
+          <p class="text-3xl font-bold text-green-600 mb-5">Free</p>
+        <% else %>
+          <p class="text-3xl font-bold text-cuhk-gold mb-5">
+            HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
+          </p>
+        <% end %>
+
+        <% if @listing.description.present? %>
+          <div class="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
+            <%= simple_format @listing.description %>
+          </div>
+        <% end %>
+
+        <div class="space-y-2 text-sm text-gray-500 border-t border-gray-100 pt-5">
+          <% if @listing.location.present? %>
+            <div class="flex items-center gap-2">
+              <svg class="w-4 h-4 text-cuhk-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              <span><%= @listing.location %></span>
+            </div>
+          <% end %>
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-cuhk-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span>Listed <%= time_ago_in_words(@listing.created_at) %> ago</span>
+          </div>
+        </div>
+
+        <div class="mt-5 p-4 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-cuhk-purple flex items-center justify-center
+                      text-cuhk-gold font-bold text-lg flex-shrink-0">
+            <%= @listing.user.name&.first&.upcase || "?" %>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 font-medium">Seller</p>
+            <p class="text-sm font-semibold text-gray-800"><%= @listing.user.name %></p>
+            <% if @listing.user.college.present? %>
+              <p class="text-xs text-cuhk-purple-light"><%= @listing.user.college %></p>
+            <% end %>
+          </div>
+        </div>
+
+        <% if @listing.status == "unsold" %>
+          <%= link_to chats_path,
+                class: "mt-5 block text-center bg-cuhk-purple text-white font-semibold py-3 rounded-xl
+                        hover:bg-cuhk-purple-dark transition-colors" do %>
+            Contact Seller
+          <% end %>
+        <% else %>
+          <div class="mt-5 block text-center bg-gray-100 text-gray-400 font-semibold py-3 rounded-xl cursor-not-allowed">
+            <%= @listing.status == "sold" ? "This item has been sold" : "Transaction in progress" %>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+
+</div>
