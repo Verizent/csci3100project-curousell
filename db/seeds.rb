@@ -1,3 +1,5 @@
+# This file is to generate the listings for testing. For whomever is going to create user profiles or listing pages, you may delete this file in your versions.
+
 # Seeds are idempotent — safe to re-run.
 puts "Seeding..."
 
