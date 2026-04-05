@@ -1,1 +1,15 @@
 @import "tailwindcss";
+
+@theme {
+  /* CUHK Brand Colors */
+  --color-cuhk-purple:       #4E2A84;
+  --color-cuhk-purple-mid:   #6B3FA0;
+  --color-cuhk-purple-light: #8B5FBF;
+  --color-cuhk-gold:         #C9A84C;
+  --color-cuhk-gold-light:   #E8D5A3;
+  --color-cuhk-bg:           #FAF8F5;
+  --color-cuhk-text:         #1A1A2E;
+
+  /* Font */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
