@@ -28,4 +28,20 @@ class Listing < ApplicationRecord
       q: query, like: "%#{sanitize_sql_like(query)}%"
     )
   }
+
+  scope :apply_filter, ->(filter, college) {
+    case filter
+    when "free"        then where(price: 0)
+    when "college"     then joins(:user).where(users: { college: college })
+    when "tech"        then tech
+    when "furniture"   then furniture
+    when "books"       then books
+    when "accessories" then accessories
+    when "misc"        then misc
+    when "under50"     then where("price > 0 AND price <= 50")
+    when "under100"    then where("price > 0 AND price <= 100")
+    when "new"         then where("listings.created_at >= ?", 7.days.ago)
+    else all
+    end
+  }
 end

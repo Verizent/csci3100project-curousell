@@ -2,32 +2,83 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-  <%# ── Search bar ── %>
-  <%= form_with url: listings_path, method: :get, data: { turbo_frame: "_top" }, class: "mb-6" do |f| %>
-    <div class="flex items-center gap-2 bg-white rounded-2xl shadow-sm border border-cuhk-gold-light/60 px-4 py-2.5 focus-within:border-cuhk-gold focus-within:ring-2 focus-within:ring-cuhk-gold/20 transition-all">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cuhk-purple/40 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-      <%= f.search_field :q,
-            value: @query,
-            placeholder: "Search listings…",
-            autocomplete: "off",
-            class: "flex-1 bg-transparent text-cuhk-text placeholder-cuhk-text/30 text-sm focus:outline-none" %>
-      <% if @query.present? %>
-        <%= link_to listings_path, class: "text-cuhk-text/30 hover:text-cuhk-purple transition-colors" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        <% end %>
-      <% end %>
-    </div>
-  <% end %>
+  <%# ── Search + Filter ── %>
+  <div data-controller="filters" class="mb-4">
 
-  <%# Search result label %>
-  <% if @query.present? %>
+    <%# Search row %>
+    <div class="flex items-center gap-2">
+      <%= form_with url: listings_path, method: :get, data: { turbo_frame: "_top" }, class: "flex-1" do |f| %>
+        <%= f.hidden_field :filter, value: @filter.presence %>
+        <div class="flex items-center gap-2 bg-white rounded-2xl shadow-sm border border-cuhk-gold-light/60 px-4 py-2.5 focus-within:border-cuhk-gold focus-within:ring-2 focus-within:ring-cuhk-gold/20 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cuhk-purple/40 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <%= f.search_field :q,
+                value: @query,
+                placeholder: "Search listings…",
+                autocomplete: "off",
+                class: "flex-1 bg-transparent text-cuhk-text placeholder-cuhk-text/30 text-sm focus:outline-none" %>
+          <% if @query.present? %>
+            <%= link_to listings_path(filter: @filter.presence), class: "text-cuhk-text/30 hover:text-cuhk-purple transition-colors" do %>
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%# Filter toggle button %>
+      <button type="button"
+              data-action="filters#toggle"
+              data-filters-target="icon"
+              class="shrink-0 p-2.5 rounded-2xl bg-white shadow-sm border border-cuhk-gold-light/60 text-white/60 hover:text-cuhk-gold transition-colors <%= @filter.present? ? 'text-cuhk-gold border-cuhk-gold' : 'text-cuhk-purple/50' %>"
+              title="Filter listings">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+        </svg>
+      </button>
+    </div>
+
+    <%# Filter bubbles panel (hidden by default) %>
+    <div data-filters-target="panel" class="<%= @filter.present? ? '' : 'hidden' %> mt-3 overflow-x-auto pb-1">
+      <div class="flex items-center gap-2 w-max">
+        <% filters = [
+          ["Free",        "free"],
+          ["College",     "college"],
+          ["Tech",        "tech"],
+          ["Furniture",   "furniture"],
+          ["Books",       "books"],
+          ["Accessories", "accessories"],
+          ["Misc",        "misc"],
+          ["Under $50",   "under50"],
+          ["Under $100",  "under100"],
+          ["New Arrival", "new"]
+        ] %>
+        <% filters.each do |label, key| %>
+          <% active = @filter == key %>
+          <% dest = active ? listings_path(q: @query.presence) : listings_path(q: @query.presence, filter: key) %>
+          <%= link_to dest,
+                class: "px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap border transition-colors
+                        #{active ? 'bg-cuhk-purple text-white border-cuhk-purple shadow-sm' : 'bg-white text-cuhk-text border-cuhk-gold-light hover:border-cuhk-purple hover:text-cuhk-purple'}" do %>
+            <%= label %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+
+  <%# Active filter / search label %>
+  <% if @query.present? || @filter.present? %>
     <p class="mb-4 text-sm text-cuhk-text/50">
-      <%= @listings.total_count %> result<%= @listings.total_count == 1 ? "" : "s" %> for
-      <span class="font-semibold text-cuhk-purple">"<%= @query %>"</span>
+      <%= @listings.total_count %> result<%= @listings.total_count == 1 ? "" : "s" %>
+      <% if @query.present? %>
+        for <span class="font-semibold text-cuhk-purple">"<%= @query %>"</span>
+      <% end %>
+      <% if @filter.present? %>
+        <span class="ml-1 px-2 py-0.5 rounded-full bg-cuhk-purple/10 text-cuhk-purple text-xs font-medium"><%= @filter %></span>
+      <% end %>
     </p>
   <% end %>
 
