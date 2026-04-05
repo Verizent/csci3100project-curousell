@@ -2,6 +2,35 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+  <%# ── Search bar ── %>
+  <%= form_with url: listings_path, method: :get, data: { turbo_frame: "_top" }, class: "mb-6" do |f| %>
+    <div class="flex items-center gap-2 bg-white rounded-2xl shadow-sm border border-cuhk-gold-light/60 px-4 py-2.5 focus-within:border-cuhk-gold focus-within:ring-2 focus-within:ring-cuhk-gold/20 transition-all">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-cuhk-purple/40 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <%= f.search_field :q,
+            value: @query,
+            placeholder: "Search listings…",
+            autocomplete: "off",
+            class: "flex-1 bg-transparent text-cuhk-text placeholder-cuhk-text/30 text-sm focus:outline-none" %>
+      <% if @query.present? %>
+        <%= link_to listings_path, class: "text-cuhk-text/30 hover:text-cuhk-purple transition-colors" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Search result label %>
+  <% if @query.present? %>
+    <p class="mb-4 text-sm text-cuhk-text/50">
+      <%= @listings.total_count %> result<%= @listings.total_count == 1 ? "" : "s" %> for
+      <span class="font-semibold text-cuhk-purple">"<%= @query %>"</span>
+    </p>
+  <% end %>
+
   <%# ── Listings grid ── %>
   <% if @listings.any? %>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -14,13 +43,13 @@
 
         <%# First %>
         <% unless @listings.first_page? %>
-          <%= link_to "First", listings_path(page: 1),
+          <%= link_to "First", listings_path(page: 1, q: @query.presence),
                 class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
         <% end %>
 
         <%# Prev %>
         <% unless @listings.first_page? %>
-          <%= link_to "← Prev", listings_path(page: @listings.prev_page),
+          <%= link_to "← Prev", listings_path(page: @listings.prev_page, q: @query.presence),
                 class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
         <% end %>
 
@@ -37,7 +66,7 @@
           <% if p == current %>
             <span class="px-3 py-1.5 rounded-lg text-sm font-bold bg-cuhk-purple text-white shadow-sm"><%= p %></span>
           <% else %>
-            <%= link_to p, listings_path(page: p),
+            <%= link_to p, listings_path(page: p, q: @query.presence),
                   class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
           <% end %>
           <% prev_p = p %>
@@ -45,13 +74,13 @@
 
         <%# Next %>
         <% unless @listings.last_page? %>
-          <%= link_to "Next →", listings_path(page: @listings.next_page),
+          <%= link_to "Next →", listings_path(page: @listings.next_page, q: @query.presence),
                 class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
         <% end %>
 
         <%# Last %>
         <% unless @listings.last_page? %>
-          <%= link_to "Last", listings_path(page: @listings.total_pages),
+          <%= link_to "Last", listings_path(page: @listings.total_pages, q: @query.presence),
                 class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
         <% end %>
 

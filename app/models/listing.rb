@@ -20,4 +20,12 @@ class Listing < ApplicationRecord
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validates :category, presence: true
   validates :status, presence: true
+
+  scope :search, ->(query) {
+    return all if query.blank?
+    where(
+      "title % :q OR description % :q OR title ILIKE :like OR description ILIKE :like",
+      q: query, like: "%#{sanitize_sql_like(query)}%"
+    )
+  }
 end
