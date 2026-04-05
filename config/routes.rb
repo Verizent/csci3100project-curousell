@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   root "listings#index"
   resources :listings, only: [:index]
+  resource  :feedback, only: [:create]
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Placeholder routes for nav links (pages built in later steps)

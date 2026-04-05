@@ -66,6 +66,24 @@
       </div>
     </header>
 
+    <%# ── Flash messages ── %>
+    <% if notice.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div class="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+          <%= notice %>
+        </div>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <div class="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z" /></svg>
+          <%= alert %>
+        </div>
+      </div>
+    <% end %>
+
     <%# ── Page Content ── %>
     <main class="min-h-screen">
       <%= yield %>
@@ -91,7 +109,7 @@
           <%# Feedback form %>
           <div>
             <h3 class="text-cuhk-gold font-semibold text-lg mb-3">Send Feedback</h3>
-            <%= form_with url: "#", method: :post, class: "space-y-3" do |f| %>
+            <%= form_with url: feedback_path, method: :post, class: "space-y-3" do |f| %>
               <%= f.email_field :email,
                     placeholder: "Your CUHK email",
                     class: "w-full px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm focus:outline-none focus:border-cuhk-gold focus:ring-1 focus:ring-cuhk-gold transition-colors" %>
