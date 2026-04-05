@@ -1,0 +1,73 @@
+<% content_for :title, "CUrousell \u2014 Home" %>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <%# ── Listings grid ── %>
+  <% if @listings.any? %>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <%= render @listings %>
+    </div>
+
+    <%# ── Pagination ── %>
+    <% if @listings.total_pages > 1 %>
+      <nav class="mt-10 flex items-center justify-center gap-1.5 flex-wrap" aria-label="Pagination">
+
+        <%# First %>
+        <% unless @listings.first_page? %>
+          <%= link_to "First", listings_path(page: 1),
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
+        <% end %>
+
+        <%# Prev %>
+        <% unless @listings.first_page? %>
+          <%= link_to "← Prev", listings_path(page: @listings.prev_page),
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
+        <% end %>
+
+        <%# Page numbers %>
+        <% pages = (1..@listings.total_pages).to_a %>
+        <% current = @listings.current_page %>
+        <% visible = pages.select { |p| p == 1 || p == @listings.total_pages || (p - current).abs <= 2 } %>
+
+        <% prev_p = nil %>
+        <% visible.each do |p| %>
+          <% if prev_p && p - prev_p > 1 %>
+            <span class="px-2 text-cuhk-text/40 text-sm">…</span>
+          <% end %>
+          <% if p == current %>
+            <span class="px-3 py-1.5 rounded-lg text-sm font-bold bg-cuhk-purple text-white shadow-sm"><%= p %></span>
+          <% else %>
+            <%= link_to p, listings_path(page: p),
+                  class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
+          <% end %>
+          <% prev_p = p %>
+        <% end %>
+
+        <%# Next %>
+        <% unless @listings.last_page? %>
+          <%= link_to "Next →", listings_path(page: @listings.next_page),
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
+        <% end %>
+
+        <%# Last %>
+        <% unless @listings.last_page? %>
+          <%= link_to "Last", listings_path(page: @listings.total_pages),
+                class: "px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-cuhk-gold-light text-cuhk-purple hover:bg-cuhk-purple hover:text-white transition-colors" %>
+        <% end %>
+
+      </nav>
+    <% end %>
+
+  <% else %>
+    <div class="flex flex-col items-center justify-center py-32 text-center">
+      <div class="w-20 h-20 rounded-full bg-cuhk-purple/10 flex items-center justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-cuhk-purple/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-cuhk-text/60">No listings yet</h2>
+      <p class="text-cuhk-text/40 mt-1 text-sm">Be the first to post something!</p>
+    </div>
+  <% end %>
+
+</div>
