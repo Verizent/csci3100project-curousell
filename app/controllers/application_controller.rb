@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
     return @current_user = nil if token.blank?
 
     payload = Rails.application.message_verifier(:user_session).verified(token)
-    @current_user = payload ? User.find_by(id: payload[:user_id]) : nil
+    @current_user = payload ? User.find_by(id: payload["user_id"]) : nil
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     @current_user = nil
   end
@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
 
   def require_login
     unless logged_in?
-      redirect_to account_login_path, alert: "Please log in to continue."
+      redirect_to account_signin_path, alert: "Please log in to continue."
     end
   end
 end

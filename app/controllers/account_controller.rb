@@ -94,7 +94,7 @@ class AccountController < ApplicationController
       redirect_to account_signin_path, alert: "Session expired. Please log in again." and return
     end
 
-    if @user.otp_valid?(params[:otp_code])
+    if @user.otp_valid?(params[:otp_code]) # log in success
       session.delete(:pending_2fa_user_id)
       reset_session
       # generate token
@@ -106,7 +106,7 @@ class AccountController < ApplicationController
       )
       session[:user_token] = token
       redirect_to root_path, notice: "Welcome back, #{@user.name}!"
-    else
+    else # log in fail
       @user.increment!(:otp_attempts)
 
       if @user.otp_attempts >= User::MAX_OTP_ATTEMPTS
