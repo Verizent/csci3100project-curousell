@@ -9,6 +9,65 @@ User.delete_all
 
 COLLEGES = Listing::COLLEGES.freeze
 
+# Real CUHK faculties and their departments
+CUHK_FACULTY_DEPARTMENTS = {
+  "Faculty of Arts" => [
+    "Department of Chinese Language and Literature",
+    "Department of Cultural and Religious Studies",
+    "Department of English",
+    "Department of Fine Arts",
+    "Department of History",
+    "Department of Japanese Studies",
+    "Department of Music",
+    "Department of Philosophy"
+  ],
+  "Faculty of Business Administration" => [
+    "Department of Accountancy",
+    "Department of Decision Sciences and Managerial Economics",
+    "Department of Finance",
+    "Department of Hotel and Tourism Management",
+    "Department of Management",
+    "Department of Marketing"
+  ],
+  "Faculty of Education" => [
+    "Department of Curriculum and Instruction",
+    "Department of Educational Administration and Policy",
+    "Department of Educational Psychology"
+  ],
+  "Faculty of Engineering" => [
+    "Department of Computer Science and Engineering",
+    "Department of Electronic Engineering",
+    "Department of Information Engineering",
+    "Department of Mechanical and Automation Engineering",
+    "Department of Systems Engineering and Engineering Management"
+  ],
+  "Faculty of Law" => [
+    "Faculty of Law"
+  ],
+  "Faculty of Medicine" => [
+    "School of Biomedical Sciences",
+    "Department of Medicine and Therapeutics",
+    "Department of Obstetrics and Gynaecology",
+    "Department of Pharmacology",
+    "Department of Surgery"
+  ],
+  "Faculty of Science" => [
+    "Department of Biology",
+    "Department of Chemistry",
+    "Department of Earth and Environmental Sciences",
+    "Department of Mathematics",
+    "Department of Physics",
+    "Department of Statistics"
+  ],
+  "Faculty of Social Science" => [
+    "Department of Economics",
+    "Department of Government and Public Administration",
+    "Department of Psychology",
+    "Department of Social Work",
+    "Department of Sociology"
+  ]
+}.freeze
+
 SEED_NAMES = [
   "Chan Siu Ming", "Wong Wai Kin", "Lee Ka Yan", "Ng Ho Fung",
   "Lau Mei Ling", "Cheung Chi Wai", "Tsang Yuen Yee", "Kwok Tsz Hin",
@@ -25,9 +84,13 @@ users = COLLEGES.flat_map do |college|
     email = "#{slug}#{i + 1}@link.cuhk.edu.hk"
     name  = name_pool.shift
     user  = User.find_or_initialize_by(email: email)
+    faculty    = CUHK_FACULTY_DEPARTMENTS.keys.sample
+    department = CUHK_FACULTY_DEPARTMENTS[faculty].sample
     user.assign_attributes(
-      name:       name,
-      college:    college,
+      name:        name,
+      college:     college,
+      faculty:     faculty,
+      department:  department,
       verified_at: Time.current
     )
     user.password = "password123456" if user.new_record?
