@@ -5,8 +5,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true,
             format: { with: /\A[^@]+@(\w+\.)*cuhk\.edu\.hk\z/i, message: "must be a CUHK email address" }
   validates :college, presence: true
-  validates :faculty, length: { minimum: 1 }
-  validates :department, length: { minimum: 1 }
+  validates :faculty, presence: true
+  validates :department, presence: true
   validates :password, length: { minimum: 12 }, allow_nil: true
 
   # Class Constants

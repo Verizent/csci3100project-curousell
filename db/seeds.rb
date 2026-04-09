@@ -9,7 +9,6 @@ User.delete_all
 
 COLLEGES = Listing::COLLEGES.freeze
 
-# Real CUHK faculties and their departments
 CUHK_FACULTY_DEPARTMENTS = {
   "Faculty of Arts" => [
     "Department of Chinese Language and Literature",
@@ -84,8 +83,8 @@ users = COLLEGES.flat_map do |college|
     email = "#{slug}#{i + 1}@link.cuhk.edu.hk"
     name  = name_pool.shift
     user  = User.find_or_initialize_by(email: email)
-    faculty    = CUHK_FACULTY_DEPARTMENTS.keys.sample
-    department = CUHK_FACULTY_DEPARTMENTS[faculty].sample
+    faculty    = CUHK_FACULTY_DEPARTMENTS.keys.sample(rand(1..2))
+    department = faculty.flat_map { |f| CUHK_FACULTY_DEPARTMENTS[f].sample(rand(1..2)) }.uniq
     user.assign_attributes(
       name:        name,
       college:     college,
