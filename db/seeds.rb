@@ -186,7 +186,20 @@ LISTING_DATA = [
   { title: "Old Phone Cables Bundle",             description: "Mix of Lightning and USB-C. Some may work. Free.",                  category: "tech",          price: 0,    location: "Morningside College" },
   { title: "Noise-Cancelling Earplugs (10 pairs)", description: "SNR 35dB, ideal for library or exam season. Sealed. Free.",       category: "accessories",   price: 0,    location: "Morningside College" },
   { title: "Instant Noodle Stockpile (50 packs)", description: "Various flavours. Moving out sale. Free.",                         category: "miscellaneous", price: 0,    location: "Wu Yee Sun College" },
-  { title: "Cable Management Kit",               description: "Velcro ties, clips, and sleeves. Clean up your desk setup.",        category: "accessories",   price: 35,   location: "S.H. Ho College" }
+  { title: "Cable Management Kit",               description: "Velcro ties, clips, and sleeves. Clean up your desk setup.",        category: "accessories",   price: 35,   location: "S.H. Ho College" },
+  # College-restricted listings (college: field limits visibility to members)
+  { title: "Shaw College Formal Dinner Ticket",        description: "One ticket to the upcoming Shaw College formal dinner. Non-transferable outside college.", category: "miscellaneous", price: 180, location: "Shaw College",        college: "Shaw College" },
+  { title: "Shaw College Hoodie (Size M)",             description: "Official Shaw College hoodie, worn twice. College members only.",                          category: "clothing",      price: 120, location: "Shaw College",        college: "Shaw College" },
+  { title: "New Asia College Blazer (Size S)",         description: "Official NAC blazer, excellent condition. Selling to fellow NAC students only.",           category: "clothing",      price: 200, location: "New Asia College",    college: "New Asia College" },
+  { title: "New Asia College Room Divider",            description: "Fits NAC hostel room dimensions exactly. Pick up at New Asia only.",                       category: "furniture",     price: 150, location: "New Asia College",    college: "New Asia College" },
+  { title: "Chung Chi Chapel Concert Ticket (x2)",    description: "Two seats for the Chung Chi College chapel concert. Chung Chi students only.",             category: "miscellaneous", price: 0,   location: "Chung Chi College",   college: "Chung Chi College" },
+  { title: "Chung Chi College Printed Notes Bundle",  description: "Complete set of printed notes tailored for Chung Chi GE courses.",                         category: "books",         price: 45,  location: "Chung Chi College",   college: "Chung Chi College" },
+  { title: "United College Sports Jersey (Size L)",   description: "United College inter-college games jersey. Restricted to UC members.",                     category: "clothing",      price: 80,  location: "United College",      college: "United College" },
+  { title: "Morningside College Lounge Pass (1 sem)", description: "Transferable lounge access card for one semester. Morningside residents only.",            category: "miscellaneous", price: 50,  location: "Morningside College", college: "Morningside College" },
+  { title: "S.H. Ho College Yearbook 2024",           description: "Official S.H. Ho College yearbook. Limited print run — Ho members only.",                 category: "books",         price: 60,  location: "S.H. Ho College",     college: "S.H. Ho College" },
+  { title: "CW Chu College Desk Fan (hostel size)",   description: "Fits CW Chu hostel desk perfectly. Selling to Chu residents only.",                        category: "miscellaneous", price: 90,  location: "CW Chu College",      college: "CW Chu College" },
+  { title: "Lee Woo Sing College Tote Bag",           description: "Exclusive LWS anniversary tote. Only for LWS college members.",                            category: "accessories",   price: 0,   location: "Lee Woo Sing College", college: "Lee Woo Sing College" },
+  { title: "Wu Yee Sun College Art Print",            description: "Limited-edition print from the WYS art exhibition. WYS members only.",                     category: "miscellaneous", price: 70,  location: "Wu Yee Sun College",  college: "Wu Yee Sun College" }
 ].freeze
 
 # ── Create listings ───────────────────────────────────────────────────────────
@@ -198,6 +211,7 @@ LISTING_DATA.each_with_index do |attrs, i|
     l.price       = attrs[:price]
     l.category    = attrs[:category]
     l.location    = attrs[:location]
+    l.college     = attrs[:college]
     l.status      = "unsold"
     l.created_at  = rand(30).days.ago
   end
