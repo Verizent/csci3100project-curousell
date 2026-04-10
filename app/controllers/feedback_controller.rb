@@ -1,4 +1,7 @@
 class FeedbackController < ApplicationController
+  rate_limit to: 5, within: 1.hour, by: -> { request.remote_ip },
+             with: -> { redirect_back fallback_location: root_path, alert: "Too many feedback submissions. Please try again later." }
+
   def create
     name    = params[:name].to_s.strip
     email   = params[:email].to_s.strip
