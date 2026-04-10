@@ -10,7 +10,7 @@ class OtpMailerTest < ActionMailer::TestCase
     mail = OtpMailer.send_code(@user, @code)
     assert_equal "Your verification code for Curousell!", mail.subject
     assert_equal [ @user.email ], mail.to
-    assert_equal [ "from@example.com" ], mail.from
+    assert_equal [ "verizent.rizz@gmail.com" ], mail.from
     assert_match "Hi #{@user.name}", mail.body.encoded
     assert_match @code, mail.body.encoded
   end
@@ -19,7 +19,7 @@ class OtpMailerTest < ActionMailer::TestCase
     mail = OtpMailer.send_2fa(@user, @code)
     assert_equal "Your sign-in code for Curousell!", mail.subject
     assert_equal [ @user.email ], mail.to
-    assert_equal [ "from@example.com" ], mail.from
+    assert_equal [ "verizent.rizz@gmail.com" ], mail.from
     assert_match "Hi #{@user.name}", mail.body.encoded
     assert_match @code, mail.body.encoded
   end
