@@ -17,15 +17,23 @@
         </p>
 
         <div class="mt-6 flex gap-3">
-          <%= link_to account_signup_path,
-                class: "text-xs bg-cuhk-gold text-cuhk-purple px-4 py-2 rounded-lg font-semibold
-                        hover:bg-cuhk-gold-light transition-colors" do %>
-            Sign Up
-          <% end %>
-          <%= link_to account_signin_path,
-                class: "text-xs border border-cuhk-gold text-cuhk-gold px-4 py-2 rounded-lg font-semibold
-                        hover:bg-cuhk-gold hover:text-cuhk-purple transition-colors" do %>
-            Sign In
+          <% if logged_in? %>
+            <%= button_to account_signout_path, method: :delete,
+                  class: "text-xs border border-cuhk-gold text-cuhk-gold px-4 py-2 rounded-lg font-semibold
+                          hover:bg-cuhk-gold hover:text-cuhk-purple transition-colors cursor-pointer" do %>
+              Sign Out
+            <% end %>
+          <% else %>
+            <%= link_to account_signup_path,
+                  class: "text-xs bg-cuhk-gold text-cuhk-purple px-4 py-2 rounded-lg font-semibold
+                          hover:bg-cuhk-gold-light transition-colors" do %>
+              Sign Up
+            <% end %>
+            <%= link_to account_signin_path,
+                  class: "text-xs border border-cuhk-gold text-cuhk-gold px-4 py-2 rounded-lg font-semibold
+                          hover:bg-cuhk-gold hover:text-cuhk-purple transition-colors" do %>
+              Sign In
+            <% end %>
           <% end %>
         </div>
       </div>

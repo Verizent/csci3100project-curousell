@@ -102,8 +102,8 @@ puts "  #{users.size} users ready"
 # ── Listing data ─────────────────────────────────────────────────────────────
 LISTING_DATA = [
   # Tech
-  { title: "MacBook Air M1 (2021)",               description: "Barely used, 8GB RAM, 256GB SSD. Selling because I upgraded.",           category: "tech",          price: 3800, location: "Chung Chi College" },
-  { title: "iPad Pro 11\" with Apple Pencil",     description: "2022 model, Wi-Fi only, includes pencil and folio case.",               category: "tech",          price: 4200, location: "New Asia College" },
+  { title: "MacBook Air M1 (2021)",               description: "Barely used, 8GB RAM, 256GB SSD. Selling because I upgraded.",           category: "tech",          price: 3800 },
+  { title: "iPad Pro 11\" with Apple Pencil",     description: "2022 model, Wi-Fi only, includes pencil and folio case.",               category: "tech",          price: 4200 },
   { title: "Sony WH-1000XM4 Headphones",          description: "Noise-cancelling, great condition, minimal use.",                      category: "tech",          price: 900,  location: "United College" },
   { title: "Mechanical Keyboard (Keychron K2)",   description: "Brown switches, TKL layout. Comes with USB-C cable.",                  category: "tech",          price: 350,  location: "Shaw College" },
   { title: "Nintendo Switch OLED",                description: "With dock, 2 joy-cons, and 3 games. No scratches.",                    category: "tech",          price: 2200, location: "Morningside College" },
@@ -205,12 +205,19 @@ LISTING_DATA = [
 # ── Create listings ───────────────────────────────────────────────────────────
 created = 0
 LISTING_DATA.each_with_index do |attrs, i|
-  seller = users[i % users.size]
+  # College-restricted listings must be sold by someone from that college.
+  # All other listings are distributed round-robin.
+  seller = if attrs[:college].present?
+    users.find { |u| u.college == attrs[:college] } || users[i % users.size]
+  else
+    users[i % users.size]
+  end
+
   Listing.find_or_create_by!(title: attrs[:title], user: seller) do |l|
     l.description = attrs[:description]
     l.price       = attrs[:price]
     l.category    = attrs[:category]
-    l.location    = attrs[:location]
+    l.location    = seller.college
     l.college     = attrs[:college]
     l.status      = "unsold"
     l.created_at  = rand(30).days.ago

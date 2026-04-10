@@ -44,6 +44,7 @@
     { key: :categories, val: "books",         label: "📚 Books"       },
     { key: :categories, val: "furniture",     label: "🪑 Furniture"   },
     { key: :categories, val: "accessories",   label: "👜 Accessories" },
+    { key: :categories, val: "clothing",      label: "👕 Clothing"    },
     { key: :categories, val: "miscellaneous", label: "📦 Misc"        },
     { key: :max_price,  val: "50",            label: "Under HK$50"    },
     { key: :max_price,  val: "100",           label: "Under HK$100"   },
@@ -120,7 +121,7 @@
           <%= link_to college_path,
                 class: college_on ? bubble_on : bubble_off,
                 data: { turbo_frame: "home_frame" } do %>
-            🏫 My College
+            🏫 College
             <% if college_on %>
               <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>

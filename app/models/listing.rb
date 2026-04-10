@@ -2,7 +2,7 @@ class Listing < ApplicationRecord
   belongs_to :user
   has_one_attached :image
 
-  CATEGORIES = %w[furniture accessories tech books miscellaneous].freeze
+  CATEGORIES = %w[furniture accessories tech books clothing miscellaneous].freeze
   STATUSES   = %w[unsold in_process sold].freeze
   COLLEGES   = [
     "Shaw College",
@@ -24,11 +24,10 @@ class Listing < ApplicationRecord
 
   scope :by_category, ->(cat) { where(category: cat) if cat.present? }
   scope :by_status,   ->(s)   { where(status: s) if s.present? }
-  # Guests see all listings (browse freely, sign-up motivated).
-  # Logged-in users see public + their own college listings.
-  # Access control (can this user contact/buy?) is enforced separately.
+  # Guests see only public listings (college: nil).
+  # Logged-in users see public listings + college-exclusive listings from their own college.
   scope :visible_to,  ->(college) {
-    college.present? ? where(college: [ nil, college ]) : all
+    college.present? ? where(college: [ nil, college ]) : where(college: nil)
   }
 
   def self.search(query)

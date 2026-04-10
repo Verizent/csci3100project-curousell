@@ -12,7 +12,7 @@ class ListingsController < ApplicationController
     @listings = @listings.where(price: 0)                                              if @filter_free
     @listings = @listings.where("price <= ?", @filter_max_price.to_i)                 if @filter_max_price
     @listings = @listings.joins(:user).where(users: { college: user_college })         if @filter_college && user_college
-    @listings = @listings.order(created_at: :desc).page(params[:page]).per(40)
+    @listings = @listings.order(Arel.sql("listings.college IS NULL ASC, listings.created_at DESC")).page(params[:page]).per(40)
   end
 
   def show

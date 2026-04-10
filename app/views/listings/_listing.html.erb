@@ -14,6 +14,7 @@
     "accessories"   => "👜",
     "tech"          => "💻",
     "books"         => "📚",
+    "clothing"      => "👕",
     "miscellaneous" => "📦"
   }
 %>
@@ -40,10 +41,10 @@
         <%= status_labels[listing.status] %>
       </span>
 
-      <%# College badge %>
+      <%# College exclusive badge %>
       <% if listing.college.present? %>
-        <span class="absolute top-2 left-2 text-xs font-medium px-2 py-0.5 rounded-full
-                     bg-cuhk-purple text-cuhk-gold border border-cuhk-gold truncate max-w-[120px]">
+        <span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full
+                     bg-cuhk-purple text-cuhk-gold border border-cuhk-gold truncate max-w-[140px]">
           <%= listing.college.sub(" College", "") %>
         </span>
       <% end %>
