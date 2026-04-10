@@ -17,5 +17,8 @@ class ListingsController < ApplicationController
 
   def show
     @listing = Listing.find(params[:id])
+    if @listing.college.present? && current_user&.college != @listing.college
+      redirect_to root_path, alert: "This listing is only available to #{@listing.college} members."
+    end
   end
 end
