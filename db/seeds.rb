@@ -4,6 +4,9 @@
 puts "Seeding..."
 
 # Clear existing data so re-runs start clean
+ListingAccessRule.delete_all
+Conversation.delete_all
+Message.delete_all
 Listing.delete_all
 User.delete_all
 
@@ -191,4 +194,67 @@ LISTING_DATA.each_with_index do |attrs, i|
 end
 
 puts "  #{created} listings seeded"
+
+# ── Create sample conversations and messages for testing ────────────────────────
+puts "Creating sample conversations..."
+
+# Find a couple of users to have a conversation
+users = User.all.to_a
+if users.size >= 2
+  # Get a listing to attach the conversation to
+  listing = Listing.first
+  if listing
+    buyer, seller = users[0], users[1]
+
+    # Create a conversation between buyer and seller about the first listing
+    conversation = Conversation.find_or_create_by!(
+      listing: listing,
+      sender: buyer,
+      receiver: seller
+    )
+
+    # Add some sample messages
+    Message.find_or_create_by!(conversation: conversation, user: buyer) do |m|
+      m.content = "Hi! Is this item still available?"
+      m.created_at = 1.hour.ago
+    end
+
+    Message.find_or_create_by!(conversation: conversation, user: seller) do |m|
+      m.content = "Yes, it's still available! Are you interested?"
+      m.created_at = 30.minutes.ago
+    end
+
+    Message.find_or_create_by!(conversation: conversation, user: buyer) do |m|
+      m.content = "Definitely! Can we meet at the library tomorrow?"
+      m.created_at = 10.minutes.ago
+    end
+
+    puts "  Created conversation between #{buyer.name} and #{seller.name} about '#{listing.title}'"
+  end
+
+  # Create another conversation with another listing
+  listing2 = Listing.second
+  if listing2 && users.size >= 3
+    buyer2, seller2 = users[2], users[1]
+
+    conversation2 = Conversation.find_or_create_by!(
+      listing: listing2,
+      sender: buyer2,
+      receiver: seller2
+    )
+
+    Message.find_or_create_by!(conversation: conversation2, user: buyer2) do |m|
+      m.content = "How old is this item?"
+      m.created_at = 2.days.ago
+    end
+
+    Message.find_or_create_by!(conversation: conversation2, user: seller2) do |m|
+      m.content = "I've had it for about 6 months. It's in great condition!"
+      m.created_at = 1.day.ago
+    end
+
+    puts "Created conversation between #{buyer2.name} and #{seller2.name} about '#{listing2.title}'"
+  end
+end
+
 puts "Done."

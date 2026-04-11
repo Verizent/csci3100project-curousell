@@ -1,7 +1,7 @@
 class NormalizeListingsColumns < ActiveRecord::Migration[8.1]
   def up
     # Clear seeded data — will be re-seeded after migration
-    execute "TRUNCATE TABLE listings RESTART IDENTITY"
+    execute "TRUNCATE TABLE listings, conversations RESTART IDENTITY CASCADE"
 
     # Convert integer enum columns to human-readable strings
     execute "ALTER TABLE listings ALTER COLUMN category TYPE varchar USING 'miscellaneous'"

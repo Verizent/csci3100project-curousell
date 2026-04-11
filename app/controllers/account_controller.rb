@@ -103,6 +103,14 @@ class AccountController < ApplicationController
         expires_in: ApplicationController::SESSION_EXPIRY
       )
       session[:user_token] = token
+      # Also set a signed cookie for ActionCable/WebSocket connections
+      # this is needed for authenticating the user and showing appropriate chat subscriptions 
+      cookies.signed[:user_token] = {
+        value: token,
+        expires: ApplicationController::SESSION_EXPIRY.from_now,
+        httponly: true,
+        same_site: :lax
+      }
       redirect_to root_path, notice: "Welcome back, #{@user.name}!"
     else
       @user.increment!(:otp_attempts)
@@ -118,8 +126,10 @@ class AccountController < ApplicationController
     end
   end
 
+  #will be used in future pull request for sing out button if needed
   def signout
     reset_session
+    cookies.delete(:user_token)
     redirect_to root_path, notice: "You have been signed out."
   end
 

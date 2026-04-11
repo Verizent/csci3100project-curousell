@@ -6,9 +6,15 @@ Rails.application.routes.draw do
   resources :feedback, only: [ :create ]
 
   # Placeholder nav routes (pages to be built later)
-  get "/chats"   => "placeholder#chats",   as: :chats
   get "/orders"  => "placeholder#orders",  as: :orders
   get "/profile" => "placeholder#profile", as: :profile
+
+  # Chat routes
+  resources :chats, only: [ :index, :show, :new ] do
+    member do
+      post :send_message
+    end
+  end
 
   # Authentication
   get  "/account/signup" => "account#signup",           as: :account_signup
@@ -22,4 +28,6 @@ Rails.application.routes.draw do
   delete "/account/signout" => "account#signout",        as: :account_signout
 
   get "up" => "rails/health#show", as: :rails_health_check
+  mount ActionCable.server => "/cable"
+  
 end

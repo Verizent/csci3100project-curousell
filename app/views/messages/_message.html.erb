@@ -1,0 +1,5 @@
+<div class="message <%= 'own' if message.user == current_user %>">
+  <strong><%= message.user.email %>:</strong>
+  <p><%= message.content %></p>
+  <small><%= message.created_at.strftime("%H:%M") %></small>
+</div>
