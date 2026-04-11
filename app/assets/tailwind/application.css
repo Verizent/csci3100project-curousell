@@ -1,10 +1,1 @@
 @import "tailwindcss";
-
-@theme {
-  --color-cuhk-purple:       #4E2A84;
-  --color-cuhk-purple-dark:  #3a1f63;
-  --color-cuhk-purple-light: #6b3fb5;
-  --color-cuhk-gold:         #C9A84C;
-  --color-cuhk-gold-light:   #e4c97a;
-  --color-cuhk-gold-dark:    #a6852e;
-}
