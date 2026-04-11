@@ -94,7 +94,18 @@ class Listing < ApplicationRecord
     )
     return no_rules if user.nil?
 
-    no_rules.or(where(build_matching_sql(user)))
+    no_rules.or(where(
+      "EXISTS (
+        SELECT 1 FROM listing_access_rules lar
+        WHERE lar.listing_id = listings.id
+          AND (lar.colleges    = '{}' OR ? = ANY(lar.colleges))
+          AND (lar.departments = '{}' OR lar.departments && ARRAY[?]::varchar[])
+          AND (lar.faculties   = '{}' OR lar.faculties   && ARRAY[?]::varchar[])
+      )",
+      user.college.to_s,
+      user.department,
+      user.faculty
+    ))
   }
 
   def restricted?
@@ -108,28 +119,5 @@ class Listing < ApplicationRecord
       "OR title ILIKE :like OR description ILIKE :like",
       q: query, like: "%#{sanitize_sql_like(query)}%"
     )
-  end
-
-  private
-
-  def self.build_matching_sql(user)
-    college_lit = connection.quote(user.college.to_s)
-    dept_arr    = pg_array_literal(user.department)
-    fac_arr     = pg_array_literal(user.faculty)
-
-    Arel.sql(<<~SQL.squish)
-      EXISTS (
-        SELECT 1 FROM listing_access_rules lar
-        WHERE lar.listing_id = listings.id
-          AND (lar.colleges    = '{}'  OR #{college_lit} = ANY(lar.colleges))
-          AND (lar.departments = '{}'  OR lar.departments && #{dept_arr})
-          AND (lar.faculties   = '{}'  OR lar.faculties   && #{fac_arr})
-      )
-    SQL
-  end
-
-  def self.pg_array_literal(arr)
-    quoted = Array(arr).map { |v| connection.quote(v) }.join(", ")
-    "ARRAY[#{quoted}]::varchar[]"
   end
 end
