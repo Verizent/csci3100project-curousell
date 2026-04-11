@@ -349,6 +349,21 @@ RSpec.describe AccountController, type: :controller do
       end
     end
 
+    context 'with an expired 2FA OTP' do
+      before { verified_user.update!(otp_sent_at: (User::OTP_EXPIRY_MINUTES + 1).minutes.ago) }
+
+      it 'clears the 2FA session key' do
+        post :verify_2fa, params: { otp_code: "654321" }
+        expect(session[:pending_2fa_user_id]).to be_nil
+      end
+
+      it 'redirects to the signin page with an expiry alert' do
+        post :verify_2fa, params: { otp_code: "654321" }
+        expect(response).to redirect_to(account_signin_path)
+        expect(flash[:alert]).to match(/expired/i)
+      end
+    end
+
     context 'with no matching user in session' do
       before { session[:pending_2fa_user_id] = -1 }
 
