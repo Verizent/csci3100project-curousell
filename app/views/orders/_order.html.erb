@@ -1,0 +1,45 @@
+<div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm" data-status="<%= order.status %>">
+  <div class="flex items-start space-x-4">
+    <!-- Listing Image -->
+    <div class="flex-shrink-0">
+      <% if order.listing.image.attached? %>
+        <%= image_tag order.listing.image.variant(:thumb), class: "w-16 h-16 object-cover rounded-md" %>
+      <% else %>
+        <div class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+          <span class="text-gray-400 text-xs">No Image</span>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Order Details -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900 truncate">
+          <%= link_to order.listing.title, listing_path(order.listing), class: "hover:text-blue-600" %>
+        </h3>
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= order_status_badge_class(order.status) %>">
+          <%= order.status.titleize %>
+        </span>
+      </div>
+
+      <p class="text-sm text-gray-500 mt-1">
+        $<%= number_with_precision(order.price_at_purchase, precision: 2) %>
+      </p>
+
+      <div class="mt-2 text-sm text-gray-600">
+        <% if local_assigns[:is_bought] %>
+          <p>Seller: <%= order.seller.name %> (<%= order.seller.college %>)</p>
+        <% else %>
+          <p>Buyer: <%= order.buyer.name %> (<%= order.buyer.college %>)</p>
+        <% end %>
+      </div>
+
+      <div class="mt-2 text-xs text-gray-500">
+        <p>Purchased: <%= order.purchased_at&.strftime('%B %d, %Y at %I:%M %p') || order.created_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+        <% if order.completed_at %>
+          <p>Completed: <%= order.completed_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
