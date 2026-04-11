@@ -1,6 +1,10 @@
 class Listing < ApplicationRecord
   belongs_to :user
+<<<<<<< HEAD
   has_one_attached :image
+=======
+  has_many_attached :images
+>>>>>>> 0d3d52e20be76d8ca17664397d339a678223cbe1
   has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
   accepts_nested_attributes_for :access_rules,
     allow_destroy: true,
