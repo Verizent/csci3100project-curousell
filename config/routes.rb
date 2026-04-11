@@ -3,7 +3,8 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
-  root "hello#index"
+  # root "hello#index"
+  root to: redirect("/home")
   get "up" => "rails/health#show", as: :rails_health_check
   get "/account/signup" => "account#signup", as: :account_signup
   post "/account/signup" => "account#create_user"
@@ -13,6 +14,7 @@ Rails.application.routes.draw do
   post "/account/signin" => "account#authenticate"
   get "/account/2fa" => "account#two_factor", as: :signin_2fa
   post "/account/2fa" => "account#verify_2fa"
+  get "/home" => "home#index", as: :home
 
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
