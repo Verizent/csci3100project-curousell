@@ -136,7 +136,11 @@
           </div>
         </div>
 
-        <% if @listing.status == "unsold" %>
+        <% if current_user == @listing.user %>
+          <div class="mt-5 block text-center bg-gray-100 text-gray-400 font-semibold py-3 rounded-xl cursor-not-allowed">
+            This is your listing
+          </div>
+        <% elsif @listing.status == "unsold" %>
           <%= link_to chats_path,
                 class: "mt-5 block text-center bg-cuhk-purple text-white font-semibold py-3 rounded-xl
                         hover:bg-cuhk-purple-dark transition-colors" do %>
