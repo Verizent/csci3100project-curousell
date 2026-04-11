@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
-  resources :listings, only: [ :index, :show ]
+  resources :listings, only: [ :index, :show, :new, :create ]
   resources :feedback, only: [ :create ]
 
   # Placeholder nav routes (pages to be built later)
