@@ -58,10 +58,10 @@
                        <%= status_classes[@listing.status] %>">
             <%= status_labels[@listing.status] %>
           </span>
-          <% if @listing.college.present? %>
+          <% if @listing.restricted? %>
             <span class="text-xs font-medium px-3 py-1 rounded-full
                          bg-cuhk-purple text-cuhk-gold border border-cuhk-gold">
-              <%= @listing.college %>
+              Members Only
             </span>
           <% end %>
         </div>
@@ -81,6 +81,24 @@
         <% if @listing.description.present? %>
           <div class="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
             <%= simple_format @listing.description %>
+          </div>
+        <% end %>
+
+        <% if @listing.restricted? %>
+          <div class="border-t border-gray-100 pt-5 space-y-2">
+            <p class="text-xs font-semibold text-cuhk-purple uppercase tracking-wide">Availability</p>
+            <% @listing.access_rules.each_with_index do |rule, i| %>
+              <% parts = [] %>
+              <% parts << "Colleges: #{rule.colleges.join(", ")}"       if rule.colleges.any? %>
+              <% parts << "Faculties: #{rule.faculties.join(", ")}"     if rule.faculties.any? %>
+              <% parts << "Departments: #{rule.departments.join(", ")}" if rule.departments.any? %>
+              <div class="text-xs text-gray-500">
+                <% if i > 0 %>
+                  <span class="font-semibold text-cuhk-gold">or</span>
+                <% end %>
+                <%= parts.join(" · ") %>
+              </div>
+            <% end %>
           </div>
         <% end %>
 

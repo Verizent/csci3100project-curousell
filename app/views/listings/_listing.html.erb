@@ -41,11 +41,11 @@
         <%= status_labels[listing.status] %>
       </span>
 
-      <%# College exclusive badge %>
-      <% if listing.college.present? %>
+      <%# Restricted badge %>
+      <% if listing.restricted? %>
         <span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full
-                     bg-cuhk-purple text-cuhk-gold border border-cuhk-gold truncate max-w-[140px]">
-          <%= listing.college.sub(" College", "") %>
+                     bg-cuhk-purple text-cuhk-gold border border-cuhk-gold">
+          Members Only
         </span>
       <% end %>
     </div>

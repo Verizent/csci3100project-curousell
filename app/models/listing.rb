@@ -1,6 +1,14 @@
 class Listing < ApplicationRecord
   belongs_to :user
   has_one_attached :image
+  has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
+  accepts_nested_attributes_for :access_rules,
+    allow_destroy: true,
+    reject_if: ->(attrs) {
+      Array(attrs[:colleges]).reject(&:blank?).empty? &&
+      Array(attrs[:departments]).reject(&:blank?).empty? &&
+      Array(attrs[:faculties]).reject(&:blank?).empty?
+    }
 
   CATEGORIES = %w[furniture accessories tech books clothing miscellaneous].freeze
   STATUSES   = %w[unsold in_process sold].freeze
@@ -15,20 +23,83 @@ class Listing < ApplicationRecord
     "Lee Woo Sing College",
     "Wu Yee Sun College"
   ].freeze
+  FACULTY_DEPARTMENTS = {
+    "Faculty of Arts" => [
+      "Department of Chinese Language and Literature",
+      "Department of Cultural and Religious Studies",
+      "Department of English",
+      "Department of Fine Arts",
+      "Department of History",
+      "Department of Japanese Studies",
+      "Department of Music",
+      "Department of Philosophy"
+    ],
+    "Faculty of Business Administration" => [
+      "Department of Accountancy",
+      "Department of Decision Sciences and Managerial Economics",
+      "Department of Finance",
+      "Department of Hotel and Tourism Management",
+      "Department of Management",
+      "Department of Marketing"
+    ],
+    "Faculty of Education" => [
+      "Department of Curriculum and Instruction",
+      "Department of Educational Administration and Policy",
+      "Department of Educational Psychology"
+    ],
+    "Faculty of Engineering" => [
+      "Department of Computer Science and Engineering",
+      "Department of Electronic Engineering",
+      "Department of Information Engineering",
+      "Department of Mechanical and Automation Engineering",
+      "Department of Systems Engineering and Engineering Management"
+    ],
+    "Faculty of Law" => [
+      "Faculty of Law"
+    ],
+    "Faculty of Medicine" => [
+      "School of Biomedical Sciences",
+      "Department of Medicine and Therapeutics",
+      "Department of Obstetrics and Gynaecology",
+      "Department of Pharmacology",
+      "Department of Surgery"
+    ],
+    "Faculty of Science" => [
+      "Department of Biology",
+      "Department of Chemistry",
+      "Department of Earth and Environmental Sciences",
+      "Department of Mathematics",
+      "Department of Physics",
+      "Department of Statistics"
+    ],
+    "Faculty of Social Science" => [
+      "Department of Economics",
+      "Department of Government and Public Administration",
+      "Department of Psychology",
+      "Department of Social Work",
+      "Department of Sociology"
+    ]
+  }.freeze
 
   validates :title,    presence: true, length: { maximum: 100 }
   validates :price,    presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :category, inclusion: { in: CATEGORIES }
   validates :status,   inclusion: { in: STATUSES }
-  validates :college,  inclusion: { in: COLLEGES }, allow_nil: true
 
   scope :by_category, ->(cat) { where(category: cat) if cat.present? }
   scope :by_status,   ->(s)   { where(status: s) if s.present? }
-  # Guests see only public listings (college: nil).
-  # Logged-in users see public listings + college-exclusive listings from their own college.
-  scope :visible_to,  ->(college) {
-    college.present? ? where(college: [ nil, college ]) : where(college: nil)
+  scope :visible_to,  ->(user) {
+    no_rules = where(
+      "NOT EXISTS (SELECT 1 FROM listing_access_rules WHERE listing_id = listings.id)"
+    )
+    return no_rules if user.nil?
+
+    no_rules.or(where(build_matching_sql(user)))
   }
+
+  def restricted?
+    access_rules.loaded? ? access_rules.any? : access_rules.exists?
+  end
 
   def self.search(query)
     return all if query.blank?
@@ -37,5 +108,28 @@ class Listing < ApplicationRecord
       "OR title ILIKE :like OR description ILIKE :like",
       q: query, like: "%#{sanitize_sql_like(query)}%"
     )
+  end
+
+  private
+
+  def self.build_matching_sql(user)
+    college_lit = connection.quote(user.college.to_s)
+    dept_arr    = pg_array_literal(user.department)
+    fac_arr     = pg_array_literal(user.faculty)
+
+    Arel.sql(<<~SQL.squish)
+      EXISTS (
+        SELECT 1 FROM listing_access_rules lar
+        WHERE lar.listing_id = listings.id
+          AND (lar.colleges    = '{}'  OR #{college_lit} = ANY(lar.colleges))
+          AND (lar.departments = '{}'  OR lar.departments && #{dept_arr})
+          AND (lar.faculties   = '{}'  OR lar.faculties   && #{fac_arr})
+      )
+    SQL
+  end
+
+  def self.pg_array_literal(arr)
+    quoted = Array(arr).map { |v| connection.quote(v) }.join(", ")
+    "ARRAY[#{quoted}]::varchar[]"
   end
 end

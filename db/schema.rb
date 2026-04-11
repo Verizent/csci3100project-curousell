@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_05_175731) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -43,9 +43,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_175731) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "listing_access_rules", force: :cascade do |t|
+    t.string "colleges", default: [], null: false, array: true
+    t.datetime "created_at", null: false
+    t.string "departments", default: [], null: false, array: true
+    t.string "faculties", default: [], null: false, array: true
+    t.bigint "listing_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["listing_id"], name: "index_listing_access_rules_on_listing_id"
+  end
+
   create_table "listings", force: :cascade do |t|
     t.string "category", default: "miscellaneous", null: false
-    t.string "college"
     t.datetime "created_at", null: false
     t.text "description"
     t.string "location"
@@ -55,7 +64,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_175731) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["category"], name: "index_listings_on_category"
-    t.index ["college"], name: "index_listings_on_college"
     t.index ["created_at"], name: "index_listings_on_created_at"
     t.index ["description"], name: "listings_description_trgm_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["status"], name: "index_listings_on_status"
@@ -76,9 +84,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_05_175731) do
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.datetime "verified_at"
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "listing_access_rules", "listings"
   add_foreign_key "listings", "users"
 end
