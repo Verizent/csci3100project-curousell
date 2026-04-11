@@ -2,12 +2,13 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
-  get "/orders"  => "orders#index",  as: :orders
+<<<<<<< HEAD
   resources :listings, only: [ :index, :show, :new, :create ]
   resources :feedback, only: [ :create ]
 
   # Placeholder nav routes (pages to be built later)
   get "/chats"   => "placeholder#chats",   as: :chats
+  get "/orders"  => "orders#index",  as: :orders
   get "/profile" => "placeholder#profile", as: :profile
 
   # Authentication
