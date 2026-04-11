@@ -86,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.datetime "verified_at"
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
