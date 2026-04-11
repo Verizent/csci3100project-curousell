@@ -6,8 +6,8 @@ RSpec.describe AccountController, type: :controller do
       name: "Test User",
       email: "test@cuhk.edu.hk",
       college: "Shaw College",
-      faculty: ["Engineering"],
-      department: ["Computer Science"],
+      faculty: [ "Engineering" ],
+      department: [ "Computer Science" ],
       password: "securepassword123",
       password_confirmation: "securepassword123"
     }
