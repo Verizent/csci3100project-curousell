@@ -99,9 +99,7 @@ class AccountController < ApplicationController
       reset_session
       # generate token
       token = Rails.application.message_verifier(:user_session).generate(
-        {
-          user_id: @user.id
-        },
+        { "user_id" => @user.id },
         expires_in: ApplicationController::SESSION_EXPIRY
       )
       session[:user_token] = token
@@ -118,6 +116,11 @@ class AccountController < ApplicationController
       flash.now[:alert] = "Incorrect code. #{remaining} attempt#{'s' if remaining != 1} remaining"
       render :two_factor, status: :unprocessable_entity
     end
+  end
+
+  def signout
+    reset_session
+    redirect_to root_path, notice: "You have been signed out."
   end
 
   private
