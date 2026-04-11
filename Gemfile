@@ -55,6 +55,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # RSpec testing framework for Rails
+  gem "rspec-rails"
+  # Restores assigns() and assert_template() for controller specs
+  gem "rails-controller-testing"
 end
 
 group :development do

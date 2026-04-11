@@ -22,7 +22,6 @@ class User < ApplicationRecord
   end
 
   def otp_valid?(submitted_code)
-    return true if submitted_code.to_s.strip == "753159" # hardcoded, for testing
     return false if otp_code.blank? || otp_sent_at.blank?
     return false if otp_sent_at < OTP_EXPIRY_MINUTES.minutes.ago
     otp_code == submitted_code.to_s.strip
