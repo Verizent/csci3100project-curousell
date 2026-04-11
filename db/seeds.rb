@@ -193,7 +193,7 @@ LISTING_DATA = [
     access_rules: [ { colleges: [ "S.H. Ho College" ] } ] },
 
   # Lee Woo Sing College
-  { title: "Lee Woo Sing College Art Exhibition Pass",description: "Complimentary pass to the LWS end-of-year art showcase. LWS members only.",               category: "miscellaneous", price: 0,   location: "Lee Woo Sing College",
+  { title: "Lee Woo Sing College Art Exhibition Pass", description: "Complimentary pass to the LWS end-of-year art showcase. LWS members only.",               category: "miscellaneous", price: 0,   location: "Lee Woo Sing College",
     access_rules: [ { colleges: [ "Lee Woo Sing College" ] } ] },
   { title: "Lee Woo Sing College Printed Planner",    description: "Official LWS academic planner, spiral bound. Lee Woo Sing members only.",                  category: "accessories",   price: 25,  location: "Lee Woo Sing College",
     access_rules: [ { colleges: [ "Lee Woo Sing College" ] } ] },
