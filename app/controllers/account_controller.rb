@@ -69,6 +69,7 @@ class AccountController < ApplicationController
     end
 
     unless @user.verified?
+      session[:pending_user_id] = @user.id
       redirect_to signup_verify_path, alert: "Your email is not verified. Please check your inbox and try again." and return
     end
 
