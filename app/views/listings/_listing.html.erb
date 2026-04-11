@@ -25,8 +25,8 @@
 
     <%# Image %>
     <div class="relative bg-gray-50 aspect-square overflow-hidden">
-      <% if listing.image.attached? %>
-        <%= image_tag listing.image.variant(resize_to_fill: [320, 320]),
+      <% if listing.images.attached? %>
+        <%= image_tag listing.images.first.variant(resize_to_fill: [320, 320]),
               class: "w-full h-full object-cover group-hover:scale-105 transition-transform duration-300",
               alt: listing.title %>
       <% else %>
