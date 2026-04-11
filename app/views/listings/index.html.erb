@@ -5,16 +5,18 @@
   my_college = current_user&.college
 
   active_filters = {
-    categories: @filter_categories.presence,
-    free:       (@filter_free ? "1" : nil),
-    max_price:  @filter_max_price,
-    college:    (@filter_college ? "1" : nil)
+    categories:   @filter_categories.presence,
+    free:         (@filter_free         ? "1" : nil),
+    max_price:    @filter_max_price,
+    college:      (@filter_college      ? "1" : nil),
+    members_only: (@filter_members_only ? "1" : nil)
   }.compact
 
   active_count = Array(active_filters[:categories]).size +
-                 (active_filters[:free]      ? 1 : 0) +
-                 (active_filters[:max_price] ? 1 : 0) +
-                 (active_filters[:college]   ? 1 : 0)
+                 (active_filters[:free]         ? 1 : 0) +
+                 (active_filters[:max_price]    ? 1 : 0) +
+                 (active_filters[:college]      ? 1 : 0) +
+                 (active_filters[:members_only] ? 1 : 0)
 
   toggle_filter = ->(key, val) {
     f = active_filters.dup
@@ -123,6 +125,21 @@
                 data: { turbo_frame: "home_frame" } do %>
             🏫 College
             <% if college_on %>
+              <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            <% end %>
+          <% end %>
+        <% end %>
+
+        <% if @show_members_only_filter %>
+          <% members_on   = active_filters[:members_only].present? %>
+          <% members_path = toggle_filter.call(:members_only, "1") %>
+          <%= link_to members_path,
+                class: members_on ? bubble_on : bubble_off,
+                data: { turbo_frame: "home_frame" } do %>
+            🔒 Members Only
+            <% if members_on %>
               <svg class="w-3.5 h-3.5 ml-0.5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
               </svg>

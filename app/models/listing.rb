@@ -1,10 +1,14 @@
 class Listing < ApplicationRecord
   belongs_to :user
 <<<<<<< HEAD
+<<<<<<< HEAD
   has_one_attached :image
 =======
   has_many_attached :images
 >>>>>>> 0d3d52e20be76d8ca17664397d339a678223cbe1
+=======
+  has_many_attached :images
+>>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
   has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
   accepts_nested_attributes_for :access_rules,
     allow_destroy: true,
@@ -85,10 +89,29 @@ class Listing < ApplicationRecord
     ]
   }.freeze
 
+  VALID_FACULTIES    = FACULTY_DEPARTMENTS.keys.freeze
+  VALID_DEPARTMENTS  = FACULTY_DEPARTMENTS.values.flatten.freeze
+
   validates :title,    presence: true, length: { maximum: 100 }
   validates :price,    presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :category, inclusion: { in: CATEGORIES }
   validates :status,   inclusion: { in: STATUSES }
+  validate  :faculty_values_are_valid
+  validate  :department_values_are_valid
+
+  private
+
+  def faculty_values_are_valid
+    invalid = faculty.reject { |f| VALID_FACULTIES.include?(f) }
+    errors.add(:faculty, "contains invalid values: #{invalid.join(', ')}") if invalid.any?
+  end
+
+  def department_values_are_valid
+    invalid = department.reject { |d| VALID_DEPARTMENTS.include?(d) }
+    errors.add(:department, "contains invalid values: #{invalid.join(', ')}") if invalid.any?
+  end
+
+  public
 
   scope :by_category, ->(cat) { where(category: cat) if cat.present? }
   scope :by_status,   ->(s)   { where(status: s) if s.present? }

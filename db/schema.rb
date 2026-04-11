@@ -10,7 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< HEAD
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
+=======
+ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
+>>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -86,7 +90,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.datetime "verified_at"
-    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
