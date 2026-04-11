@@ -63,13 +63,20 @@
         <%= listing.title %>
       </h3>
 
-      <% if listing.price.zero? %>
-        <p class="text-green-600 font-bold text-lg mt-1">Free</p>
-      <% else %>
-        <p class="text-cuhk-gold font-bold text-lg mt-1">
-          HK$<%= number_with_precision(listing.price, precision: 0, delimiter: ",") %>
-        </p>
-      <% end %>
+      <div class="flex items-baseline gap-2 mt-1">
+        <% if listing.price.zero? %>
+          <p class="text-green-600 font-bold text-lg">Free</p>
+        <% else %>
+          <p class="text-cuhk-gold font-bold text-lg">
+            HK$<%= number_with_precision(listing.price, precision: 0, delimiter: ",") %>
+          </p>
+        <% end %>
+        <% if listing.negotiable? %>
+          <span class="text-xs font-medium text-cuhk-purple border border-cuhk-purple-light rounded-full px-2 py-0.5">
+            Negotiable
+          </span>
+        <% end %>
+      </div>
 
       <div class="flex items-center justify-between mt-2 text-xs text-gray-400">
         <span class="flex items-center gap-1 truncate">

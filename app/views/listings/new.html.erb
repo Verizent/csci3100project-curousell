@@ -68,6 +68,10 @@
                           focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
           </div>
           <p class="mt-1 text-xs text-gray-400">Enter 0 for a free item</p>
+          <label class="flex items-center gap-2 mt-2 text-sm text-gray-600 cursor-pointer">
+            <%= form.check_box :negotiable, class: "rounded border-gray-300 text-cuhk-purple focus:ring-cuhk-purple" %>
+            Price is negotiable
+          </label>
         </div>
 
         <div>

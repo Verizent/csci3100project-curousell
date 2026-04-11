@@ -70,13 +70,20 @@
           <%= @listing.title %>
         </h1>
 
-        <% if @listing.price.zero? %>
-          <p class="text-3xl font-bold text-green-600 mb-5">Free</p>
-        <% else %>
-          <p class="text-3xl font-bold text-cuhk-gold mb-5">
-            HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
-          </p>
-        <% end %>
+        <div class="flex items-baseline gap-3 mb-5">
+          <% if @listing.price.zero? %>
+            <p class="text-3xl font-bold text-green-600">Free</p>
+          <% else %>
+            <p class="text-3xl font-bold text-cuhk-gold">
+              HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
+            </p>
+          <% end %>
+          <% if @listing.negotiable? %>
+            <span class="text-xs font-medium text-cuhk-purple border border-cuhk-purple-light rounded-full px-2 py-0.5">
+              Negotiable
+            </span>
+          <% end %>
+        </div>
 
         <% if @listing.description.present? %>
           <div class="text-gray-600 text-sm leading-relaxed mb-6 flex-1">

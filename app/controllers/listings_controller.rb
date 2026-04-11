@@ -44,7 +44,7 @@ class ListingsController < ApplicationController
 
   def listing_params
     params.require(:listing).permit(
-      :title, :description, :price, :location, :category, :image,
+      :title, :description, :price, :negotiable, :location, :category, :image,
       access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ] # _destroy is used to delete
     )
   end
