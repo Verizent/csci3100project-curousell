@@ -41,11 +41,7 @@ Rails.application.routes.draw do
   post "/account/signin" => "account#authenticate"
   get  "/account/2fa"    => "account#two_factor",       as: :signin_2fa
   post "/account/2fa"    => "account#verify_2fa"
-<<<<<<< HEAD
   delete "/account/signout" => "account#signout",        as: :account_signout
-=======
-  delete "/account/signout" => "account#signout",       as: :account_signout
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
 
   get "up" => "rails/health#show", as: :rails_health_check
   mount ActionCable.server => "/cable"
