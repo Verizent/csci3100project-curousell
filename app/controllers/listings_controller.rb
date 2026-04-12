@@ -27,4 +27,30 @@ class ListingsController < ApplicationController
       redirect_to home_path, alert: "This listing is not available to you."
     end
   end
+
+  def edit
+    @listing = Listing.find(params[:id])
+    unless @listing.user == current_user
+      redirect_to home_path, alert: "You can only edit your own listings."
+    end
+  end
+
+  def update
+    @listing = Listing.find(params[:id])
+    unless @listing.user == current_user
+      redirect_to home_path, alert: "You can only edit your own listings."
+    end
+
+    if @listing.update(listing_params)
+      redirect_to @listing, notice: "Listing updated successfully."
+    else
+      render :edit
+    end
+  end
+
+  private
+
+  def listing_params
+    params.require(:listing).permit(:title, :description, :price, :category, :location, images: [])
+  end
 end

@@ -2,8 +2,8 @@
   <div class="flex items-start space-x-4">
     <!-- Listing Image -->
     <div class="flex-shrink-0">
-      <% if order.listing.image.attached? %>
-        <%= image_tag order.listing.image.variant(:thumb), class: "w-16 h-16 object-cover rounded-md" %>
+      <% if order.listing.images.attached? %>
+        <%= image_tag order.listing.images.first.variant(resize_to_limit: [100, 100]), class: "w-16 h-16 object-cover rounded-md" %>
       <% else %>
         <div class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
           <span class="text-gray-400 text-xs">No Image</span>
@@ -17,9 +17,14 @@
         <h3 class="text-lg font-medium text-gray-900 truncate">
           <%= link_to order.listing.title, listing_path(order.listing), class: "hover:text-blue-600" %>
         </h3>
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= order_status_badge_class(order.status) %>">
-          <%= order.status.titleize %>
-        </span>
+        <div class="flex items-center space-x-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= order_status_badge_class(order.status) %>">
+            <%= order.status.titleize %>
+          </span>
+          <% unless local_assigns[:is_bought] %>
+            <%= link_to "Edit", edit_listing_path(order.listing), class: "text-sm text-blue-600 hover:text-blue-800" %>
+          <% end %>
+        </div>
       </div>
 
       <p class="text-sm text-gray-500 mt-1">

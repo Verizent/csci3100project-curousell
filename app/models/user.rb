@@ -13,6 +13,8 @@ class User < ApplicationRecord
   has_many :sent_conversations, class_name: "Conversation", foreign_key: "sender_id", dependent: :destroy
   has_many :received_conversations, class_name: "Conversation", foreign_key: "receiver_id", dependent: :destroy
   has_many :messages, dependent: :destroy
+  has_many :purchases, class_name: 'Order', foreign_key: 'buyer_id', dependent: :destroy
+  has_many :sales, class_name: "Order", foreign_key: "seller_id", dependent: :destroy
 
   # All conversations (sent or received)
   def all_conversations
