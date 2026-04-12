@@ -69,7 +69,6 @@ class AccountController < ApplicationController
     end
 
     unless @user.verified?
-      session[:pending_user_id] = @user.id
       redirect_to signup_verify_path, alert: "Your email is not verified. Please check your inbox and try again." and return
     end
 
@@ -95,21 +94,24 @@ class AccountController < ApplicationController
       redirect_to account_signin_path, alert: "Session expired. Please log in again." and return
     end
 
-    if @user.otp_valid?(params[:otp_code]) # log in success
+    if @user.otp_valid?(params[:otp_code])
       session.delete(:pending_2fa_user_id)
       reset_session
       # generate token
       token = Rails.application.message_verifier(:user_session).generate(
-        {
-          user_id: @user.id
-        },
+        { "user_id" => @user.id },
         expires_in: ApplicationController::SESSION_EXPIRY
       )
       session[:user_token] = token
+      # Also set a signed cookie for ActionCable/WebSocket connections
+      # this is needed for authenticating the user and showing appropriate chat subscriptions 
+      cookies.signed[:user_token] = {
+        value: token,
+        expires: ApplicationController::SESSION_EXPIRY.from_now,
+        httponly: true,
+        same_site: :lax
+      }
       redirect_to root_path, notice: "Welcome back, #{@user.name}!"
-    elsif @user.otp_sent_at < User::OTP_EXPIRY_MINUTES.minutes.ago
-      session.delete(:pending_2fa_user_id)
-      redirect_to account_signin_path, alert: "Verification code expired. Please sign in again."
     else
       @user.increment!(:otp_attempts)
 
@@ -122,6 +124,13 @@ class AccountController < ApplicationController
       flash.now[:alert] = "Incorrect code. #{remaining} attempt#{'s' if remaining != 1} remaining"
       render :two_factor, status: :unprocessable_entity
     end
+  end
+
+  #will be used in future pull request for sing out button if needed
+  def signout
+    reset_session
+    cookies.delete(:user_token)
+    redirect_to root_path, notice: "You have been signed out."
   end
 
   private
