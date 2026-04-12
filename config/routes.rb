@@ -14,6 +14,11 @@ Rails.application.routes.draw do
   get "/account/2fa" => "account#two_factor", as: :signin_2fa
   post "/account/2fa" => "account#verify_2fa"
 
+  # Payments
+  post "/payments/checkout/:product_id" => "payments#checkout", as: :payment_checkout
+  get  "/payments/success" => "payments#success", as: :payment_success
+  get  "/payments/cancel" => "payments#cancel", as: :payment_cancel
+  post "/payments/webhook" => "payments#webhook", as: :stripe_webhook
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
