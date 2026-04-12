@@ -9,7 +9,6 @@ Rails.application.routes.draw do
   # Placeholder nav routes (pages to be built later)
   get "/chats"   => "placeholder#chats",   as: :chats
   get "/orders"  => "placeholder#orders",  as: :orders
-  get "/orders"  => "placeholder#index",  as: :orders
   get "/profile" => "placeholder#profile", as: :profile
 
   # Chat routes
