@@ -31,19 +31,9 @@
       </div>
     <% end %>
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <%= form_with model: @listing, multipart: true, class: "space-y-6" do |form| %>
-=======
     <%= form_with model: @listing, multipart: true, class: "space-y-6",
                   data: { controller: "listing-form",
                           listing_form_api_key_value: Rails.application.credentials.google_maps_api_key } do |form| %>
->>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
-=======
-    <%= form_with model: @listing, multipart: true, class: "space-y-6",
-                  data: { controller: "listing-form",
-                          listing_form_api_key_value: Rails.application.credentials.google_maps_api_key } do |form| %>
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
 
       <%# Title %>
       <div>
