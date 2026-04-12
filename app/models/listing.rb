@@ -1,21 +1,6 @@
 class Listing < ApplicationRecord
   belongs_to :user
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Stashed changes
-  has_one_attached :image
   has_many_attached :images
-  has_many_attached :images
-<<<<<<< Updated upstream
->>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
-=======
-  has_many_attached :images
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
-=======
->>>>>>> Stashed changes
   has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
   accepts_nested_attributes_for :access_rules,
     allow_destroy: true,
