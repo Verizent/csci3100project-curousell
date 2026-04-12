@@ -44,4 +44,3 @@ When("I visit the listing for {string}") do |title|
   listing = Listing.find_by!(title: title)
   visit listing_path(listing)
 end
-
