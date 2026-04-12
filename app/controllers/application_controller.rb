@@ -16,8 +16,7 @@ class ApplicationController < ActionController::Base
     return @current_user = nil if token.blank?
 
     payload = Rails.application.message_verifier(:user_session).verified(token)
-    user_id = payload && (payload[:user_id] || payload["user_id"])
-    @current_user = user_id ? User.find_by(id: user_id) : nil
+    @current_user = payload ? User.find_by(id: payload["user_id"]) : nil
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     @current_user = nil
   end
