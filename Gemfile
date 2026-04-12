@@ -61,6 +61,13 @@ group :development, :test do
 
   # RSpec testing framework for Rails
   gem "rspec-rails"
+
+  # Test data factories
+  gem "factory_bot_rails"
+
+  # Fake data generation
+  gem "faker"
+
   # Restores assigns() and assert_template() for controller specs
   gem "rails-controller-testing"
 end
@@ -75,7 +82,16 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  gem "cucumber-rails", require: false
+
+  # RSpec matchers for Rails models
+  gem "shoulda-matchers"
+
+  # Database cleanup between tests
   gem "database_cleaner-active_record"
+
+  # BDD feature testing
+  gem "cucumber-rails", require: false
+
+  # Coverage Report
   gem "simplecov", require: false
 end

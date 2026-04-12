@@ -34,12 +34,28 @@
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
     <div class="grid grid-cols-1 md:grid-cols-2">
 
-      <%# Image %>
-      <div class="bg-gray-50 flex items-center justify-center min-h-72 md:min-h-96">
-        <% if @listing.image.attached? %>
-          <%= image_tag @listing.image.variant(resize_to_limit: [600, 600]),
+      <%# Images %>
+      <div class="bg-gray-50 flex flex-col items-center justify-center min-h-72 md:min-h-96"
+           data-controller="listing-gallery">
+        <% if @listing.images.attached? %>
+          <%= image_tag @listing.images.first.variant(resize_to_limit: [600, 600]),
                 class: "max-h-96 w-full object-contain",
-                alt: @listing.title %>
+                alt: @listing.title,
+                data: { listing_gallery_target: "mainImage" } %>
+          <% if @listing.images.count > 1 %>
+            <div class="flex gap-2 p-3 overflow-x-auto w-full">
+              <% @listing.images.each_with_index do |img, i| %>
+                <%= image_tag img.variant(resize_to_fill: [80, 80]),
+                      class: "w-20 h-20 object-cover rounded-lg border-2 #{ i == 0 ? 'border-cuhk-gold' : 'border-gray-200' } flex-shrink-0 cursor-pointer",
+                      alt: "#{@listing.title} photo #{i + 1}",
+                      data: {
+                        listing_gallery_target: "thumbnail",
+                        action: "click->listing-gallery#show",
+                        full_src: url_for(img.variant(resize_to_limit: [600, 600]))
+                      } %>
+              <% end %>
+            </div>
+          <% end %>
         <% else %>
           <div class="text-8xl">
             <%= category_icons[@listing.category] || "📦" %>

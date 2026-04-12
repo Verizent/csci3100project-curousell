@@ -4,6 +4,7 @@
 puts "Seeding..."
 
 # Clear existing data so re-runs start clean
+ListingAccessRule.delete_all
 Listing.delete_all
 User.delete_all
 
@@ -161,7 +162,7 @@ LISTING_DATA = [
     access_rules: [ { colleges: [ "S.H. Ho College", "Wu Yee Sun College" ] } ] },
   # Faculty-only restriction
   { title: "Chung Chi College Printed Notes Bundle",  description: "GE notes tailored for Arts and Social Science students.",                                  category: "books",         price: 45,  location: "Chung Chi College",
-    access_rules: [ { faculties: [ "Faculty of Arts", "Faculty of Social Science" ] } ] },
+    access_rules: [ { faculties: [ "Faculty of Arts", "Faculty of Social Sciences" ] } ] },
   { title: "New Asia College Blazer (Size S)",        description: "Official NAC blazer. For Engineering and Science students only.",                           category: "clothing",      price: 200, location: "New Asia College",
     access_rules: [ { faculties: [ "Faculty of Engineering", "Faculty of Science" ] } ] },
   # Department + faculty restriction
@@ -174,7 +175,61 @@ LISTING_DATA = [
     access_rules: [
       { faculties: [ "Faculty of Arts" ],    departments: [ "Department of Fine Arts" ] },
       { faculties: [ "Faculty of Science" ], departments: [] }
-    ] }
+    ] },
+  # ── 2 college-exclusive listings per college ────────────────────────────────
+  # Shaw College
+  { title: "Shaw College Common Room Key Deposit",    description: "Transferable key deposit receipt for Shaw common room. Shaw residents only.",              category: "miscellaneous", price: 100, location: "Shaw College",
+    access_rules: [ { colleges: [ "Shaw College" ] } ] },
+  { title: "Shaw College Orientation Camp Tee (M)",   description: "Official O-camp tee from Shaw College. Shaw members only.",                                category: "clothing",      price: 40,  location: "Shaw College",
+    access_rules: [ { colleges: [ "Shaw College" ] } ] },
+
+  # United College
+  { title: "United College Sports Day Wristband",     description: "Entry wristband for UC annual sports day. United College members only.",                   category: "miscellaneous", price: 20,  location: "United College",
+    access_rules: [ { colleges: [ "United College" ] } ] },
+  { title: "United College Hall Trolley Rental",      description: "One-week rental slot for the UC hostel trolley. UC residents only.",                       category: "miscellaneous", price: 15,  location: "United College",
+    access_rules: [ { colleges: [ "United College" ] } ] },
+
+  # New Asia College
+  { title: "New Asia College Orientation Kit",        description: "Unused NAC orientation pack including tote, lanyard and notebook. NAC members only.",      category: "accessories",   price: 55,  location: "New Asia College",
+    access_rules: [ { colleges: [ "New Asia College" ] } ] },
+  { title: "New Asia College Canteen Meal Coupon x5", description: "Five NAC canteen lunch coupons. Valid this semester. NAC residents only.",                  category: "miscellaneous", price: 60,  location: "New Asia College",
+    access_rules: [ { colleges: [ "New Asia College" ] } ] },
+
+  # Chung Chi College
+  { title: "Chung Chi College Chapel Seat Reservation",  description: "Reserved seat for the upcoming Chung Chi chapel recital. Chung Chi members only.",     category: "miscellaneous", price: 0,   location: "Chung Chi College",
+    access_rules: [ { colleges: [ "Chung Chi College" ] } ] },
+  { title: "Chung Chi College Hostel Locker (1 sem)",    description: "Locker slot in Chung Chi hostel block B. Chung Chi residents only.",                    category: "miscellaneous", price: 80,  location: "Chung Chi College",
+    access_rules: [ { colleges: [ "Chung Chi College" ] } ] },
+
+  # Morningside College
+  { title: "Morningside College Dinner Gala Ticket",  description: "One ticket to the Morningside annual gala dinner. Morningside members only.",              category: "miscellaneous", price: 220, location: "Morningside College",
+    access_rules: [ { colleges: [ "Morningside College" ] } ] },
+  { title: "Morningside College Gym Pass (1 month)",  description: "One-month gym access pass for the Morningside fitness room. Morningside residents only.",  category: "miscellaneous", price: 70,  location: "Morningside College",
+    access_rules: [ { colleges: [ "Morningside College" ] } ] },
+
+  # CW Chu College
+  { title: "CW Chu College Rooftop BBQ Slot",         description: "One BBQ slot booking on CW Chu rooftop. CW Chu residents only.",                          category: "miscellaneous", price: 50,  location: "CW Chu College",
+    access_rules: [ { colleges: [ "CW Chu College" ] } ] },
+  { title: "CW Chu College House Tee (Size L)",       description: "Official CW Chu house competition tee. CW Chu members only.",                              category: "clothing",      price: 35,  location: "CW Chu College",
+    access_rules: [ { colleges: [ "CW Chu College" ] } ] },
+
+  # S.H. Ho College
+  { title: "S.H. Ho College Study Room Booking",      description: "One week priority booking slot for S.H. Ho study rooms. S.H. Ho members only.",           category: "miscellaneous", price: 0,   location: "S.H. Ho College",
+    access_rules: [ { colleges: [ "S.H. Ho College" ] } ] },
+  { title: "S.H. Ho College Welcome Hamper",          description: "Leftover welcome hamper items: snacks, stationery, mug. S.H. Ho residents only.",          category: "miscellaneous", price: 30,  location: "S.H. Ho College",
+    access_rules: [ { colleges: [ "S.H. Ho College" ] } ] },
+
+  # Lee Woo Sing College
+  { title: "Lee Woo Sing College Art Exhibition Pass", description: "Complimentary pass to the LWS end-of-year art showcase. LWS members only.",               category: "miscellaneous", price: 0,   location: "Lee Woo Sing College",
+    access_rules: [ { colleges: [ "Lee Woo Sing College" ] } ] },
+  { title: "Lee Woo Sing College Printed Planner",    description: "Official LWS academic planner, spiral bound. Lee Woo Sing members only.",                  category: "accessories",   price: 25,  location: "Lee Woo Sing College",
+    access_rules: [ { colleges: [ "Lee Woo Sing College" ] } ] },
+
+  # Wu Yee Sun College
+  { title: "Wu Yee Sun College Wellness Kit",         description: "WYS wellness week kit: essential oils, eye mask, tea sachets. WYS members only.",          category: "miscellaneous", price: 45,  location: "Wu Yee Sun College",
+    access_rules: [ { colleges: [ "Wu Yee Sun College" ] } ] },
+  { title: "Wu Yee Sun College Movie Night Ticket",   description: "One ticket to the WYS outdoor movie screening this Friday. WYS residents only.",           category: "miscellaneous", price: 10,  location: "Wu Yee Sun College",
+    access_rules: [ { colleges: [ "Wu Yee Sun College" ] } ] }
 ].freeze
 
 # ── Create listings ───────────────────────────────────────────────────────────

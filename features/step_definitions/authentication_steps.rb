@@ -1,3 +1,22 @@
+Given("a verified user exists with email {string} and password {string} and college {string}") do |email, password, college|
+  @user = create(:user, email: email, password: password,
+                        password_confirmation: password, college: college)
+end
+
+Given("I am signed in as a Shaw College user") do
+  allow(OtpMailer).to receive(:send_2fa).and_return(double(deliver_later: true))
+  shaw_user = create(:user,
+    college: "Shaw College",
+    faculty: [ "Faculty of Engineering" ],
+    department: [ "Department of Computer Science and Engineering" ])
+  visit account_signin_path
+  fill_in "Email Address", with: shaw_user.email
+  fill_in "Password",      with: "SecurePassword123!"
+  click_button "Sign In"
+  fill_in "otp_code", with: shaw_user.reload.otp_code
+  click_button "Verify Email"
+end
+
 Given("a verified user exists with email {string} and password {string}") do |email, password|
   @user = User.create!(
     name: "Test Student",
@@ -120,8 +139,12 @@ Then("I should be redirected to the home page") do
   expect(current_path).to eq(home_path)
 end
 
-Then("I should see {string}") do |text|
-  expect(page).to have_content(text)
+Then(/^I should (not )?see "([^"]*)"/) do |no, text|
+  if no
+    expect(page).not_to have_content(text)
+  else
+    expect(page).to have_content(text)
+  end
 end
 
 When("I submit the correct OTP") do

@@ -124,7 +124,7 @@ class AccountController < ApplicationController
 
   def signout
     reset_session
-    redirect_to root_path, notice: "You have been signed out."
+    redirect_to home_path, notice: "You have been signed out."
   end
 
   private
