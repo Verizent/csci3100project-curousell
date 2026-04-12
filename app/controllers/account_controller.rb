@@ -91,6 +91,10 @@ class AccountController < ApplicationController
   def verify_2fa
     @user = User.find_by(id: session[:pending_2fa_user_id])
 
+    unless @user
+      redirect_to account_signin_path, alert: "Session expired. Please log in again." and return
+    end
+
     if @user.otp_valid?(params[:otp_code]) # log in success
       session.delete(:pending_2fa_user_id)
       reset_session

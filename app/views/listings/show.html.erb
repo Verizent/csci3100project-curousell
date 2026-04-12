@@ -35,24 +35,17 @@
     <div class="grid grid-cols-1 md:grid-cols-2">
 
       <%# Images %>
-      <div class="bg-gray-50 flex flex-col items-center justify-center min-h-72 md:min-h-96"
-           data-controller="listing-gallery">
+      <div class="bg-gray-50 flex flex-col items-center justify-center min-h-72 md:min-h-96">
         <% if @listing.images.attached? %>
           <%= image_tag @listing.images.first.variant(resize_to_limit: [600, 600]),
                 class: "max-h-96 w-full object-contain",
-                alt: @listing.title,
-                data: { listing_gallery_target: "mainImage" } %>
+                alt: @listing.title %>
           <% if @listing.images.count > 1 %>
             <div class="flex gap-2 p-3 overflow-x-auto w-full">
               <% @listing.images.each_with_index do |img, i| %>
                 <%= image_tag img.variant(resize_to_fill: [80, 80]),
                       class: "w-20 h-20 object-cover rounded-lg border-2 #{ i == 0 ? 'border-cuhk-gold' : 'border-gray-200' } flex-shrink-0 cursor-pointer",
-                      alt: "#{@listing.title} photo #{i + 1}",
-                      data: {
-                        listing_gallery_target: "thumbnail",
-                        action: "click->listing-gallery#show",
-                        full_src: url_for(img.variant(resize_to_limit: [600, 600]))
-                      } %>
+                      alt: "#{@listing.title} photo #{i + 1}" %>
               <% end %>
             </div>
           <% end %>
@@ -86,20 +79,13 @@
           <%= @listing.title %>
         </h1>
 
-        <div class="flex items-baseline gap-3 mb-5">
-          <% if @listing.price.zero? %>
-            <p class="text-3xl font-bold text-green-600">Free</p>
-          <% else %>
-            <p class="text-3xl font-bold text-cuhk-gold">
-              HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
-            </p>
-          <% end %>
-          <% if @listing.negotiable? %>
-            <span class="text-xs font-medium text-cuhk-purple border border-cuhk-purple-light rounded-full px-2 py-0.5">
-              Negotiable
-            </span>
-          <% end %>
-        </div>
+        <% if @listing.price.zero? %>
+          <p class="text-3xl font-bold text-green-600 mb-5">Free</p>
+        <% else %>
+          <p class="text-3xl font-bold text-cuhk-gold mb-5">
+            HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
+          </p>
+        <% end %>
 
         <% if @listing.description.present? %>
           <div class="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
@@ -163,7 +149,7 @@
           <%= link_to chats_path,
                 class: "mt-5 block text-center bg-cuhk-purple text-white font-semibold py-3 rounded-xl
                         hover:bg-cuhk-purple-dark transition-colors" do %>
-            Chat with Seller
+            Contact Seller
           <% end %>
         <% else %>
           <div class="mt-5 block text-center bg-gray-100 text-gray-400 font-semibold py-3 rounded-xl cursor-not-allowed">

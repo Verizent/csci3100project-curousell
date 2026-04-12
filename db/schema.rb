@@ -10,27 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
-=======
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
->>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
-=======
 ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
->>>>>>> 6d1301d74cd39b89b8ee1c86b8ba7d1920e1ad8d
-=======
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
->>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
-=======
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
-=======
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
->>>>>>> Stashed changes
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -116,6 +96,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.integer "buyer_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.bigint "listing_id", null: false
+    t.text "notes"
+    t.decimal "price_at_purchase", precision: 10, scale: 2
+    t.datetime "purchased_at"
+    t.integer "seller_id", null: false
+    t.string "status", default: "pending"
+    t.datetime "updated_at", null: false
+    t.index ["buyer_id", "status"], name: "index_orders_on_buyer_id_and_status"
+    t.index ["buyer_id"], name: "index_orders_on_buyer_id"
+    t.index ["listing_id", "status"], name: "index_orders_on_listing_id_and_status"
+    t.index ["listing_id"], name: "index_orders_on_listing_id"
+    t.index ["seller_id", "status"], name: "index_orders_on_seller_id_and_status"
+    t.index ["seller_id"], name: "index_orders_on_seller_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "college"
     t.datetime "created_at", null: false
@@ -141,4 +140,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
   add_foreign_key "listings", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
+  add_foreign_key "orders", "listings"
 end
