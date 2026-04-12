@@ -72,12 +72,22 @@ class Listing < ApplicationRecord
       "Department of Physics",
       "Department of Statistics"
     ],
-    "Faculty of Social Science" => [
+    "Faculty of Social Sciences" => [
       "Department of Economics",
       "Department of Government and Public Administration",
       "Department of Psychology",
       "Department of Social Work",
       "Department of Sociology"
+    ],
+    "Zhizhen School of Interdisciplinary Mathematical Sciences" => [
+      "Zhizhen School of Interdisciplinary Mathematical Sciences"
+    ],
+    "Other Academic Units" => [
+      "Postgraduate",
+      "Teacher/Lecturer",
+      "Researcher",
+      "Staff",
+      "Other"
     ]
   }.freeze
 

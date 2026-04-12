@@ -8,7 +8,7 @@ class ListingsController < ApplicationController
     @filter_max_price  = params[:max_price].presence
     @filter_college    = params[:college] == "1"
 
-    @listings = Listing.search(@query).visible_to(current_user)
+    @listings = Listing.search(@query).visible_to(current_user).includes(:user)
     @listings = @listings.where.not(user: current_user)                                if current_user
     @listings = @listings.where(category: @filter_categories)                          if @filter_categories.any?
     @listings = @listings.where(price: 0)                                              if @filter_free
@@ -20,7 +20,7 @@ class ListingsController < ApplicationController
   def show
     @listing = Listing.find(params[:id])
     unless @listing.user == current_user || Listing.visible_to(current_user).exists?(@listing.id)
-      redirect_to root_path, alert: "This listing is not available to you."
+      redirect_to root_path, alert: "This listing is not available to you." and return
     end
   end
 
