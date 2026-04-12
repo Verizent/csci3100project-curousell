@@ -72,7 +72,7 @@ class Listing < ApplicationRecord
       "Department of Physics",
       "Department of Statistics"
     ],
-    "Faculty of Social Sciences" => [
+    "Faculty of Social Science" => [
       "Department of Economics",
       "Department of Government and Public Administration",
       "Department of Psychology",
