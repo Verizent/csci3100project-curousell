@@ -257,4 +257,68 @@ LISTING_DATA.each_with_index do |attrs, i|
 end
 
 puts "  #{created} listings seeded"
+
+# ── Seed orders ───────────────────────────────────────────────────────────────
+puts "Seeding orders..."
+
+listings = Listing.all
+
+# Create dummy orders for testing the orders page
+# User 0 (unitedcollege1@link.cuhk.edu.hk) as buyer and seller
+
+# Bought items
+Order.create!(
+  listing: listings[0],
+  buyer: users[0],
+  seller: users[1],
+  status: 'pending',
+  price_at_purchase: listings[0].price,
+  purchased_at: Time.current,
+  notes: "Dummy pending order for testing"
+)
+
+Order.create!(
+  listing: listings[1],
+  buyer: users[0],
+  seller: users[2],
+  status: 'completed',
+  price_at_purchase: listings[1].price,
+  purchased_at: 1.day.ago,
+  completed_at: Time.current,
+  notes: "Dummy completed order for testing"
+)
+
+Order.create!(
+  listing: listings[2],
+  buyer: users[0],
+  seller: users[3],
+  status: 'cancelled',
+  price_at_purchase: listings[2].price,
+  purchased_at: 2.days.ago,
+  notes: "Dummy cancelled order for testing"
+)
+
+# Sold items
+Order.create!(
+  listing: listings[3],
+  buyer: users[4],
+  seller: users[0],
+  status: 'pending',
+  price_at_purchase: listings[3].price,
+  purchased_at: Time.current,
+  notes: "Dummy sold pending order"
+)
+
+Order.create!(
+  listing: listings[4],
+  buyer: users[5],
+  seller: users[0],
+  status: 'completed',
+  price_at_purchase: listings[4].price,
+  purchased_at: 3.days.ago,
+  completed_at: 1.day.ago,
+  notes: "Dummy sold completed order"
+)
+
+puts "  Orders seeded"
 puts "Done."

@@ -1,37 +1,30 @@
 class ApplicationController < ActionController::Base
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
-
-  # Changes to the importmap will invalidate the etag for HTML responses
-  stale_when_importmap_changes
-
-  helper_method :current_user, :logged_in?
-
-  SESSION_EXPIRY = 8.hours
-
+  helper_method :current_user
+  
+  private
+  
   def current_user
-    return @current_user if defined?(@current_user)
-
-    token = session[:user_token]
-    return @current_user = nil if token.blank?
-
-    payload = Rails.application.message_verifier(:user_session).verified(token)
-    @current_user = payload ? User.find_by(id: payload["user_id"]) : nil
-  rescue ActiveSupport::MessageVerifier::InvalidSignature
-    @current_user = nil
+    # Temporary: Return the first user for testing
+    @current_user ||= User.first
   end
-
-  def logged_in?
-    current_user.present?
-  end
-
+  
   def require_login
+<<<<<<< Updated upstream
+    return true # for testing purposes, remove this line in production
     unless logged_in?
       redirect_to account_signin_path, alert: "Please log in to continue."
     end
+=======
+    # Do nothing for now - always return a user
+    current_user
+>>>>>>> Stashed changes
   end
+<<<<<<< Updated upstream
 
   def authenticate_user!
     require_login
   end
 end
+=======
+end
+>>>>>>> Stashed changes
