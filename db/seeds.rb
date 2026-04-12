@@ -7,3 +7,17 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+puts "Seeding database..."
+
+User.find_or_create_by!(email: "hiadmin@link.cuhk.edu.hk") do |u|
+  u.name = "Admin"
+  u.email = "hiadmin@link.cuhk.edu.hk"
+  u.password = "adminpassword123"
+  u.college = "United College"
+  u.faculty = [ "Engineering" ]
+  u.department = [ "Computer Science and Engineering" ]
+  u.verified_at = Time.current
+end
+
+puts "Seeding done. Users: #{User.count}"

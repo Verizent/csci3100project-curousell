@@ -69,6 +69,7 @@ class AccountController < ApplicationController
     end
 
     unless @user.verified?
+      session[:pending_user_id] = @user.id
       redirect_to signup_verify_path, alert: "Your email is not verified. Please check your inbox and try again." and return
     end
 
@@ -94,7 +95,7 @@ class AccountController < ApplicationController
       redirect_to account_signin_path, alert: "Session expired. Please log in again." and return
     end
 
-    if @user.otp_valid?(params[:otp_code])
+    if @user.otp_valid?(params[:otp_code]) # log in success
       session.delete(:pending_2fa_user_id)
       reset_session
       # generate token
@@ -106,6 +107,9 @@ class AccountController < ApplicationController
       )
       session[:user_token] = token
       redirect_to root_path, notice: "Welcome back, #{@user.name}!"
+    elsif @user.otp_sent_at < User::OTP_EXPIRY_MINUTES.minutes.ago
+      session.delete(:pending_2fa_user_id)
+      redirect_to account_signin_path, alert: "Verification code expired. Please sign in again."
     else
       @user.increment!(:otp_attempts)
 
