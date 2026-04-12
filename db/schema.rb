@@ -10,6 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -27,6 +28,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
 =======
 ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
 >>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
+=======
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
+>>>>>>> Stashed changes
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -125,6 +129,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
     t.string "password_digest"
     t.datetime "updated_at", null: false
     t.datetime "verified_at"
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -132,8 +137,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
   add_foreign_key "conversations", "listings"
   add_foreign_key "conversations", "users", column: "receiver_id"
   add_foreign_key "conversations", "users", column: "sender_id"
-  add_foreign_key "messages", "conversations"
-  add_foreign_key "messages", "users"
   add_foreign_key "listing_access_rules", "listings"
   add_foreign_key "listings", "users"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
 end
