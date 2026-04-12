@@ -15,8 +15,8 @@ class CreateOrders < ActiveRecord::Migration[8.1]
 
     add_index :orders, :buyer_id
     add_index :orders, :seller_id
-    add_index :orders, [:buyer_id, :status]
-    add_index :orders, [:seller_id, :status]
-    add_index :orders, [:listing_id, :status]
+    add_index :orders, [ :buyer_id, :status ]
+    add_index :orders, [ :seller_id, :status ]
+    add_index :orders, [ :listing_id, :status ]
   end
 end
