@@ -126,11 +126,10 @@ class AccountController < ApplicationController
     end
   end
 
-  #will be used in future pull request for sing out button if needed
   def signout
     reset_session
     cookies.delete(:user_token)
-    redirect_to root_path, notice: "You have been signed out."
+    redirect_to home_path, notice: "You have been signed out."
   end
 
   private

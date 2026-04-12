@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_11_134831) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -69,10 +69,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_134831) do
   create_table "listings", force: :cascade do |t|
     t.string "category", default: "miscellaneous", null: false
     t.datetime "created_at", null: false
-    t.string "department", default: [], array: true
     t.text "description"
-    t.string "faculty", default: [], array: true
     t.string "location"
+    t.boolean "negotiable", default: false, null: false
     t.decimal "price", precision: 10, scale: 2, default: "0.0", null: false
     t.string "status", default: "unsold", null: false
     t.string "title"
@@ -117,8 +116,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_134831) do
   add_foreign_key "conversations", "listings"
   add_foreign_key "conversations", "users", column: "receiver_id"
   add_foreign_key "conversations", "users", column: "sender_id"
-  add_foreign_key "listing_access_rules", "listings"
-  add_foreign_key "listings", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
+  add_foreign_key "listing_access_rules", "listings"
+  add_foreign_key "listings", "users"
 end

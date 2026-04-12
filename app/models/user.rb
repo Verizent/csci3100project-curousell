@@ -2,7 +2,7 @@ class User < ApplicationRecord
   # Run before saving to database
   has_secure_password
   validates :name, presence: true
-  validates :email, presence: true, uniqueness: true,
+  validates :email, presence: true, uniqueness: { case_sensitive: false },
             format: { with: /\A[^@]+@(\w+\.)*cuhk\.edu\.hk\z/i, message: "must be a CUHK email address" }
   validates :college, presence: true
   validates :faculty, presence: true
