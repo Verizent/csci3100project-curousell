@@ -67,7 +67,7 @@ group :development, :test do
 
   # Fake data generation
   gem "faker"
-  
+
   # Restores assigns() and assert_template() for controller specs
   gem "rails-controller-testing"
 end

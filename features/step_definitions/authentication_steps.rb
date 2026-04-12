@@ -125,9 +125,9 @@ Then("I should be redirected to the home page") do
 end
 
 Then(/^I should (not )?see "([^"]*)"/) do |no, text|
-  if no 
+  if no
     expect(page).not_to have_content(text)
-  else 
+  else
     expect(page).to have_content(text)
   end
 end

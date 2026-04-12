@@ -8,7 +8,7 @@ RSpec.describe OtpMailer, type: :mailer do
     subject(:mail) { OtpMailer.send_code(user, code) }
 
     it "sends to the user's email" do
-      expect(mail.to).to eq(["alice@link.cuhk.edu.hk"])
+      expect(mail.to).to eq([ "alice@link.cuhk.edu.hk" ])
     end
 
     it "has the correct subject" do
@@ -28,7 +28,7 @@ RSpec.describe OtpMailer, type: :mailer do
     subject(:mail) { OtpMailer.send_2fa(user, code) }
 
     it "sends to the user's email" do
-      expect(mail.to).to eq(["alice@link.cuhk.edu.hk"])
+      expect(mail.to).to eq([ "alice@link.cuhk.edu.hk" ])
     end
 
     it "has the correct subject" do
