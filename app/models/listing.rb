@@ -78,16 +78,6 @@ class Listing < ApplicationRecord
       "Department of Psychology",
       "Department of Social Work",
       "Department of Sociology"
-    ],
-    "Zhizhen School of Interdisciplinary Mathematical Sciences" => [
-      "Zhizhen School of Interdisciplinary Mathematical Sciences"
-    ],
-    "Other Academic Units" => [
-      "Postgraduate",
-      "Teacher/Lecturer",
-      "Researcher",
-      "Staff",
-      "Other"
     ]
   }.freeze
 
