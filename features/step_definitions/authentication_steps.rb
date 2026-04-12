@@ -1,205 +1,143 @@
-require "factory_bot_rails"
-
-# ── Shared helpers ────────────────────────────────────────────────────────────
-
-# Fill in the standard signup form fields (college, faculty, department are
-# set to safe defaults so callers only need to override what they care about).
-def fill_signup_form(name: "Test User",
-                     email: "testuser@link.cuhk.edu.hk",
-                     password: "SecurePassword123!",
-                     password_confirmation: nil)
-  password_confirmation ||= password
-
-  fill_in "Full Name",        with: name
-  fill_in "Email Address",    with: email
-  select  "Shaw College",     from: "user_college"
-  select  "Faculty of Engineering",
-          from: "user_faculty"
-  select  "Department of Computer Science and Engineering",
-          from: "user_department"
-  fill_in "Password",         with: password
-  fill_in "Confirm Password", with: password_confirmation
+Given("a verified user exists with email {string} and password {string} and college {string}") do |email, password, college|
+  @user = create(:user, email: email, password: password,
+                        password_confirmation: password, college: college)
 end
 
-# Sign in through the UI and complete 2FA using the OTP stored on the user.
-# Returns after being redirected to root.
-def ui_sign_in(email, password)
-  visit account_signin_path
-  fill_in "Email Address", with: email
-  fill_in "Password",      with: password
-  click_button "Sign In"
-
-  # Complete 2FA
-  user = User.find_by!(email: email)
-  otp  = user.reload.otp_code
-  fill_in "Verification Code", with: otp
-  click_button "Verify Email"
-end
-
-# ── Given ─────────────────────────────────────────────────────────────────────
-
-Given "I visit the signup page" do
-  visit account_signup_path
-end
-
-Given "I visit the signin page" do
-  visit account_signin_path
-end
-
-Given "a verified user exists with email {string} and password {string}" do |email, password|
-  @registered_user = create(:user, email: email, password: password,
-                                   password_confirmation: password)
-end
-
-Given "a verified user exists with email {string} and password {string} and college {string}" do |email, password, college|
-  @registered_user = create(:user, email: email, password: password,
-                                   password_confirmation: password,
-                                   college: college)
-end
-
-Given "an unverified user exists with email {string} and password {string}" do |email, password|
-  create(:user, :unverified, email: email, password: password,
-                             password_confirmation: password)
-end
-
-Given "I have completed the signup form successfully" do
-  # Prevent actual email delivery and background jobs
-  allow(OtpMailer).to receive(:send_code).and_return(double(deliver_later: true))
-  allow(CleanupUnverifiedUserJob).to receive_message_chain(:set, :perform_later)
-
-  visit account_signup_path
-  fill_signup_form
-  check "terms_accepted"
-  click_button "Create Account"
-  # We should now be on the verify page
-  expect(page).to have_content("Verify Your Email")
-end
-
-Given "I am signed in as {string} with password {string}" do |email, password|
-  # Stub OTP mailer so we don't need real SMTP
-  allow(OtpMailer).to receive(:send_2fa).and_return(double(deliver_later: true))
-  ui_sign_in(email, password)
-end
-
-Given "I am signed in as a Shaw College user" do
+Given("I am signed in as a Shaw College user") do
   allow(OtpMailer).to receive(:send_2fa).and_return(double(deliver_later: true))
   shaw_user = create(:user,
     college: "Shaw College",
     faculty: [ "Faculty of Engineering" ],
     department: [ "Department of Computer Science and Engineering" ])
-  ui_sign_in(shaw_user.email, "SecurePassword123!")
+  visit account_signin_path
+  fill_in "Email Address", with: shaw_user.email
+  fill_in "Password",      with: "SecurePassword123!"
+  click_button "Sign In"
+  fill_in "otp_code", with: shaw_user.reload.otp_code
+  click_button "Verify Email"
 end
 
-# ── When ──────────────────────────────────────────────────────────────────────
-
-When "I fill in the signup form with valid CUHK credentials" do
-  fill_signup_form
+Given("a verified user exists with email {string} and password {string}") do |email, password|
+  @user = User.create!(
+    name: "Test Student",
+    email: email,
+    college: "Shaw College",
+    faculty: [ "Faculty of Engineering" ],
+    department: [ "Department of Computer Science and Engineering" ],
+    password: password,
+    password_confirmation: password,
+    verified_at: Time.current
+  )
 end
 
-When "I fill in the signup form with email {string}" do |email|
-  fill_signup_form(email: email)
+Given("an unverified user exists with email {string} and password {string}") do |email, password|
+  User.create!(
+    name: "Unverified Student",
+    email: email,
+    college: "Shaw College",
+    faculty: [ "Faculty of Engineering" ],
+    department: [ "Department of Computer Science and Engineering" ],
+    password: password,
+    password_confirmation: password
+  )
 end
 
-When "I fill in the signup form with password {string}" do |password|
-  fill_signup_form(password: password, password_confirmation: password)
+Given("I am on the sign in page") do
+  visit account_signin_path
 end
 
-When "I check the terms and conditions checkbox" do
+Given("I am on the sign up page") do
+  visit account_signup_path
+end
+
+When("I fill in the signup form with valid details") do
+  fill_in "Full Name", with: "Test Student"
+  fill_in "Email Address", with: "newstudent@cuhk.edu.hk"
+  select "Shaw College", from: "College"
+  select "Faculty of Engineering", from: "user[faculty][]"
+  select "Department of Computer Science and Engineering", from: "user[department][]"
+  fill_in "Password", with: "securepassword123"
+  fill_in "Confirm Password", with: "securepassword123"
+end
+
+When("I fill in the signup form with email {string}") do |email|
+  fill_in "Full Name", with: "Test Student"
+  fill_in "Email Address", with: email
+  select "Shaw College", from: "College"
+  select "Faculty of Engineering", from: "user[faculty][]"
+  select "Department of Computer Science and Engineering", from: "user[department][]"
+  fill_in "Password", with: "securepassword123"
+  fill_in "Confirm Password", with: "securepassword123"
+end
+
+When("I accept the Terms & Conditions") do
   check "terms_accepted"
 end
 
-When "I do not check the terms and conditions checkbox" do
-  # Intentionally do not check the box
+Then("I should be on the verify page") do
+  expect(current_path).to eq(signup_verify_path)
 end
 
-When "I submit the signup form" do
-  click_button "Create Account"
+Then("I should be on the sign up page") do
+  expect(current_path).to eq(account_signup_path)
 end
 
-When "I sign in with email {string} and password {string}" do |email, password|
-  fill_in "Email Address", with: email
-  fill_in "Password",      with: password
-  click_button "Sign In"
+When("I submit the signup OTP") do
+  user = User.find_by(email: "newstudent@cuhk.edu.hk")
+  fill_in "otp_code", with: user.otp_code
+  click_button "Verify Email"
 end
 
-When "I enter the OTP code sent to my email" do
-  # The OTP was stored on the most-recently-created unverified user
-  user = User.order(:created_at).last
-  fill_in "Verification Code", with: user.otp_code
+When("I submit an incorrect OTP {string}") do |code|
+  user = User.find_by(email: "newstudent@cuhk.edu.hk")
+  user.update!(otp_code: code != "111111" ? "111111" : "010101")                      # ensure that otp_code is wrong
+  fill_in "otp_code", with: code
+  click_button "Verify Email"
 end
 
-When "I enter the 2FA OTP code" do
-  user = User.order(:created_at).last
-  fill_in "Verification Code", with: user.reload.otp_code
-end
-
-When "I enter an incorrect OTP code {string}" do |code|
-  fill_in "Verification Code", with: code
-end
-
-When "I enter an incorrect OTP code {string} {int} times" do |code, times|
+When("I submit an incorrect OTP {string} {int} times") do |code, times|
+  user = User.find_by(email: "newstudent@cuhk.edu.hk")
+  user.update!(otp_code: code != "111111" ? "111111" : "010101")
   times.times do
-    fill_in "Verification Code", with: code
+    fill_in "otp_code", with: code
     click_button "Verify Email"
   end
 end
 
-When "I submit the 2FA form with code {string}" do |code|
-  fill_in "Verification Code", with: code
-  click_button "Verify Email"
+When("I fill in {string} with {string}") do |field, value|
+  fill_in field, with: value
 end
 
-When "I sign out" do
-  # The signout link/button uses DELETE method (Rails UJS / Turbo)
-  # rack_test can simulate this via a direct delete request helper
-  page.driver.submit :delete, account_signout_path, {}
+When("I click {string}") do |button|
+  find_button(button, disabled: :all).click                                           # allow pressing disabled button (because capybara's rack_test driver doesn't run JavaScript)
 end
 
-When "I click {string}" do |label|
-  click_button label
-end
-
-# ── Then ──────────────────────────────────────────────────────────────────────
-
-Then "I should be on the verify email page" do
-  expect(page).to have_content("Verify Your Email")
-end
-
-Then "I should still be on the verify email page" do
-  expect(page).to have_content("Verify Your Email")
-end
-
-Then "I should be on the signin page" do
-  expect(page).to have_content("Sign In")
-end
-
-Then "I should be on the 2FA verification page" do
-  expect(page).to have_content("Verify Your Email")
+Then("I should be on the 2FA page") do
   expect(current_path).to eq(signin_2fa_path)
 end
 
-Then "I should still be on the 2FA verification page" do
-  expect(page).to have_content("Verify Your Email")
-  expect(current_path).to eq(signin_2fa_path)
+Then("I should be on the sign in page") do
+  expect(current_path).to eq(account_signin_path)
 end
 
-Then "I should be on the signup page" do
-  expect(page).to have_content("Register")
-end
-
-Then "I should be redirected to the home page" do
+Then("I should be redirected to the home page") do
   expect(current_path).to eq(home_path)
 end
 
-Then "the {string} button should be disabled" do |label|
-  btn = find_button(label, disabled: :all)
-  expect(btn[:disabled]).to be_truthy
+Then(/^I should (not )?see "([^"]*)"/) do |no, text|
+  if no 
+    expect(page).not_to have_content(text)
+  else 
+    expect(page).to have_content(text)
+  end
 end
 
-Then "I should see {string}" do |text|
-  expect(page).to have_content(text)
+When("I submit the correct OTP") do
+  @user.reload
+  fill_in "otp_code", with: @user.otp_code
+  click_button "Verify Email"
 end
 
-Then "I should not see {string}" do |text|
-  expect(page).not_to have_content(text)
+When("the OTP has expired") do
+  @user.update!(otp_sent_at: (User::OTP_EXPIRY_MINUTES + 1).minutes.ago)
 end

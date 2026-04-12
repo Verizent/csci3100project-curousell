@@ -297,7 +297,7 @@ RSpec.describe "Account", type: :request do
   describe "DELETE /account/signout" do
     it "clears the session and redirects to root" do
       delete account_signout_path
-      expect(response).to redirect_to(root_path)
+      expect(response).to redirect_to(home_path)
       follow_redirect!
       expect(response.body).to include("signed out")
     end

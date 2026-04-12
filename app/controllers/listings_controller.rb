@@ -24,7 +24,7 @@ class ListingsController < ApplicationController
   def show
     @listing = Listing.includes(:access_rules).find(params[:id])
     unless Listing.visible_to(current_user).exists?(@listing.id)
-      redirect_to root_path, alert: "This listing is not available to you."
+      redirect_to home_path, alert: "This listing is not available to you."
     end
   end
 end

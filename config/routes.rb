@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   post "/account/signin" => "account#authenticate"
   get  "/account/2fa"    => "account#two_factor",       as: :signin_2fa
   post "/account/2fa"    => "account#verify_2fa"
-  delete "/account/signout" => "account#signout",        as: :account_signout
+  delete "/account/signout" => "account#signout",       as: :account_signout
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

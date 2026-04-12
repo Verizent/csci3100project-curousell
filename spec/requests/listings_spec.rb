@@ -128,7 +128,7 @@ RSpec.describe "Listings", type: :request do
 
       it "redirects a guest to the home page with an alert" do
         get listing_path(restricted)
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(home_path)
         follow_redirect!
         expect(response.body).to include("not available")
       end
@@ -138,7 +138,7 @@ RSpec.describe "Listings", type: :request do
           faculty: [ "Faculty of Arts" ], department: [ "Department of English" ])
         sign_in_as(other)
         get listing_path(restricted)
-        expect(response).to redirect_to(root_path)
+        expect(response).to redirect_to(home_path)
       end
     end
 
