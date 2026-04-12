@@ -2,27 +2,14 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-<<<<<<< HEAD
-  get "/orders"  => "orders#index",  as: :orders
-=======
->>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
-=======
-  get "/orders"  => "orders#index",  as: :orders
->>>>>>> Stashed changes
+  get "/orders"  => "placeholder#index",  as: :orders
   resources :listings, only: [ :index, :show, :new, :create ]
   resources :feedback, only: [ :create ]
 
   # Placeholder nav routes (pages to be built later)
   get "/chats"   => "placeholder#chats",   as: :chats
   get "/orders"  => "placeholder#orders",  as: :orders
-  get "/orders"  => "orders#index",  as: :orders
+  get "/orders"  => "placeholder#index",  as: :orders
   get "/profile" => "placeholder#profile", as: :profile
 
   # Chat routes
