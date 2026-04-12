@@ -136,6 +136,12 @@ class AccountController < ApplicationController
     redirect_to home_path, notice: "You have been signed out."
   end
 
+  # GET /profile
+  def profile
+    require_login
+    @user = current_user
+  end
+
   private
 
   def signup_params

@@ -7,7 +7,4 @@ class PlaceholderController < ApplicationController
     render plain: "Orders — coming soon", status: :ok
   end
 
-  def profile
-    render plain: "Profile — coming soon", status: :ok
-  end
 end
