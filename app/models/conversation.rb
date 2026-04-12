@@ -1,14 +1,14 @@
 class Conversation < ApplicationRecord
-  # our database for conversation is item-based, as such two different items sold by the same seller will make 
-  # two separate chats with the same buyer 
-   
+  # our database for conversation is item-based, as such two different items sold by the same seller will make
+  # two separate chats with the same buyer
+
   belongs_to :sender, class_name: "User"
   belongs_to :receiver, class_name: "User"
   belongs_to :listing
   has_many :messages, dependent: :destroy
 
   validate :unique_participant_pair_per_listing
-  #this ensure that every conversation is unique on the following attributes (buyer_id, seller_id, and item_id) 
+  # this ensure that every conversation is unique on the following attributes (buyer_id, seller_id, and item_id)
 
 
   # Get the other participant in the conversation
@@ -32,9 +32,9 @@ class Conversation < ApplicationRecord
   private
 
   # Prevent duplicate conversations for the same two users on the same item,
-  # regardless of sender/receiver direction. This is especially important when dealing with creating 
+  # regardless of sender/receiver direction. This is especially important when dealing with creating
   # new chats from "chat with seller" as during development it was found that the new chat for the same item gets created despite
-  # primary key enforcement 
+  # primary key enforcement
   def unique_participant_pair_per_listing
     return if sender_id.blank? || receiver_id.blank? || listing_id.blank?
 

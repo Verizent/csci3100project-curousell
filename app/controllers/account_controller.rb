@@ -104,7 +104,7 @@ class AccountController < ApplicationController
       )
       session[:user_token] = token
       # Also set a signed cookie for ActionCable/WebSocket connections
-      # this is needed for authenticating the user and showing appropriate chat subscriptions 
+      # this is needed for authenticating the user and showing appropriate chat subscriptions
       cookies.signed[:user_token] = {
         value: token,
         expires: ApplicationController::SESSION_EXPIRY.from_now,

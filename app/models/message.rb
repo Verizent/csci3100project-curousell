@@ -16,7 +16,7 @@ class Message < ApplicationRecord
         content: content,
         user_id: user_id,
         user_name: user.name,
-        created_at: created_at.strftime("%H:%M"),
+        created_at: created_at.in_time_zone("Asia/Hong_Kong").strftime("%H:%M"),
         conversation_id: conversation_id
       }
     )

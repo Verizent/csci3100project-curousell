@@ -1,12 +1,12 @@
 class ChatChannel < ApplicationCable::Channel
-  # Action cable implementation: 
-  # Subscription implies the user has a chat with some other user 
+  # Action cable implementation:
+  # Subscription implies the user has a chat with some other user
   # and the conversation_id is the id of the conversation between them
   # The channel will stream from "chat_#{conversation_id}" and broadcast messages to that stream
-  # 
-  #Speak action is when the user sends a message in the chat 
-  #There are constraints done such as only participants of the 
-  #conversation can join the chat/contribute to the chat (obviously, for the security reasons)
+  #
+  # Speak action is when the user sends a message in the chat
+  # There are constraints done such as only participants of the
+  # conversation can join the chat/contribute to the chat (obviously, for the security reasons)
   #
   #
   def subscribed

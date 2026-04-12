@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :current_user, :logged_in? 
+  helper_method :current_user, :logged_in?
 
   SESSION_EXPIRY = 8.hours
 

@@ -1,7 +1,7 @@
 <% content_for :title, "CUrousell — Chat" %>
 
-<div class="min-h-screen bg-gray-50 flex flex-col">
-  <div class="bg-white border-b border-gray-200 sticky top-0 z-10">
+<div class="h-[calc(100vh-4rem)] bg-gray-50 flex flex-col overflow-hidden">
+  <div class="bg-white border-b border-gray-200">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between py-4">
         <div class="flex items-center gap-3">
@@ -35,7 +35,7 @@
 
   <%# Messages Container %>
   <div class="flex-1 overflow-y-auto" id="messages-container" data-conversation-id="<%= @conversation.id %>">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div id="messages-list" class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <% @messages.each do |message| %>
           <% is_own = message.user == current_user %>
           <div class="flex <%= is_own ? 'justify-end' : 'justify-start' %> mb-4">
@@ -91,11 +91,12 @@
     },
     received(data) {
       console.log("Received:", data);
-      const container = document.getElementById('messages-container');
+      const scrollContainer = document.getElementById('messages-container');
+      const messagesList = document.getElementById('messages-list');
       const input = document.getElementById('message-input');
       const currentUserId = <%= current_user.id %>;
-      
-      if (container) {
+
+      if (messagesList) {
         // Create message HTML
         const isOwn = data.user_id == currentUserId;
         const messageHtml = `
@@ -107,10 +108,10 @@
             </div>
           </div>
         `;
-        
-        container.insertAdjacentHTML('beforeend', messageHtml);
-        container.scrollTop = container.scrollHeight;
-        
+
+        messagesList.insertAdjacentHTML('beforeend', messageHtml);
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+
         // Clear input only if it's our own message
         if (isOwn && input) {
           input.value = '';
