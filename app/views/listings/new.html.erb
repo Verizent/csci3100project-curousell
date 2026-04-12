@@ -70,19 +70,10 @@
                           focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
           </div>
           <p class="mt-1 text-xs text-gray-400">Enter 0 for a free item</p>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
           <label class="flex items-center gap-2 mt-2 text-sm text-gray-600 cursor-pointer">
             <%= form.check_box :negotiable, class: "rounded border-gray-300 text-cuhk-purple focus:ring-cuhk-purple" %>
             Price is negotiable
           </label>
-<<<<<<< HEAD
->>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
-=======
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
         </div>
 
         <div>
@@ -101,66 +92,6 @@
         <%= form.label :location, "Meeting Place", class: "block text-sm font-medium text-gray-700 mb-1" %>
         <%= form.text_field :location,
               placeholder: "e.g. CUHK Library, Chung Chi MTR station…",
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-              data: { action: "input->listing-form#previewLocation" },
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
-              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
-                      text-gray-900 placeholder-gray-400
-                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
-
-        <div class="mt-2 rounded-xl overflow-hidden border border-gray-100">
-          <div data-listing-form-target="mapPlaceholder"
-               class="flex items-center justify-center h-40 bg-gray-50 text-sm text-gray-400">
-            Map preview will appear here
-          </div>
-          <iframe data-listing-form-target="mapPreview"
-                  class="hidden w-full"
-                  height="220"
-                  style="border:0"
-                  loading="lazy"
-                  allowfullscreen
-                  referrerpolicy="no-referrer-when-downgrade"
-                  src="">
-          </iframe>
-        </div>
-      </div>
-
-      <%# Images %>
-      <div>
-        <p class="block text-sm font-medium text-gray-700 mb-1">Photos</p>
-
-        <%= form.file_field :images,
-              multiple: true,
-              accept: "image/jpeg,image/png,image/webp",
-              class: "sr-only",
-              data: {
-                listing_form_target: "fileInput",
-                action: "change->listing-form#addImages"
-              } %>
-
-        <div data-listing-form-target="preview"
-             class="hidden flex-wrap gap-3 mb-3">
-        </div>
-
-        <button type="button"
-                data-action="click->listing-form#openFilePicker"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300
-                       text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          Add Photos
-        </button>
-        <p class="mt-1 text-xs text-gray-400">Optional — JPEG, PNG or WebP only, up to 10 MB each.</p>
-      </div>
-
-      <%# Audience / Access Rules %>
-<<<<<<< HEAD
-      <div class="border border-gray-200 rounded-xl p-5 space-y-5"
-           data-controller="listing-form">
-=======
               data: { action: "input->listing-form#previewLocation" },
               class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
                       text-gray-900 placeholder-gray-400
@@ -214,10 +145,6 @@
 
       <%# Audience / Access Rules %>
       <div class="border border-gray-200 rounded-xl p-5 space-y-5">
->>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
-=======
-      <div class="border border-gray-200 rounded-xl p-5 space-y-5">
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
         <div>
           <p class="text-sm font-semibold text-gray-700">Restrict Audience <span class="font-normal text-gray-400">(optional)</span></p>
           <p class="text-xs text-gray-400 mt-0.5">Leave everything unchecked to make this listing visible to all CUHK members. Selecting a faculty with no departments means all departments under it can access.</p>
