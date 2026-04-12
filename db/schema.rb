@@ -12,6 +12,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
 =======
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
@@ -19,6 +20,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
 =======
 ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
 >>>>>>> 6d1301d74cd39b89b8ee1c86b8ba7d1920e1ad8d
+=======
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
+>>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -51,6 +55,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "conversations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "listing_id", null: false
+    t.bigint "receiver_id"
+    t.bigint "sender_id"
+    t.datetime "updated_at", null: false
+    t.index ["listing_id"], name: "index_conversations_on_listing_id"
+    t.index ["receiver_id"], name: "index_conversations_on_receiver_id"
+    t.index ["sender_id", "receiver_id", "listing_id"], name: "idx_on_sender_id_receiver_id_listing_id_b8539bcf80", unique: true
+    t.index ["sender_id", "receiver_id", "listing_id"], name: "index_conversations_on_sender_receiver_listing", unique: true
+    t.index ["sender_id"], name: "index_conversations_on_sender_id"
+  end
+
   create_table "listing_access_rules", force: :cascade do |t|
     t.string "colleges", default: [], null: false, array: true
     t.datetime "created_at", null: false
@@ -66,6 +83,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
     t.datetime "created_at", null: false
     t.text "description"
     t.string "location"
+    t.boolean "negotiable", default: false, null: false
     t.decimal "price", precision: 10, scale: 2, default: "0.0", null: false
     t.string "status", default: "unsold", null: false
     t.string "title"
@@ -77,6 +95,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
     t.index ["status"], name: "index_listings_on_status"
     t.index ["title"], name: "listings_title_trgm_idx", opclass: :gin_trgm_ops, using: :gin
     t.index ["user_id"], name: "index_listings_on_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.text "content"
+    t.bigint "conversation_id"
+    t.datetime "created_at", null: false
+    t.boolean "read", default: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["conversation_id"], name: "index_messages_on_conversation_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -96,6 +125,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "conversations", "listings"
+  add_foreign_key "conversations", "users", column: "receiver_id"
+  add_foreign_key "conversations", "users", column: "sender_id"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
   add_foreign_key "listing_access_rules", "listings"
   add_foreign_key "listings", "users"
 end
