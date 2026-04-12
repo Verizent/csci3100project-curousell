@@ -91,10 +91,6 @@ class AccountController < ApplicationController
   def verify_2fa
     @user = User.find_by(id: session[:pending_2fa_user_id])
 
-    unless @user
-      redirect_to account_signin_path, alert: "Session expired. Please log in again." and return
-    end
-
     if @user.otp_valid?(params[:otp_code]) # log in success
       session.delete(:pending_2fa_user_id)
       reset_session
@@ -104,14 +100,6 @@ class AccountController < ApplicationController
         expires_in: ApplicationController::SESSION_EXPIRY
       )
       session[:user_token] = token
-      # Also set a signed cookie for ActionCable/WebSocket connections
-      # this is needed for authenticating the user and showing appropriate chat subscriptions
-      cookies.signed[:user_token] = {
-        value: token,
-        expires: ApplicationController::SESSION_EXPIRY.from_now,
-        httponly: true,
-        same_site: :lax
-      }
       redirect_to root_path, notice: "Welcome back, #{@user.name}!"
     elsif @user.otp_sent_at < User::OTP_EXPIRY_MINUTES.minutes.ago
       session.delete(:pending_2fa_user_id)
@@ -132,10 +120,6 @@ class AccountController < ApplicationController
 
   def signout
     reset_session
-<<<<<<< HEAD
-    cookies.delete(:user_token)
-=======
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
     redirect_to home_path, notice: "You have been signed out."
   end
 
