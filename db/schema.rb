@@ -13,6 +13,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
 =======
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
@@ -23,6 +24,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
 =======
 ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
 >>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
+=======
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_080821) do
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"

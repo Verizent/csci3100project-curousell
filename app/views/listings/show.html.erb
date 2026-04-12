@@ -36,6 +36,7 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       <%# Image %>
       <div class="bg-gray-50 flex items-center justify-center min-h-72 md:min-h-96">
         <% if @listing.image.attached? %>
@@ -45,6 +46,8 @@
 =======
 =======
 >>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
+=======
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
       <%# Images %>
       <div class="bg-gray-50 flex flex-col items-center justify-center min-h-72 md:min-h-96"
            data-controller="listing-gallery">
@@ -68,9 +71,12 @@
             </div>
           <% end %>
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 0d3d52e20be76d8ca17664397d339a678223cbe1
 =======
 >>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
+=======
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
         <% else %>
           <div class="text-8xl">
             <%= category_icons[@listing.category] || "📦" %>
@@ -187,17 +193,23 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
+=======
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
         <% if current_user == @listing.user %>
           <div class="mt-5 block text-center bg-gray-100 text-gray-400 font-semibold py-3 rounded-xl cursor-not-allowed">
             This is your listing
           </div>
         <% elsif @listing.status == "unsold" %>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         <% if @listing.status == "unsold" %>
 >>>>>>> 0d3d52e20be76d8ca17664397d339a678223cbe1
+=======
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
           <%= link_to chats_path,
 =======
           <%= link_to new_chat_path(listing_id: @listing.id),

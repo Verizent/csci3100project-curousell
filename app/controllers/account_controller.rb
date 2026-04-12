@@ -132,7 +132,10 @@ class AccountController < ApplicationController
 
   def signout
     reset_session
+<<<<<<< HEAD
     cookies.delete(:user_token)
+=======
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
     redirect_to home_path, notice: "You have been signed out."
   end
 

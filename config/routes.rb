@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 <<<<<<< HEAD
   get "/orders"  => "orders#index",  as: :orders
@@ -9,6 +10,8 @@ Rails.application.routes.draw do
 >>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
   resources :listings, only: [ :index, :show, :new, :create ]
   resources :feedback, only: [ :create ]
 
@@ -40,7 +43,11 @@ Rails.application.routes.draw do
   post "/account/signin" => "account#authenticate"
   get  "/account/2fa"    => "account#two_factor",       as: :signin_2fa
   post "/account/2fa"    => "account#verify_2fa"
+<<<<<<< HEAD
   delete "/account/signout" => "account#signout",        as: :account_signout
+=======
+  delete "/account/signout" => "account#signout",       as: :account_signout
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
 
   get "up" => "rails/health#show", as: :rails_health_check
   mount ActionCable.server => "/cable"
