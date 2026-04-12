@@ -6,5 +6,4 @@ class PlaceholderController < ApplicationController
   def orders
     render plain: "Orders — coming soon", status: :ok
   end
-
 end
