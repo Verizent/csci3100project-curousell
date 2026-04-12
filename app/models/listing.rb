@@ -1,6 +1,21 @@
 class Listing < ApplicationRecord
   belongs_to :user
+<<<<<<< Updated upstream
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Stashed changes
+  has_one_attached :image
   has_many_attached :images
+  has_many_attached :images
+<<<<<<< Updated upstream
+>>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
+=======
+  has_many_attached :images
+>>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
+=======
+>>>>>>> Stashed changes
   has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
   accepts_nested_attributes_for :access_rules,
     allow_destroy: true,
@@ -72,19 +87,48 @@ class Listing < ApplicationRecord
       "Department of Physics",
       "Department of Statistics"
     ],
-    "Faculty of Social Science" => [
+    "Faculty of Social Sciences" => [
       "Department of Economics",
       "Department of Government and Public Administration",
       "Department of Psychology",
       "Department of Social Work",
       "Department of Sociology"
+    ],
+    "Zhizhen School of Interdisciplinary Mathematical Sciences" => [
+      "Zhizhen School of Interdisciplinary Mathematical Sciences"
+    ],
+    "Other Academic Units" => [
+      "Postgraduate",
+      "Teacher/Lecturer",
+      "Researcher",
+      "Staff",
+      "Other"
     ]
   }.freeze
+
+  VALID_FACULTIES    = FACULTY_DEPARTMENTS.keys.freeze
+  VALID_DEPARTMENTS  = FACULTY_DEPARTMENTS.values.flatten.freeze
 
   validates :title,    presence: true, length: { maximum: 100 }
   validates :price,    presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :category, inclusion: { in: CATEGORIES }
   validates :status,   inclusion: { in: STATUSES }
+  validate  :faculty_values_are_valid
+  validate  :department_values_are_valid
+
+  private
+
+  def faculty_values_are_valid
+    invalid = faculty.reject { |f| VALID_FACULTIES.include?(f) }
+    errors.add(:faculty, "contains invalid values: #{invalid.join(', ')}") if invalid.any?
+  end
+
+  def department_values_are_valid
+    invalid = department.reject { |d| VALID_DEPARTMENTS.include?(d) }
+    errors.add(:department, "contains invalid values: #{invalid.join(', ')}") if invalid.any?
+  end
+
+  public
 
   scope :by_category, ->(cat) { where(category: cat) if cat.present? }
   scope :by_status,   ->(s)   { where(status: s) if s.present? }
