@@ -4,6 +4,7 @@
 puts "Seeding..."
 
 # Clear existing data so re-runs start clean
+ListingAccessRule.delete_all
 Listing.delete_all
 User.delete_all
 
@@ -21,6 +22,17 @@ SEED_NAMES = [
 
 # ── Seed users ───────────────────────────────────────────────────────────────
 name_pool = SEED_NAMES.dup
+
+User.find_or_create_by!(email: "hiadmin@link.cuhk.edu.hk") do |u|
+  u.name = "Admin"
+  u.email = "hiadmin@link.cuhk.edu.hk"
+  u.password = "adminpassword123"
+  u.college = "United College"
+  u.faculty = [ "Engineering" ]
+  u.department = [ "Computer Science and Engineering" ]
+  u.verified_at = Time.current
+end
+
 users = COLLEGES.flat_map do |college|
   2.times.map do |i|
     slug  = college.downcase.gsub(/[^a-z0-9]/, "")

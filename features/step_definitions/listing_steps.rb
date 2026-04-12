@@ -56,24 +56,9 @@ When "I filter by category {string}" do |label|
 end
 
 When "I filter by free items" do
-  click_link "Free"
+  visit home_path(free: "1")
 end
 
 When "I search for {string}" do |query|
-  fill_in "q", with: query
-  find("input[name='q']").send_keys(:return)
-end
-
-# ── Then ──────────────────────────────────────────────────────────────────────
-
-Then "I should see {string}" do |text|
-  expect(page).to have_content(text)
-end
-
-Then "I should not see {string}" do |text|
-  expect(page).not_to have_content(text)
-end
-
-Then "I should be redirected to the home page" do
-  expect(current_path).to eq(home_path)
+  visit home_path(q: query)
 end

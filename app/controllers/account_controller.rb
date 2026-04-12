@@ -69,6 +69,7 @@ class AccountController < ApplicationController
     end
 
     unless @user.verified?
+      session[:pending_user_id] = @user.id
       redirect_to signup_verify_path, alert: "Your email is not verified. Please check your inbox and try again." and return
     end
 
@@ -90,7 +91,11 @@ class AccountController < ApplicationController
   def verify_2fa
     @user = User.find_by(id: session[:pending_2fa_user_id])
 
-    if @user.otp_valid?(params[:otp_code])
+    unless @user
+      redirect_to account_signin_path, alert: "Session expired. Please log in again." and return
+    end
+
+    if @user.otp_valid?(params[:otp_code]) # log in success
       session.delete(:pending_2fa_user_id)
       reset_session
       # generate token
@@ -119,7 +124,7 @@ class AccountController < ApplicationController
 
   def signout
     reset_session
-    redirect_to root_path, notice: "You have been signed out."
+    redirect_to home_path, notice: "You have been signed out."
   end
 
   private

@@ -11,10 +11,14 @@
 # It's strongly recommended that you check this file into your version control system.
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_112023) do
 =======
 ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
 >>>>>>> 9774978a7dd147065d2cee03b5e0ad87716e0744
+=======
+ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
+>>>>>>> 6d1301d74cd39b89b8ee1c86b8ba7d1920e1ad8d
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -60,9 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_11_184331) do
   create_table "listings", force: :cascade do |t|
     t.string "category", default: "miscellaneous", null: false
     t.datetime "created_at", null: false
-    t.string "department", default: [], array: true
     t.text "description"
-    t.string "faculty", default: [], array: true
     t.string "location"
     t.decimal "price", precision: 10, scale: 2, default: "0.0", null: false
     t.string "status", default: "unsold", null: false

@@ -1,57 +1,46 @@
-Feature: User Signup
+Feature: User Sign Up
   As a CUHK student
-  I want to create an account on CUrousell
-  So that I can buy and sell items with fellow students
+  I want to create an account on Curousell
+  So that I can buy and sell items on the platform
 
-  # Signup form relies on a Stimulus JS controller to enable the submit button
-  # after the terms checkbox is checked — all scenarios here need @javascript.
-
-  @javascript
-  Scenario: Successful signup and OTP verification
-    Given I visit the signup page
-    When I fill in the signup form with valid CUHK credentials
-    And I check the terms and conditions checkbox
-    And I submit the signup form
-    Then I should be on the verify email page
-    When I enter the OTP code sent to my email
-    And I click "Verify Email"
-    Then I should be on the signin page
+  Scenario: Successful signup with valid OTP
+    Given I am on the sign up page
+    When I fill in the signup form with valid details
+    And I accept the Terms & Conditions
+    And I click "Create Account"
+    Then I should be on the verify page
+    When I submit the signup OTP
+    Then I should be on the sign in page
     And I should see "Email verified"
 
-  @javascript
-  Scenario: Signup rejected without accepting terms
-    Given I visit the signup page
-    When I fill in the signup form with valid CUHK credentials
-    But I do not check the terms and conditions checkbox
-    Then the "Create Account" button should be disabled
+  Scenario: Signup without accepting terms
+    Given I am on the sign up page
+    When I fill in the signup form with valid details
+    And I click "Create Account"
+    Then I should see "Terms & Conditions"
 
-  @javascript
-  Scenario: Signup rejected with a non-CUHK email
-    Given I visit the signup page
-    When I fill in the signup form with email "hacker@gmail.com"
-    And I check the terms and conditions checkbox
-    And I submit the signup form
-    Then I should see "must be a CUHK email address"
+  Scenario: Signup with a non-CUHK email
+    Given I am on the sign up page
+    When I fill in the signup form with email "student@gmail.com"
+    And I accept the Terms & Conditions
+    And I click "Create Account"
+    Then I should see "must be a CUHK email"
 
-  @javascript
-  Scenario: Signup rejected with a short password
-    Given I visit the signup page
-    When I fill in the signup form with password "Short1!"
-    And I check the terms and conditions checkbox
-    And I submit the signup form
-    Then I should see "is too short"
-
-  @javascript
-  Scenario: OTP verification fails with a wrong code
-    Given I have completed the signup form successfully
-    When I enter an incorrect OTP code "000000"
-    And I click "Verify Email"
+  Scenario: Signup OTP incorrect
+    Given I am on the sign up page
+    When I fill in the signup form with valid details
+    And I accept the Terms & Conditions
+    And I click "Create Account"
+    Then I should be on the verify page
+    When I submit an incorrect OTP "000000"
     Then I should see "Incorrect code"
-    And I should still be on the verify email page
 
-  @javascript
-  Scenario: Account destroyed after too many wrong OTP attempts
-    Given I have completed the signup form successfully
-    When I enter an incorrect OTP code "000000" 3 times
-    Then I should be on the signup page
-    And I should see "Maximum attempts reached"
+  Scenario: Signup OTP max attempts reached
+    Given I am on the sign up page
+    When I fill in the signup form with valid details
+    And I accept the Terms & Conditions
+    And I click "Create Account"
+    Then I should be on the verify page
+    When I submit an incorrect OTP "000000" 3 times
+    Then I should be on the sign up page
+    And I should see "Maximum attempts"

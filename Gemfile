@@ -67,6 +67,9 @@ group :development, :test do
 
   # Fake data generation
   gem "faker"
+
+  # Restores assigns() and assert_template() for controller specs
+  gem "rails-controller-testing"
 end
 
 group :development do
@@ -88,4 +91,7 @@ group :test do
 
   # BDD feature testing
   gem "cucumber-rails", require: false
+
+  # Coverage Report
+  gem "simplecov", require: false
 end
