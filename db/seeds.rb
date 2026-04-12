@@ -4,6 +4,7 @@
 puts "Seeding..."
 
 # Clear existing data so re-runs start clean
+ListingAccessRule.delete_all
 Listing.delete_all
 User.delete_all
 
