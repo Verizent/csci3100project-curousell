@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
 
   def require_login
     unless logged_in?
-      redirect_to account_login_path, alert: "Please log in to continue."
+      redirect_to account_signin_path, alert: "Please log in to continue."
     end
   end
 end

@@ -19,7 +19,7 @@ class ListingsController < ApplicationController
 
   def show
     @listing = Listing.find(params[:id])
-    unless Listing.visible_to(current_user).exists?(@listing.id)
+    unless @listing.user == current_user || Listing.visible_to(current_user).exists?(@listing.id)
       redirect_to root_path, alert: "This listing is not available to you."
     end
   end

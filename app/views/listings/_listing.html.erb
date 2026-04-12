@@ -18,7 +18,7 @@
     "miscellaneous" => "📦"
   }
 %>
-<%= link_to listing_path(listing), class: "block group" do %>
+<%= link_to listing_path(listing), data: { turbo_frame: "_top" }, class: "block group" do %>
   <div class="bg-white rounded-2xl shadow-sm border border-gray-100
               hover:shadow-md hover:border-cuhk-gold transition-all duration-200
               overflow-hidden flex flex-col h-full">
