@@ -42,6 +42,11 @@ class ListingsController < ApplicationController
     end
   end
 
+  def new
+    @listing = Listing.new
+    @listing.access_rules.build
+  end
+
   def edit
     @listing = Listing.find(params[:id])
     unless @listing.user == current_user
