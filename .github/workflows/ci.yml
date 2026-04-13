@@ -229,7 +229,7 @@ jobs:
       - name: Set up test database
         env:
           RAILS_ENV: test
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/curousell_test
         run: bin/rails db:test:prepare
 
       - name: Compile Tailwind CSS
