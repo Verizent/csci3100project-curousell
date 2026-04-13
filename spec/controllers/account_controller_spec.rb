@@ -216,6 +216,43 @@ RSpec.describe AccountController, type: :controller do
   end
 
   # ---------------------------------------------------------------------------
+  # GET /profile
+  # ---------------------------------------------------------------------------
+  describe 'GET #profile' do
+    context 'when logged in' do
+      before do
+        token = Rails.application.message_verifier(:user_session).generate(
+          { "user_id" => verified_user.id },
+          expires_in: ApplicationController::SESSION_EXPIRY
+        )
+        session[:user_token] = token
+      end
+
+      it 'returns http success' do
+        get :profile
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'assigns current_user to @user' do
+        get :profile
+        expect(assigns(:user)).to eq(verified_user)
+      end
+    end
+
+    context 'when not logged in' do
+      it 'redirects to the sign-in page' do
+        get :profile
+        expect(response).to redirect_to(account_signin_path)
+      end
+
+      it 'sets an alert flash message' do
+        get :profile
+        expect(flash[:alert]).to match(/Please log in/i)
+      end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   # GET /account/signin
   # ---------------------------------------------------------------------------
   describe 'GET #signin' do

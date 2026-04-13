@@ -291,6 +291,55 @@ RSpec.describe "Account", type: :request do
   end
 
   # ---------------------------------------------------------------------------
+  # Profile page
+  # ---------------------------------------------------------------------------
+
+  describe "GET /profile" do
+    context "when logged in" do
+      let!(:user) { create(:user) }
+
+      before { sign_in_as(user) }
+
+      it "returns 200" do
+        get profile_path
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "displays the user's name" do
+        get profile_path
+        expect(response.body).to include(user.name)
+      end
+
+      it "displays the user's email" do
+        get profile_path
+        expect(response.body).to include(user.email)
+      end
+
+      it "displays the user's college" do
+        get profile_path
+        expect(response.body).to include(user.college)
+      end
+
+      it "displays the user's faculty" do
+        get profile_path
+        user.faculty.each { |f| expect(response.body).to include(f) }
+      end
+
+      it "displays the user's department" do
+        get profile_path
+        user.department.each { |d| expect(response.body).to include(d) }
+      end
+    end
+
+    context "when not logged in" do
+      it "redirects to the sign-in page" do
+        get profile_path
+        expect(response).to redirect_to(account_signin_path)
+      end
+    end
+  end
+
+  # ---------------------------------------------------------------------------
   # Signout
   # ---------------------------------------------------------------------------
 
