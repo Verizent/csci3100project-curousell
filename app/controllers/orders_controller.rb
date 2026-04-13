@@ -5,6 +5,7 @@ class OrdersController < ApplicationController
     Order.cancel_expired!
     @bought_orders = current_user.purchases.includes(:listing, :seller).order(created_at: :desc)
     @sold_orders = current_user.sales.includes(:listing, :buyer).order(created_at: :desc)
+    @my_listings = Listing.where(user_id: current_user.id).includes({ images_attachments: :blob }, orders: :buyer).order(created_at: :desc)
   end
 
   def confirm
