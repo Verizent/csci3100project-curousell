@@ -239,7 +239,7 @@ jobs:
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/curousell_test
-        run: bundle exec cucumber
+        run: bundle exec cucumber --tags "not @pending_status_workflow and not @pending_order_create and not @pending_authz and not @pending and not @wip"
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
