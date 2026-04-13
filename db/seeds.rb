@@ -322,4 +322,260 @@ Order.create!(
 )
 
 puts "  Orders seeded"
+
+# Add explicit pending orders for different confirmation states
+Order.create!(
+  listing: listings[20],
+  buyer: users[0],
+  seller: listings[20].user,
+  status: 'pending',
+  price_at_purchase: listings[20].price,
+  purchased_at: 10.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[21],
+  buyer: users[0],
+  seller: listings[21].user,
+  status: 'pending',
+  price_at_purchase: listings[21].price,
+  purchased_at: 9.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[22],
+  buyer: users[0],
+  seller: listings[22].user,
+  status: 'pending',
+  price_at_purchase: listings[22].price,
+  purchased_at: 8.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[23],
+  buyer: users[0],
+  seller: listings[23].user,
+  status: 'pending',
+  price_at_purchase: listings[23].price,
+  purchased_at: 7.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[24],
+  buyer: users[0],
+  seller: listings[24].user,
+  status: 'pending',
+  price_at_purchase: listings[24].price,
+  purchased_at: 6.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[25],
+  buyer: users[0],
+  seller: listings[25].user,
+  status: 'pending',
+  price_at_purchase: listings[25].price,
+  purchased_at: 5.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[26],
+  buyer: users[0],
+  seller: listings[26].user,
+  status: 'pending',
+  price_at_purchase: listings[26].price,
+  purchased_at: 4.days.ago,
+  buyer_confirmed_at: nil,
+  seller_confirmed_at: Time.current,
+  notes: "Pending order not confirmed by buyer"
+)
+
+Order.create!(
+  listing: listings[27],
+  buyer: users[0],
+  seller: listings[27].user,
+  status: 'pending',
+  price_at_purchase: listings[27].price,
+  purchased_at: 10.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[28],
+  buyer: users[0],
+  seller: listings[28].user,
+  status: 'pending',
+  price_at_purchase: listings[28].price,
+  purchased_at: 9.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[29],
+  buyer: users[0],
+  seller: listings[29].user,
+  status: 'pending',
+  price_at_purchase: listings[29].price,
+  purchased_at: 8.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[30],
+  buyer: users[0],
+  seller: listings[30].user,
+  status: 'pending',
+  price_at_purchase: listings[30].price,
+  purchased_at: 7.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[31],
+  buyer: users[0],
+  seller: listings[31].user,
+  status: 'pending',
+  price_at_purchase: listings[31].price,
+  purchased_at: 6.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[32],
+  buyer: users[0],
+  seller: listings[32].user,
+  status: 'pending',
+  price_at_purchase: listings[32].price,
+  purchased_at: 5.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[33],
+  buyer: users[0],
+  seller: listings[33].user,
+  status: 'pending',
+  price_at_purchase: listings[33].price,
+  purchased_at: 4.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: nil,
+  notes: "Pending order not confirmed by seller"
+)
+
+Order.create!(
+  listing: listings[34],
+  buyer: users[0],
+  seller: listings[34].user,
+  status: 'completed',
+  price_at_purchase: listings[34].price,
+  purchased_at: 10.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: Time.current,
+  completed_at: 3.days.ago,
+  notes: "Completed order with both confirmations"
+)
+
+Order.create!(
+  listing: listings[35],
+  buyer: users[0],
+  seller: listings[35].user,
+  status: 'completed',
+  price_at_purchase: listings[35].price,
+  purchased_at: 9.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: Time.current,
+  completed_at: 2.days.ago,
+  notes: "Completed order with both confirmations"
+)
+
+Order.create!(
+  listing: listings[36],
+  buyer: users[1],
+  seller: listings[36].user,
+  status: 'completed',
+  price_at_purchase: listings[36].price,
+  purchased_at: 8.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: Time.current,
+  completed_at: 1.day.ago,
+  notes: "Completed order with both confirmations"
+)
+
+Order.create!(
+  listing: listings[37],
+  buyer: users[2],
+  seller: listings[37].user,
+  status: 'completed',
+  price_at_purchase: listings[37].price,
+  purchased_at: 7.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: Time.current,
+  completed_at: 2.days.ago,
+  notes: "Completed order with both confirmations"
+)
+
+Order.create!(
+  listing: listings[38],
+  buyer: users[1],
+  seller: listings[38].user,
+  status: 'completed',
+  price_at_purchase: listings[38].price,
+  purchased_at: 6.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: Time.current,
+  completed_at: 3.days.ago,
+  notes: "Completed order with both confirmations"
+)
+
+Order.create!(
+  listing: listings[39],
+  buyer: users[1],
+  seller: listings[39].user,
+  status: 'completed',
+  price_at_purchase: listings[39].price,
+  purchased_at: 5.days.ago,
+  buyer_confirmed_at: Time.current,
+  seller_confirmed_at: Time.current,
+  completed_at: 4.days.ago,
+  notes: "Completed order with both confirmations"
+)
+
+# Update listing statuses based on orders
+Order.all.each do |order|
+  if order.status == 'completed'
+    order.listing.update(status: 'sold')
+  elsif order.status == 'pending'
+    order.listing.update(status: 'in_process')
+  end
+end
 puts "Done."

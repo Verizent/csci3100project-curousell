@@ -12,9 +12,30 @@ class Order < ApplicationRecord
   scope :pending, -> { where(status: "pending") }
 
   before_validation :set_price_at_purchase, on: :create
+  after_create :mark_listing_in_process
 
   def set_price_at_purchase
     self.price_at_purchase = listing.price if price_at_purchase.nil?
+  end
+
+  def mark_listing_in_process
+    listing.update(status: "in_process")
+  end
+
+  def buyer_confirm!
+    update(buyer_confirmed_at: Time.current)
+    complete_if_both_confirmed
+  end
+
+  def seller_confirm!
+    update(seller_confirmed_at: Time.current)
+    complete_if_both_confirmed
+  end
+
+  def complete_if_both_confirmed
+    if buyer_confirmed_at.present? && seller_confirmed_at.present?
+      complete!
+    end
   end
 
   def complete!
@@ -24,6 +45,9 @@ class Order < ApplicationRecord
 
   def cancel!
     update(status: "cancelled")
-    listing.update(status: "unsold") if listing.status == "in_process"
+    # Change 'available' to 'unsold', and 'pending' to 'in_process'
+    if listing.status == "in_process"
+      listing.update(status: "unsold")
+    end
   end
 end

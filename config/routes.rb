@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :listings, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :feedback, only: [ :create ]
   get "/orders"  => "orders#index",  as: :orders
+  post "/orders/:id/confirm" => "orders#confirm", as: :confirm_order
 
   # Placeholder nav routes (pages to be built later)
   get "/chats"   => "placeholder#chats",   as: :chats

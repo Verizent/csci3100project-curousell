@@ -9,7 +9,7 @@ class ListingsController < ApplicationController
 
     restricted_sql = "EXISTS (SELECT 1 FROM listing_access_rules WHERE listing_id = listings.id)"
 
-    @listings = Listing.includes(:access_rules).search(@query).visible_to(current_user)
+    @listings = Listing.includes(:access_rules).search(@query).visible_to(current_user).where(status: "unsold")
     @listings = @listings.where(category: @filter_categories)                          if @filter_categories.any?
     @listings = @listings.where(price: 0)                                              if @filter_free
     @listings = @listings.where("price <= ?", @filter_max_price.to_i)                 if @filter_max_price

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_083316) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -97,6 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
   end
 
   create_table "orders", force: :cascade do |t|
+    t.datetime "buyer_confirmed_at"
     t.integer "buyer_id", null: false
     t.datetime "completed_at"
     t.datetime "created_at", null: false
@@ -104,6 +105,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_12_053442) do
     t.text "notes"
     t.decimal "price_at_purchase", precision: 10, scale: 2
     t.datetime "purchased_at"
+    t.datetime "seller_confirmed_at"
     t.integer "seller_id", null: false
     t.string "status", default: "pending"
     t.datetime "updated_at", null: false
