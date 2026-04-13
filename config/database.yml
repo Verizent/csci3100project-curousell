@@ -32,7 +32,6 @@ development:
 
   # The password associated with the PostgreSQL role (username).
   #password:
-  username: kantambp
 
   # The password associated with the PostgreSQL role (username).
 

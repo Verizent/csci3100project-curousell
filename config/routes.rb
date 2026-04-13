@@ -4,11 +4,13 @@ Rails.application.routes.draw do
   get "/home" => "listings#index", as: :home
   resources :listings, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :feedback, only: [ :create ]
-  get "/orders"  => "orders#index",  as: :orders
-  post "/orders/:id/confirm" => "orders#confirm", as: :confirm_order
+  resources :orders, only: [ :index ] do
+    member do
+      post :confirm
+    end
+  end
 
   # Placeholder nav routes (pages to be built later)
-  get "/chats"   => "placeholder#chats",   as: :chats
   get "/profile" => "placeholder#profile", as: :profile
 
   # Chat routes

@@ -7,9 +7,10 @@ class Order < ApplicationRecord
   validates :price_at_purchase, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   scope :bought_by, ->(user) { where(buyer_id: user.id) }
-  scope :sold_by, ->(user) { where(seller_id: user.id) }
+  scope :sold_by,   ->(user) { where(seller_id: user.id) }
   scope :completed, -> { where(status: "completed") }
-  scope :pending, -> { where(status: "pending") }
+  scope :pending,   -> { where(status: "pending") }
+  scope :expired,   -> { pending.where("purchased_at < ?", 2.weeks.ago) }
 
   before_validation :set_price_at_purchase, on: :create
   after_create :mark_listing_in_process
@@ -43,11 +44,22 @@ class Order < ApplicationRecord
     listing.update(status: "sold")
   end
 
+  def confirmed_by?(user)
+    if user == buyer
+      buyer_confirmed_at.present?
+    elsif user == seller
+      seller_confirmed_at.present?
+    else
+      false
+    end
+  end
+
   def cancel!
     update(status: "cancelled")
-    # Change 'available' to 'unsold', and 'pending' to 'in_process'
-    if listing.status == "in_process"
-      listing.update(status: "unsold")
-    end
+    listing.update(status: "unsold") if listing.status == "in_process"
+  end
+
+  def self.cancel_expired!
+    expired.includes(:listing).find_each { |order| order.cancel! }
   end
 end

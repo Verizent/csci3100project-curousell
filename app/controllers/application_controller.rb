@@ -30,4 +30,6 @@ class ApplicationController < ActionController::Base
       redirect_to account_signin_path, alert: "Please log in to continue."
     end
   end
+
+  alias_method :authenticate_user!, :require_login
 end
