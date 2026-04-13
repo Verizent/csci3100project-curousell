@@ -43,14 +43,20 @@ class ListingsController < ApplicationController
   def edit
     @listing = Listing.find(params[:id])
     unless @listing.user == current_user
-      redirect_to home_path, alert: "You can only edit your own listings."
+      redirect_to home_path, alert: "You can only edit your own listings." and return
+    end
+    if @listing.status != "unsold"
+      redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed."
     end
   end
 
   def update
     @listing = Listing.find(params[:id])
     unless @listing.user == current_user
-      redirect_to home_path, alert: "You can only edit your own listings."
+      redirect_to home_path, alert: "You can only edit your own listings." and return
+    end
+    if @listing.status != "unsold"
+      redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed." and return
     end
 
     if @listing.update(listing_params)
