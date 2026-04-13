@@ -1,4 +1,6 @@
 class ListingsController < ApplicationController
+  before_action :require_login, only: [ :edit, :update ]
+
   def index
     @query                = params[:q]
     @filter_categories    = Array(params[:categories]).select { |c| Listing::CATEGORIES.include?(c) }
@@ -35,7 +37,7 @@ class ListingsController < ApplicationController
     if @listing.status != "unsold"
       active_order = @listing.orders.find_by("status != ?", "cancelled")
       unless active_order&.buyer_id == current_user&.id
-        redirect_to home_path, alert: "This listing is not available to you."
+        redirect_to home_path, alert: "This listing is not available to you." and return
       end
     end
   end
@@ -46,7 +48,7 @@ class ListingsController < ApplicationController
       redirect_to home_path, alert: "You can only edit your own listings." and return
     end
     if @listing.status != "unsold"
-      redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed."
+      redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed." and return
     end
   end
 
