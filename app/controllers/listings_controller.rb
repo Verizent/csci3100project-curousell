@@ -1,5 +1,6 @@
 class ListingsController < ApplicationController
-  before_action :require_login, only: [ :edit, :update ]
+  before_action :require_login, only: [ :new, :create, :edit, :update ]
+  
 
   def index
     @query                = params[:q]
@@ -47,6 +48,17 @@ class ListingsController < ApplicationController
     @listing.access_rules.build
   end
 
+  def create
+    @listing = Listing.new(listing_params)
+    @listing.user = current_user
+
+    if @listing.save
+      redirect_to @listing, notice: "Your listing is live!"     # redirect to /listings/:id
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def edit
     @listing = Listing.find(params[:id])
     unless @listing.user == current_user
@@ -76,6 +88,14 @@ class ListingsController < ApplicationController
   private
 
   def listing_params
-    params.require(:listing).permit(:title, :description, :price, :category, :location, images: [])
+    params.require(:listing).permit(
+      :title,
+      :description,
+      :price,
+      :category,
+      :location,
+      images: [],
+      access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ]
+    )
   end
 end

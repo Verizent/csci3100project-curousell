@@ -1,11 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
   static targets = ["mapPreview", "mapPlaceholder", "fileInput", "preview"]
   static values  = { apiKey: String }
 
@@ -101,10 +96,6 @@ export default class extends Controller {
     }, 600)
   }
 
-<<<<<<< HEAD
->>>>>>> 1df9ea645d254d9b8ca0ef1e469ee1494a684064
-=======
->>>>>>> 4cffdff3ed511338a31b6cd16fe96cded9b70358
   toggleFaculty(event) {
     const faculty = event.target.value
     const section = this.element.querySelector(`[data-faculty-section="${CSS.escape(faculty)}"]`)
