@@ -56,9 +56,6 @@ class OrdersController < ApplicationController
       if order.status == "delivered"
         order.receive!
         redirect_to orders_path, notice: "Receipt recorded."
-      elsif order.status == "pending" && order.seller_confirmed_at.present?
-        order.buyer_confirm!
-        redirect_to orders_path, notice: "Receipt recorded."
       else
         redirect_to orders_path, alert: "This order is not ready to be marked as received." and return
       end
