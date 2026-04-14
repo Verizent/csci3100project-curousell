@@ -40,18 +40,14 @@ RSpec.describe "Orders", type: :request do
   end
 
   describe "POST /orders/:id/confirm" do
-    before do
-      order.define_singleton_method(:confirmed_by?) do |user|
-        user.id == buyer_id ? buyer_confirmed_at.present? : seller_confirmed_at.present?
-      end
-    end
-
     it "allows seller to mark as delivered (seller confirmation stage)" do
       sign_in_as(seller)
 
       expect {
         post confirm_order_path(order)
-      }.to change { order.reload.seller_confirmed_at }.from(nil)
+      }.to change { order.reload.status }.from("pending").to("delivered")
+
+      expect(order.reload.seller_confirmed_at).to be_present
 
       expect(response).to redirect_to(orders_path)
     end
@@ -66,14 +62,15 @@ RSpec.describe "Orders", type: :request do
       expect(flash[:alert]).to match(/not authorized/i)
     end
 
-    it "completes order when buyer confirms after seller" do
-      order.update!(seller_confirmed_at: Time.current)
+    it "marks order as received when buyer confirms after seller delivery" do
+      order.deliver!
       sign_in_as(buyer)
 
       post confirm_order_path(order)
 
-      expect(order.reload.status).to eq("completed")
-      expect(order.listing.reload.status).to eq("sold")
+      expect(order.reload.status).to eq("received")
+      expect(order.buyer_confirmed_at).to be_present
+      expect(order.listing.reload.status).to eq("in_process")
       expect(response).to redirect_to(orders_path)
     end
 
@@ -85,6 +82,16 @@ RSpec.describe "Orders", type: :request do
 
       expect(response).to redirect_to(orders_path)
       expect(flash[:alert]).to match(/no longer pending/i)
+    end
+
+    it "rejects buyer confirmation before seller delivery" do
+      sign_in_as(buyer)
+
+      post confirm_order_path(order)
+
+      expect(order.reload.status).to eq("pending")
+      expect(response).to redirect_to(orders_path)
+      expect(flash[:alert]).to match(/not ready to be marked as received/i)
     end
   end
 

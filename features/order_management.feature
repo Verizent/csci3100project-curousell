@@ -7,7 +7,6 @@ Feature: Order management lifecycle
     Given a verified user exists with email "order_seller@link.cuhk.edu.hk" and password "SecurePassword123!" and college "Shaw College"
     And a verified user exists with email "order_buyer@link.cuhk.edu.hk" and password "SecurePassword123!" and college "United College"
 
-  @pending_status_workflow
   Scenario: Seller marks pending order as delivered
     Given a seller has a listing for sale
     And a buyer has purchased that listing
@@ -16,7 +15,6 @@ Feature: Order management lifecycle
     Then the order status should be "delivered"
     And the buyer should see the order as delivered
 
-  @pending_status_workflow
   Scenario: Buyer marks delivered order as received
     Given a seller has a listing for sale
     And a buyer has purchased that listing

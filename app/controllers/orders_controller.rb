@@ -11,26 +11,24 @@ class OrdersController < ApplicationController
   def confirm
     order = Order.find(params[:id])
 
-    if order.status != "pending"
-      redirect_to orders_path, alert: "This order is no longer pending." and return
-    end
-
-    if order.confirmed_by?(current_user)
-      redirect_to orders_path, alert: "You have already confirmed this order." and return
-    end
-
-    if order.buyer == current_user
-      order.buyer_confirm!
-    elsif order.seller == current_user
-      order.seller_confirm!
-    else
+    unless [ order.buyer, order.seller ].include?(current_user)
       redirect_to orders_path, alert: "You are not authorized to confirm this order." and return
     end
 
-    if order.reload.status == "completed"
-      redirect_to orders_path, notice: "Transaction complete! Both parties have confirmed."
+    if order.seller == current_user
+      if order.status != "pending"
+        redirect_to orders_path, alert: "This order is no longer pending." and return
+      end
+
+      order.deliver!
+      redirect_to orders_path, notice: "Delivery recorded. Waiting for buyer to confirm receipt."
     else
-      redirect_to orders_path, notice: "Confirmation recorded. Waiting for the other party."
+      if order.status != "delivered"
+        redirect_to orders_path, alert: "This order is not ready to be marked as received." and return
+      end
+
+      order.receive!
+      redirect_to orders_path, notice: "Receipt recorded."
     end
   end
 end

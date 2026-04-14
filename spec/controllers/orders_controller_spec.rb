@@ -38,10 +38,8 @@ RSpec.describe OrdersController, type: :controller do
 
     before do
       allow(Order).to receive(:find).with(order.id.to_s).and_return(order)
-      allow(order).to receive(:reload).and_return(order)
-      allow(order).to receive(:confirmed_by?).and_return(false)
-      allow(order).to receive(:buyer_confirm!)
-      allow(order).to receive(:seller_confirm!)
+      allow(order).to receive(:deliver!)
+      allow(order).to receive(:receive!)
     end
 
     it "allows seller to record delivery confirmation" do
@@ -49,17 +47,18 @@ RSpec.describe OrdersController, type: :controller do
 
       post :confirm, params: { id: order.id }
 
-      expect(order).to have_received(:seller_confirm!)
+      expect(order).to have_received(:deliver!)
       expect(response).to redirect_to(orders_path)
-      expect(flash[:notice]).to match(/Confirmation recorded/i)
+      expect(flash[:notice]).to match(/Delivery recorded/i)
     end
 
     it "allows buyer to record receipt confirmation" do
       stub_current_user(buyer)
+      allow(order).to receive(:status).and_return("delivered")
 
       post :confirm, params: { id: order.id }
 
-      expect(order).to have_received(:buyer_confirm!)
+      expect(order).to have_received(:receive!)
       expect(response).to redirect_to(orders_path)
     end
 
@@ -72,16 +71,6 @@ RSpec.describe OrdersController, type: :controller do
       expect(flash[:alert]).to match(/not authorized/i)
     end
 
-    it "rejects already confirmed users" do
-      stub_current_user(seller)
-      allow(order).to receive(:confirmed_by?).with(seller).and_return(true)
-
-      post :confirm, params: { id: order.id }
-
-      expect(response).to redirect_to(orders_path)
-      expect(flash[:alert]).to match(/already confirmed/i)
-    end
-
     it "rejects non-pending orders" do
       stub_current_user(seller)
       allow(order).to receive(:status).and_return("completed")
@@ -90,6 +79,15 @@ RSpec.describe OrdersController, type: :controller do
 
       expect(response).to redirect_to(orders_path)
       expect(flash[:alert]).to match(/no longer pending/i)
+    end
+
+    it "rejects buyer receipt before delivery" do
+      stub_current_user(buyer)
+
+      post :confirm, params: { id: order.id }
+
+      expect(response).to redirect_to(orders_path)
+      expect(flash[:alert]).to match(/not ready to be marked as received/i)
     end
   end
 end

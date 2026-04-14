@@ -18,11 +18,21 @@ RSpec.describe CancelOldPendingOrdersJob, type: :job do
     end
 
     it "cancels pending orders older than 14 days (integration requirement)" do
-      skip("Not implemented: Order.expired scope / cancel_expired! policy methods are missing")
+      old_order   = create(:order, :old_pending)
+      fresh_order = create(:order)
+
+      described_class.perform_now
+
+      expect(old_order.reload.status).to eq("cancelled")
+      expect(fresh_order.reload.status).to eq("pending")
     end
 
     it "does not include cancelled orders in active metrics" do
-      skip("Not implemented: active-order metrics API/query object is not defined yet")
+      old_order = create(:order, :old_pending)
+
+      described_class.perform_now
+
+      expect(Order.pending).not_to include(old_order.reload)
     end
   end
 end
