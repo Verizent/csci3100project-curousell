@@ -1,0 +1,13 @@
+<% content_for :title, "Order ##{@order.id}" %>
+
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h1 class="text-2xl font-semibold text-gray-900 mb-4">Order Details</h1>
+
+  <div class="bg-white border border-gray-200 rounded-xl p-6 space-y-3">
+    <p><span class="font-medium">Listing:</span> <%= @order.listing.title %></p>
+    <p><span class="font-medium">Status:</span> <%= @order.status.humanize %></p>
+    <p><span class="font-medium">Seller:</span> <%= @order.seller.name %></p>
+    <p><span class="font-medium">Buyer:</span> <%= @order.buyer.name %></p>
+    <p><span class="font-medium">Price at purchase:</span> HK$<%= number_with_precision(@order.price_at_purchase, precision: 0, delimiter: ",") %></p>
+  </div>
+</div>

@@ -1,0 +1,98 @@
+<%
+  # Map listing status to filter-compatible data-status value
+  filter_status = case listing.status
+                  when "unsold"     then "unsold"
+                  when "in_process" then "pending"
+                  when "sold"       then "completed"
+                  else listing.status
+                  end
+
+  # Find the active (non-cancelled) order for this listing
+  active_order = listing.orders.find { |o| o.status != "cancelled" }
+%>
+<div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm" data-status="<%= filter_status %>">
+  <div class="flex items-start space-x-4">
+    <!-- Listing Image -->
+    <div class="flex-shrink-0">
+      <% if listing.images.attached? %>
+        <%= image_tag listing.images.first.variant(resize_to_limit: [100, 100]), class: "w-16 h-16 object-cover rounded-md" %>
+      <% else %>
+        <div class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+          <span class="text-gray-400 text-xs">No Image</span>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Listing Details -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900 truncate">
+          <%= link_to listing.title, listing_path(listing), class: "hover:text-blue-600" %>
+        </h3>
+        <div class="flex items-center space-x-2">
+          <!-- Status Badge -->
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= listing_status_badge_class(listing.status) %>">
+            <%= listing.status == "in_process" ? "Pending" : listing.status.titleize %>
+          </span>
+
+          <!-- Actions -->
+          <% if listing.status == "unsold" %>
+            <%= link_to "Edit", edit_listing_path(listing), class: "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors" %>
+          <% elsif listing.status == "in_process" && active_order&.status == "pending" %>
+            <%= button_to "Mark as Delivered", confirm_order_path(active_order), method: :post, class: "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 transition-colors" %>
+          <% end %>
+        </div>
+      </div>
+
+      <p class="text-sm text-gray-500 mt-1">
+        $<%= number_with_precision(listing.price, precision: 2) %>
+        <span class="ml-2 text-gray-400 capitalize"><%= listing.category %></span>
+      </p>
+
+      <!-- Buyer info (for in_process / sold listings) -->
+      <% if active_order %>
+        <div class="mt-2 text-sm text-gray-600">
+          <p>Buyer: <%= active_order.buyer.name %> (<%= active_order.buyer.college %>)</p>
+        </div>
+
+        <div class="mt-2 text-xs text-gray-500">
+          <p>Purchased: <%= (active_order.purchased_at || active_order.created_at).strftime('%B %d, %Y at %I:%M %p') %></p>
+          <% if active_order.completed_at %>
+            <p>Completed: <%= active_order.completed_at.strftime('%B %d, %Y at %I:%M %p') %></p>
+          <% end %>
+          <% if listing.status == "in_process" %>
+            <% expires_at = (active_order.purchased_at || active_order.created_at) + 2.weeks %>
+            <p class="text-amber-600">Auto-cancels: <%= expires_at.strftime('%B %d, %Y') %></p>
+          <% end %>
+        </div>
+
+        <!-- Waiting state indicator -->
+        <% if listing.status == "in_process" && active_order&.status == "delivered" %>
+          <div class="mt-3 inline-flex items-center px-3 py-2 rounded-md bg-blue-50 border border-blue-200">
+            <svg class="w-4 h-4 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+            <span class="text-sm text-blue-800">Marked as delivered — waiting for buyer to confirm receipt…</span>
+          </div>
+        <% end %>
+
+        <!-- Chat with buyer -->
+        <div class="mt-3">
+          <% chat = Conversation.where(listing_id: listing.id)
+                                .where("sender_id = ? OR receiver_id = ?", current_user.id, current_user.id)
+                                .first %>
+          <% if chat %>
+            <%= link_to "Chat with Buyer", chat_path(chat), class: "inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors" %>
+          <% else %>
+            <span class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-gray-50 text-gray-400 border border-gray-200 cursor-not-allowed">No chat yet</span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- For unsold items, show when listed -->
+      <% if listing.status == "unsold" %>
+        <div class="mt-2 text-xs text-gray-500">
+          <p>Listed: <%= listing.created_at.strftime('%B %d, %Y') %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
 class Listing < ApplicationRecord
   belongs_to :user
   has_many_attached :images
+  has_many :orders
   has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
   accepts_nested_attributes_for :access_rules,
     allow_destroy: true,
@@ -108,9 +109,9 @@ class Listing < ApplicationRecord
       "EXISTS (
         SELECT 1 FROM listing_access_rules lar
         WHERE lar.listing_id = listings.id
-          AND (lar.colleges    = '{}' OR ? = ANY(lar.colleges))
-          AND (lar.departments = '{}' OR lar.departments && ARRAY[?]::varchar[])
-          AND (lar.faculties   = '{}' OR lar.faculties   && ARRAY[?]::varchar[])
+        AND (lar.colleges    = '{}' OR ? = ANY(lar.colleges))
+        AND (lar.departments = '{}' OR lar.departments && ARRAY[?]::varchar[])
+        AND (lar.faculties   = '{}' OR lar.faculties   && ARRAY[?]::varchar[])
       )",
       user.college.to_s,
       user.department,

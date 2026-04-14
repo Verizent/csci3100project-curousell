@@ -98,6 +98,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_000001) do
     t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
+  create_table "orders", force: :cascade do |t|
+    t.datetime "buyer_confirmed_at"
+    t.integer "buyer_id", null: false
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.bigint "listing_id", null: false
+    t.text "notes"
+    t.decimal "price_at_purchase", precision: 10, scale: 2
+    t.datetime "purchased_at"
+    t.datetime "seller_confirmed_at"
+    t.integer "seller_id", null: false
+    t.string "status", default: "pending"
+    t.datetime "updated_at", null: false
+    t.index ["buyer_id", "status"], name: "index_orders_on_buyer_id_and_status"
+    t.index ["buyer_id"], name: "index_orders_on_buyer_id"
+    t.index ["listing_id", "status"], name: "index_orders_on_listing_id_and_status"
+    t.index ["listing_id"], name: "index_orders_on_listing_id"
+    t.index ["seller_id", "status"], name: "index_orders_on_seller_id_and_status"
+    t.index ["seller_id"], name: "index_orders_on_seller_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "college"
     t.datetime "created_at", null: false
@@ -122,4 +143,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_000001) do
   add_foreign_key "listings", "users"
   add_foreign_key "messages", "conversations"
   add_foreign_key "messages", "users"
+  add_foreign_key "orders", "listings"
 end

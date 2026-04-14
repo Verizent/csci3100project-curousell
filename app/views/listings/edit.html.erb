@@ -1,0 +1,118 @@
+<% content_for :title, "CUrousell — Edit Listing" %>
+
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+  <%= link_to @listing,
+        class: "inline-flex items-center gap-1.5 text-cuhk-purple hover:text-cuhk-purple-light
+                text-sm font-medium mb-6 group" do %>
+    <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none"
+         stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to listing
+  <% end %>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+    <h1 class="text-2xl font-bold text-gray-900 mb-8">Edit Listing</h1>
+
+    <%# Validation errors %>
+    <% if @listing.errors.any? %>
+      <div class="rounded-lg bg-red-50 border border-red-200 p-4 mb-6">
+        <div class="flex items-start gap-3">
+          <svg class="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-.75-4.75a.75.75 0 001.5 0V9.25a.75.75 0 00-1.5 0v4zm.75-7.5a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+          </svg>
+          <ul class="list-disc list-inside text-sm text-red-600 space-y-0.5">
+            <% @listing.errors.full_messages.each do |msg| %>
+              <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form_with model: @listing, multipart: true, class: "space-y-6" do |form| %>
+
+      <%# Title %>
+      <div>
+        <%= form.label :title, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_field :title,
+              placeholder: "e.g. Calculus textbook, IKEA desk lamp…",
+              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
+                      text-gray-900 placeholder-gray-400
+                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+      </div>
+
+      <%# Description %>
+      <div>
+        <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_area :description,
+              placeholder: "Describe your item in detail. Include condition, dimensions, etc.",
+              rows: 4,
+              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
+                      text-gray-900 placeholder-gray-400
+                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+      </div>
+
+      <%# Price %>
+      <div>
+        <%= form.label :price, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <span class="text-gray-500 text-sm">$</span>
+          </div>
+          <%= form.number_field :price,
+                placeholder: "0",
+                min: 0,
+                step: 0.01,
+                class: "block w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg text-sm
+                        text-gray-900 placeholder-gray-400
+                        focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+        </div>
+      </div>
+
+      <%# Category %>
+      <div>
+        <%= form.label :category, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.select :category,
+              options_for_select(Listing::CATEGORIES.map { |c| [c.titleize, c] }, @listing.category),
+              { prompt: "Select a category" },
+              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
+                      text-gray-900
+                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+      </div>
+
+      <%# Location %>
+      <div>
+        <%= form.label :location, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.text_field :location,
+              placeholder: "e.g. United College, Science Centre…",
+              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
+                      text-gray-900 placeholder-gray-400
+                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+      </div>
+
+      <%# Image %>
+      <div>
+        <%= form.label :images, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.file_field :images, multiple: true,
+              accept: "image/*",
+              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
+                      text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                      file:text-sm file:font-medium file:bg-cuhk-purple file:text-white
+                      hover:file:bg-cuhk-purple-light" %>
+        <% if @listing.images.attached? %>
+          <p class="mt-2 text-sm text-gray-600">Current images will be replaced if you upload new ones.</p>
+        <% end %>
+      </div>
+
+      <%# Submit %>
+      <div class="pt-4">
+        <%= form.submit "Update Listing",
+              class: "w-full bg-cuhk-purple hover:bg-cuhk-purple-light text-white font-medium
+                      py-3 px-4 rounded-lg transition-colors duration-200
+                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:ring-offset-2" %>
+      </div>
+    <% end %>
+  </div>
+</div>

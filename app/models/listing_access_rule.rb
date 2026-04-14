@@ -1,8 +1,8 @@
 class ListingAccessRule < ApplicationRecord
   belongs_to :listing
 
-  validate :faculties_are_valid
-  validate :departments_are_valid
+  # validate :faculties_are_valid
+  # validate :departments_are_valid
 
   before_validation :compact_arrays
 
