@@ -2,13 +2,19 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
-  resources :listings, only: [ :index, :show ]
+  resources :listings, only: [ :index, :show, :new, :create ]
   resources :feedback, only: [ :create ]
 
   # Placeholder nav routes (pages to be built later)
-  get "/chats"   => "placeholder#chats",   as: :chats
   get "/orders"  => "placeholder#orders",  as: :orders
-  get "/profile" => "placeholder#profile", as: :profile
+  get "/profile" => "account#profile",     as: :profile
+
+  # Chat routes
+  resources :chats, only: [ :index, :show, :new ] do
+    member do
+      post :send_message
+    end
+  end
 
   # Authentication
   get  "/account/signup" => "account#signup",           as: :account_signup
@@ -19,7 +25,7 @@ Rails.application.routes.draw do
   post "/account/signin" => "account#authenticate"
   get  "/account/2fa"    => "account#two_factor",       as: :signin_2fa
   post "/account/2fa"    => "account#verify_2fa"
-  delete "/account/signout" => "account#signout",       as: :account_signout
+  delete "/account/signout" => "account#signout",        as: :account_signout
 
   # Payments
   post "/payments/checkout/:product_id" => "payments#checkout", as: :payment_checkout
@@ -28,6 +34,10 @@ Rails.application.routes.draw do
   post "/payments/webhook" => "payments#webhook", as: :stripe_webhook
 
   get "up" => "rails/health#show", as: :rails_health_check
+<<<<<<< HEAD
 
   match "*path", to: "errors#not_found", via: :all
+=======
+  mount ActionCable.server => "/cable"
+>>>>>>> origin/main
 end

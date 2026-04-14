@@ -11,6 +11,16 @@ class User < ApplicationRecord
   validates :department, presence: true
   validates :password, length: { minimum: 12 }, allow_nil: true
 
+  # Associations for Chat
+  has_many :sent_conversations, class_name: "Conversation", foreign_key: "sender_id", dependent: :destroy
+  has_many :received_conversations, class_name: "Conversation", foreign_key: "receiver_id", dependent: :destroy
+  has_many :messages, dependent: :destroy
+
+  # All conversations (sent or received)
+  def all_conversations
+    Conversation.where("sender_id = ? OR receiver_id = ?", id, id)
+  end
+
   # Class Constants
   OTP_EXPIRY_MINUTES = 10
   MAX_OTP_ATTEMPTS = 3
