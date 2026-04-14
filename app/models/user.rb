@@ -1,7 +1,7 @@
 class User < ApplicationRecord
   # Run before saving to database
   has_secure_password
-  has_many :products, foreign_key: :seller_id, dependent: :destroy
+  has_many :listings, foreign_key: :user_id, dependent: :destroy
   has_many :buyer_orders, class_name: "Order", foreign_key: :buyer_id, dependent: :restrict_with_error
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false },
