@@ -76,7 +76,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-  gem "letter_opener"       # for OTP email intercepting
+  gem "letter_opener_web"   # view sent emails at /letter_opener
 end
 
 group :test do
