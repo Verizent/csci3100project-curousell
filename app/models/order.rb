@@ -4,7 +4,7 @@ class Order < ApplicationRecord
 
   STATUSES = %w[pending paid completed cancelled failed refunded].freeze
 
-  validates :amount_cents, presence: true, numericality: { greater_than: 0 }
+  validates :amount_cents, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :currency, presence: true
   validates :status, presence: true, inclusion: { in: STATUSES }
 
