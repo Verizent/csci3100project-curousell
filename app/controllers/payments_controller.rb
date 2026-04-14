@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :webhook
-  before_action :require_login, only: [ :checkout, :success, :cancel ]
+  before_action :require_login, only: [ :checkout, :claim, :success, :cancel ]
 
   def checkout
     @listing = Listing.available.find(params[:listing_id])
@@ -44,6 +44,33 @@ class PaymentsController < ApplicationController
     order&.update!(status: "failed")
     @listing.update!(status: "unsold")
     redirect_to listing_path(@listing), alert: "Payment could not be initiated: #{e.message}"
+  end
+
+  def claim
+    @listing = Listing.available.find(params[:listing_id])
+
+    if @listing.user == current_user
+      redirect_to listing_path(@listing), alert: "You cannot claim your own listing." and return
+    end
+
+    unless @listing.price_cents == 0
+      redirect_to listing_path(@listing), alert: "This listing is not free." and return
+    end
+
+    order = Order.create!(
+      buyer: current_user,
+      listing: @listing,
+      amount_cents: 0,
+      currency: @listing.currency,
+      status: "paid"
+    )
+
+    @listing.update!(status: "in_process")
+    AutoCancelOrderJob.set(wait: 2.weeks).perform_later(order.id)
+
+    redirect_to order_path(order), notice: "You claimed this item! Arrange with the seller to complete handover."
+  rescue ActiveRecord::RecordNotFound
+    redirect_to home_path, alert: "Listing not found."
   end
 
   def success
