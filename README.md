@@ -14,7 +14,7 @@ Distribution of work:
 | chat feature           | Asset Yermukhanbet               | x                      | ActionCable 
 | payment feature        | Po Chi Hang                      | Kanta Fujimoto         | Stripe 
 | user's orders page     | Kanta Fujimoto                   | Po Chi Hang            | Hotwire Stimulus
-| add/edit item          | Michael Richard Suryajaya        | x                      | Google Maps API 
+| add/edit item          | Michael Richard Suryajaya        | Kanta Fujimoto         | Google Maps API 
 
 
 ## How to run the app on your local machine?
