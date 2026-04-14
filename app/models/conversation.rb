@@ -18,7 +18,11 @@ class Conversation < ApplicationRecord
 
   # Get the last message in this conversation
   def last_message
-    messages.order(created_at: :desc).first
+    if messages.loaded?
+      messages.max_by(&:created_at)
+    else
+      messages.order(created_at: :desc).first
+    end
   end
 
   # Check if user is a participant
