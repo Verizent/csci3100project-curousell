@@ -163,4 +163,132 @@ RSpec.describe "Listings", type: :request do
       end
     end
   end
+
+  describe "GET /listings/:id/edit" do
+    let!(:seller) { create(:user) }
+    let!(:listing) { create(:listing, user: seller, status: "unsold") }
+
+    it "shows only the price field — no title, description, location, category or access rules" do
+      sign_in_as(seller)
+
+      get edit_listing_path(listing)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("HK$")                      # price input present
+      expect(response.body).not_to include("Add Photos")
+      expect(response.body).not_to include("listing_form_target=\"fileInput\"")
+      expect(response.body).not_to include("Meeting Place")
+      expect(response.body).not_to include("Restrict Audience")
+      expect(response.body).not_to include("negotiable")
+      expect(response.body).not_to include("Category")
+      expect(response.body).not_to match(/label[^>]*>Title/)
+      expect(response.body).not_to match(/label[^>]*>Description/)
+    end
+
+    it "shows delete button for the seller" do
+      sign_in_as(seller)
+
+      get edit_listing_path(listing)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Delete Listing")
+    end
+
+    it "shows delete-disabled message when delivery has been confirmed" do
+      create(:order, :paid, :seller_confirmed, listing: listing)
+      sign_in_as(seller)
+
+      get edit_listing_path(listing)
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("Delete is disabled after delivery has been confirmed")
+      expect(response.body).not_to include("Delete Listing")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Update (price only)
+  # ---------------------------------------------------------------------------
+
+  describe "PATCH /listings/:id" do
+    let!(:seller) { create(:user) }
+    let!(:listing) { create(:listing, user: seller, status: "unsold", title: "Original Title", price: 100) }
+
+    it "updates only the price" do
+      sign_in_as(seller)
+
+      patch listing_path(listing), params: { listing: { price: 75 } }
+
+      expect(response).to redirect_to(listing_path(listing))
+      expect(listing.reload.price).to eq(75)
+    end
+
+    it "ignores other fields even if submitted" do
+      sign_in_as(seller)
+
+      patch listing_path(listing), params: { listing: { price: 60, title: "Hacked Title" } }
+
+      listing.reload
+      expect(listing.price).to eq(60)
+      expect(listing.title).to eq("Original Title")
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Destroy
+  # ---------------------------------------------------------------------------
+
+  describe "DELETE /listings/:id" do
+    let!(:seller) { create(:user) }
+    let!(:other_user) { create(:user) }
+    let!(:listing) { create(:listing, user: seller, status: "unsold") }
+
+    it "allows the seller to delete when no delivery confirmation exists" do
+      sign_in_as(seller)
+
+      expect {
+        delete listing_path(listing)
+      }.to change(Listing, :count).by(-1)
+
+      expect(response).to redirect_to(home_path)
+    end
+
+    it "rejects non-sellers from deleting" do
+      sign_in_as(other_user)
+
+      expect {
+        delete listing_path(listing)
+      }.not_to change(Listing, :count)
+
+      expect(response).to redirect_to(home_path)
+      follow_redirect!
+      expect(response.body).to include("only delete your own listings")
+    end
+
+    it "rejects deletion after seller confirmed delivery" do
+      create(:order, :paid, :seller_confirmed, listing: listing)
+      sign_in_as(seller)
+
+      expect {
+        delete listing_path(listing)
+      }.not_to change(Listing, :count)
+
+      expect(response).to redirect_to(listing_path(listing))
+      follow_redirect!
+      expect(response.body).to include("cannot be deleted after delivery has been confirmed")
+    end
+
+    it "rejects deletion after buyer confirmed receipt" do
+      create(:order, :paid, :buyer_confirmed, listing: listing)
+      sign_in_as(seller)
+
+      expect {
+        delete listing_path(listing)
+      }.not_to change(Listing, :count)
+
+      expect(response).to redirect_to(listing_path(listing))
+      follow_redirect!
+      expect(response.body).to include("cannot be deleted after delivery has been confirmed")
+    end
+  end
 end
