@@ -46,24 +46,50 @@
   <%# Selling %>
   <section>
     <h2 class="text-lg font-semibold text-cuhk-purple mb-4">Selling</h2>
-    <% if @selling.empty? %>
+    <% if @selling.empty? && @unsold_listings.empty? %>
       <p class="text-sm text-gray-400">No orders on your listings yet.</p>
     <% else %>
       <div class="space-y-3">
-        <% @selling.each do |order| %>
-          <% badge_class, badge_label = status_badge.call(order) %>
-          <%= link_to order_path(order), class: "block bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow" do %>
+        <% @unsold_listings.each do |listing| %>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between gap-4">
               <div class="flex-1 min-w-0">
-                <p class="font-medium text-gray-900 truncate"><%= order.listing.title %></p>
-                <p class="text-xs text-gray-400 mt-0.5">Buyer: <%= order.buyer.name %> &middot; <%= order.created_at.strftime("%d %b %Y") %></p>
+                <p class="font-medium text-gray-900 truncate"><%= listing.title %></p>
+                <p class="text-xs text-gray-400 mt-0.5">Listed <%= listing.created_at.strftime("%d %b %Y") %></p>
               </div>
               <div class="flex items-center gap-3 flex-shrink-0">
-                <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(order.amount, precision: 0, delimiter: ",") %></span>
-                <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= badge_class %>"><%= badge_label %></span>
+                <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(listing.price, precision: 0, delimiter: ",") %></span>
+                <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700">Unsold</span>
+                <%= link_to "View", listing_path(listing),
+                      class: "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors" %>
+                <%= link_to "Edit Item", edit_listing_path(listing),
+                      class: "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors" %>
               </div>
             </div>
-          <% end %>
+          </div>
+        <% end %>
+
+        <% @selling.each do |order| %>
+          <% badge_class, badge_label = status_badge.call(order) %>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-4">
+              <%= link_to order_path(order), class: "flex items-center justify-between gap-4 flex-1 min-w-0" do %>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate"><%= order.listing.title %></p>
+                  <p class="text-xs text-gray-400 mt-0.5">Buyer: <%= order.buyer.name %> &middot; <%= order.created_at.strftime("%d %b %Y") %></p>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0">
+                  <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(order.amount, precision: 0, delimiter: ",") %></span>
+                  <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= badge_class %>"><%= badge_label %></span>
+                </div>
+              <% end %>
+
+              <% if order.listing.status == "unsold" %>
+                <%= link_to "Edit Item", edit_listing_path(order.listing),
+                      class: "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors flex-shrink-0" %>
+              <% end %>
+            </div>
+          </div>
         <% end %>
       </div>
     <% end %>

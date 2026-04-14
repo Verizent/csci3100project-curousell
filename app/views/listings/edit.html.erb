@@ -31,7 +31,9 @@
       </div>
     <% end %>
 
-    <%= form_with model: @listing, multipart: true, class: "space-y-6" do |form| %>
+    <%= form_with model: @listing, multipart: true, class: "space-y-6",
+            data: { controller: "listing-form",
+                listing_form_api_key_value: Rails.application.credentials.google_maps_api_key } do |form| %>
 
       <%# Title %>
       <div>
@@ -47,72 +49,175 @@
       <div>
         <%= form.label :description, class: "block text-sm font-medium text-gray-700 mb-1" %>
         <%= form.text_area :description,
-              placeholder: "Describe your item in detail. Include condition, dimensions, etc.",
               rows: 4,
+              placeholder: "Describe the condition, any defects, reason for selling…",
               class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
-                      text-gray-900 placeholder-gray-400
+                      text-gray-900 placeholder-gray-400 resize-none
                       focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
       </div>
 
-      <%# Price %>
-      <div>
-        <%= form.label :price, class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <span class="text-gray-500 text-sm">$</span>
+      <%# Price + Category %>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <%= form.label :price, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 text-sm pointer-events-none">HK$</span>
+            <%= form.number_field :price,
+                  min: 0, step: 1,
+                  placeholder: "0",
+                  class: "block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm
+                          text-gray-900 placeholder-gray-400
+                          focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
           </div>
-          <%= form.number_field :price,
-                placeholder: "0",
-                min: 0,
-                step: 0.01,
-                class: "block w-full pl-8 pr-4 py-3 border border-gray-300 rounded-lg text-sm
-                        text-gray-900 placeholder-gray-400
+          <p class="mt-1 text-xs text-gray-400">Enter 0 for a free item</p>
+          <label class="flex items-center gap-2 mt-2 text-sm text-gray-600 cursor-pointer">
+            <%= form.check_box :negotiable, class: "rounded border-gray-300 text-cuhk-purple focus:ring-cuhk-purple" %>
+            Price is negotiable
+          </label>
+        </div>
+
+        <div>
+          <%= form.label :category, class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.select :category,
+                Listing::CATEGORIES.map { |c| [c.capitalize, c] },
+                { include_blank: "Select a category" },
+                class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
+                        text-gray-900
                         focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
         </div>
       </div>
 
-      <%# Category %>
-      <div>
-        <%= form.label :category, class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= form.select :category,
-              options_for_select(Listing::CATEGORIES.map { |c| [c.titleize, c] }, @listing.category),
-              { prompt: "Select a category" },
-              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
-                      text-gray-900
-                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
-      </div>
-
       <%# Location %>
       <div>
-        <%= form.label :location, class: "block text-sm font-medium text-gray-700 mb-1" %>
+        <%= form.label :location, "Meeting Place", class: "block text-sm font-medium text-gray-700 mb-1" %>
         <%= form.text_field :location,
-              placeholder: "e.g. United College, Science Centre…",
+              placeholder: "e.g. CUHK Library, Chung Chi MTR station…",
+              autocomplete: "off",
+              data: { listing_form_target: "locationInput", action: "input->listing-form#locationChanged" },
               class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
                       text-gray-900 placeholder-gray-400
                       focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+        <%= form.hidden_field :latitude,  data: { listing_form_target: "latInput" } %>
+        <%= form.hidden_field :longitude, data: { listing_form_target: "lngInput" } %>
+
+        <div class="mt-2 rounded-xl overflow-hidden border border-gray-100">
+          <div data-listing-form-target="mapPlaceholder"
+               class="flex items-center justify-center h-40 bg-gray-50 text-sm text-gray-400">
+            Map preview will appear here
+          </div>
+          <iframe data-listing-form-target="mapPreview"
+                  class="hidden w-full"
+                  height="220"
+                  style="border:0"
+                  loading="lazy"
+                  allowfullscreen
+                  referrerpolicy="no-referrer-when-downgrade"
+                  src="">
+          </iframe>
+        </div>
       </div>
 
-      <%# Image %>
+      <%# Images %>
       <div>
-        <%= form.label :images, class: "block text-sm font-medium text-gray-700 mb-1" %>
-        <%= form.file_field :images, multiple: true,
-              accept: "image/*",
-              class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
-                      text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
-                      file:text-sm file:font-medium file:bg-cuhk-purple file:text-white
-                      hover:file:bg-cuhk-purple-light" %>
-        <% if @listing.images.attached? %>
-          <p class="mt-2 text-sm text-gray-600">Current images will be replaced if you upload new ones.</p>
+        <p class="block text-sm font-medium text-gray-700 mb-1">Photos</p>
+
+        <%= form.file_field :images,
+              multiple: true,
+              accept: "image/jpeg,image/png,image/webp",
+              class: "sr-only",
+              data: {
+                listing_form_target: "fileInput",
+                action: "change->listing-form#addImages"
+              } %>
+
+        <div data-listing-form-target="preview"
+             class="hidden flex-wrap gap-3 mb-3">
+        </div>
+
+        <button type="button"
+                data-action="click->listing-form#openFilePicker"
+                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300
+                       text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Add Photos
+        </button>
+        <p class="mt-1 text-xs text-gray-400">Optional — JPEG, PNG or WebP only, up to 10 MB each.</p>
+      </div>
+
+      <%# Audience / Access Rules %>
+      <div class="border border-gray-200 rounded-xl p-5 space-y-5">
+        <div>
+          <p class="text-sm font-semibold text-gray-700">Restrict Audience <span class="font-normal text-gray-400">(optional)</span></p>
+          <p class="text-xs text-gray-400 mt-0.5">Leave everything unchecked to make this listing visible to all CUHK members. Selecting a faculty with no departments means all departments under it can access.</p>
+        </div>
+
+        <%= form.fields_for :access_rules, (@listing.access_rules.first || @listing.access_rules.build) do |ff| %>
+
+          <%# Colleges %>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Colleges</p>
+            <div class="grid grid-cols-2 gap-y-1.5 gap-x-4">
+              <% Listing::COLLEGES.each do |college| %>
+                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                  <%= ff.check_box :colleges, { multiple: true, checked: Array(ff.object.colleges).include?(college) }, college, nil %>
+                  <%= college %>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <%# Faculties + Departments (departments revealed per faculty) %>
+          <div>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Faculties</p>
+            <div class="space-y-3">
+              <% Listing::FACULTY_DEPARTMENTS.each do |faculty, departments| %>
+                <div>
+                  <label class="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer">
+                    <%= ff.check_box :faculties, {
+                          multiple: true,
+                          checked: Array(ff.object.faculties).include?(faculty),
+                          data: { action: "change->listing-form#toggleFaculty" }
+                        }, faculty, nil %>
+                    <%= faculty %>
+                  </label>
+
+                  <%# Departments — hidden until faculty is checked %>
+                  <div data-faculty-section="<%= faculty %>"
+                       class="mt-2 ml-6 grid grid-cols-2 gap-y-1.5 gap-x-4
+                              <%= Array(ff.object.faculties).include?(faculty) ? "" : "hidden" %>">
+                    <p class="col-span-2 text-xs text-gray-400 mb-1">Leave unchecked to allow all departments</p>
+                    <% departments.each do |dept| %>
+                      <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <%= ff.check_box :departments, { multiple: true, checked: Array(ff.object.departments).include?(dept) }, dept, nil %>
+                        <%= dept %>
+                      </label>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
         <% end %>
       </div>
 
       <%# Submit %>
-      <div class="pt-4">
+      <div class="pt-2">
         <%= form.submit "Update Listing",
-              class: "w-full bg-cuhk-purple hover:bg-cuhk-purple-light text-white font-medium
-                      py-3 px-4 rounded-lg transition-colors duration-200
-                      focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:ring-offset-2" %>
+              class: "w-full py-3 px-6 bg-cuhk-purple text-white font-semibold rounded-xl
+                      hover:bg-cuhk-purple-dark transition-colors cursor-pointer" %>
       </div>
     <% end %>
   </div>
 </div>
+
+<script>
+  window.initMapsAutocomplete = function() {
+    document.dispatchEvent(new CustomEvent("google-maps-loaded"))
+  }
+</script>
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key %>&libraries=places&callback=initMapsAutocomplete">
+</script>

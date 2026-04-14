@@ -5,6 +5,7 @@ class OrdersController < ApplicationController
   def index
     @buying  = current_user.buyer_orders.includes(:listing).order(created_at: :desc)
     @selling = current_user.seller_orders.includes(:listing).order(created_at: :desc)
+    @unsold_listings = Listing.where(user: current_user, status: "unsold").order(created_at: :desc)
   end
 
   def show
