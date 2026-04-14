@@ -28,4 +28,6 @@ Rails.application.routes.draw do
   post "/payments/webhook" => "payments#webhook", as: :stripe_webhook
 
   get "up" => "rails/health#show", as: :rails_health_check
+
+  match "*path", to: "errors#not_found", via: :all
 end

@@ -32,7 +32,6 @@
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
-/config/initializers/stripe.rb
 
 
 /app/assets/builds/*

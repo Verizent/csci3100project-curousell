@@ -1,5 +1,6 @@
 class PaymentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :webhook
+  before_action :require_login, only: [ :checkout, :success, :cancel ]
 
   def checkout
     @product = Product.available.find(params[:product_id])
@@ -37,11 +38,15 @@ class PaymentsController < ApplicationController
 
   def success
     @order = current_user.buyer_orders.find(params[:order_id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to home_path, alert: "Order not found." and return
   end
 
   def cancel
     @order = current_user.buyer_orders.find(params[:order_id])
     @order.update!(status: "cancelled") if @order.status == "pending"
+  rescue ActiveRecord::RecordNotFound
+    redirect_to home_path, alert: "Order not found." and return
   end
 
   def webhook
@@ -69,10 +74,6 @@ class PaymentsController < ApplicationController
   end
 
   private
-
-  def current_user
-    @current_user ||= User.find(session[:user_id]) if session[:user_id]
-  end
 
   def handle_checkout_completed(checkout_session)
     order = Order.find_by(stripe_checkout_session_id: checkout_session.id)
