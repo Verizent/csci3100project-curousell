@@ -2,14 +2,13 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
-  resources :listings, only: [ :index, :show, :new, :create ]
+  resources :listings, only: [ :index, :show, :new, :create, :edit, :update ]
   resources :feedback, only: [ :create ]
-
-  # Orders
   resources :orders, only: [ :index, :show ] do
     member do
       post :buyer_confirm
       post :seller_confirm
+      post :cancel
     end
   end
 

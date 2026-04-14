@@ -30,7 +30,6 @@ class Order < ApplicationRecord
 
   def mark_paid!(payment_intent_id:)
     update!(status: "paid", stripe_payment_intent_id: payment_intent_id)
-    # Keep listing as in_process — stays locked until both parties confirm
     AutoCancelOrderJob.set(wait: 2.weeks).perform_later(id)
   end
 

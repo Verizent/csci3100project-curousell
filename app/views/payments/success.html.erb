@@ -36,9 +36,12 @@
       </div>
     </div>
 
-    <div class="px-8 pb-8">
-      <%= link_to home_path, class: "block text-center bg-cuhk-purple text-white font-semibold py-3 rounded-xl hover:bg-cuhk-purple-dark transition-colors" do %>
-        Back to Home
+    <div class="px-8 pb-8 space-y-3">
+      <%= link_to order_path(@order), class: "block text-center bg-cuhk-gold text-cuhk-purple font-semibold py-3 rounded-xl hover:brightness-105 transition-all" do %>
+        View Order &amp; Confirm Receipt
+      <% end %>
+      <%= link_to orders_path, class: "block text-center border border-gray-200 text-gray-500 font-medium py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm" do %>
+        My Orders
       <% end %>
     </div>
   </div>

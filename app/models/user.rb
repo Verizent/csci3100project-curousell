@@ -16,7 +16,6 @@ class User < ApplicationRecord
   has_many :sent_conversations, class_name: "Conversation", foreign_key: "sender_id", dependent: :destroy
   has_many :received_conversations, class_name: "Conversation", foreign_key: "receiver_id", dependent: :destroy
   has_many :messages, dependent: :destroy
-
   # All conversations (sent or received)
   def all_conversations
     Conversation.where("sender_id = ? OR receiver_id = ?", id, id)

@@ -110,9 +110,9 @@ class Listing < ApplicationRecord
       "EXISTS (
         SELECT 1 FROM listing_access_rules lar
         WHERE lar.listing_id = listings.id
-          AND (lar.colleges    = '{}' OR ? = ANY(lar.colleges))
-          AND (lar.departments = '{}' OR lar.departments && ARRAY[?]::varchar[])
-          AND (lar.faculties   = '{}' OR lar.faculties   && ARRAY[?]::varchar[])
+        AND (lar.colleges    = '{}' OR ? = ANY(lar.colleges))
+        AND (lar.departments = '{}' OR lar.departments && ARRAY[?]::varchar[])
+        AND (lar.faculties   = '{}' OR lar.faculties   && ARRAY[?]::varchar[])
       )",
       user.college.to_s,
       user.department,

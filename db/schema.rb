@@ -69,6 +69,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_000003) do
   create_table "listings", force: :cascade do |t|
     t.string "category", default: "miscellaneous", null: false
     t.datetime "created_at", null: false
+    t.string "department", default: [], array: true
     t.text "description"
     t.decimal "latitude", precision: 10, scale: 7
     t.string "location"

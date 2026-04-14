@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   before_action :require_login
-  before_action :set_order, only: [ :show, :buyer_confirm, :seller_confirm ]
+  before_action :set_order, only: [ :show, :buyer_confirm, :seller_confirm, :cancel ]
 
   def index
     @buying  = current_user.buyer_orders.includes(:listing).order(created_at: :desc)
@@ -32,6 +32,18 @@ class OrdersController < ApplicationController
 
     @order.confirm_by_seller!
     redirect_to order_path(@order), notice: "You have confirmed delivery. Waiting for the buyer to confirm."
+  end
+
+  def cancel
+    unless @order.buyer == current_user || @order.seller == current_user
+      redirect_to orders_path, alert: "Not authorised." and return
+    end
+    unless @order.status == "paid"
+      redirect_to order_path(@order), alert: "Only paid orders can be cancelled." and return
+    end
+
+    @order.auto_cancel!
+    redirect_to orders_path, notice: "Order cancelled and payment refunded."
   end
 
   private
