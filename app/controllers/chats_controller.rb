@@ -15,8 +15,7 @@ class ChatsController < ApplicationController
      if @conversation.nil?
       redirect_to chats_path, alert: "This chat doesn't exist"
       return
-    end
-    
+     end
     # Security check - only participants can view
     unless @conversation.participant?(current_user)
       redirect_to chats_path, alert: "You don't have access to this conversation"
