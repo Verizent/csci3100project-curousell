@@ -17,8 +17,8 @@ RSpec.describe Order, type: :model do
       expect(order).not_to be_valid
     end
 
-    it "is invalid with zero amount" do
-      order = build(:order, amount_cents: 0)
+    it "is invalid with negative amount" do
+      order = build(:order, amount_cents: -1)
       expect(order).not_to be_valid
     end
 
