@@ -38,7 +38,7 @@
     <div id="messages-list" class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <% @messages.each do |message| %>
           <% is_own = message.user == current_user %>
-          <div id="message-<%= message.id %>" class="flex <%= is_own ? 'justify-end' : 'justify-start' %> mb-4">
+          <div class="flex <%= is_own ? 'justify-end' : 'justify-start' %> mb-4">
             <div class="max-w-[75%] <%= is_own ? 'bg-cuhk-purple text-white' : 'bg-white text-gray-900 border border-gray-200' %> rounded-2xl px-4 py-3 shadow-sm">
               <% unless is_own %>
                 <span class="text-xs font-semibold text-cuhk-purple mb-1 block"><%= message.user.name %></span>
@@ -97,16 +97,10 @@
       const currentUserId = <%= current_user.id %>;
 
       if (messagesList) {
-        // Check if message already exists to prevent duplicates
-        if (document.getElementById(`message-${data.id}`)) {
-          console.log("Message already exists, skipping duplicate");
-          return;
-        }
-
-        // Create message HTML with unique ID for deduplication
+        // Create message HTML
         const isOwn = data.user_id == currentUserId;
         const messageHtml = `
-          <div id="message-${data.id}" class="flex ${isOwn ? 'justify-end' : 'justify-start'} mb-4">
+          <div class="flex ${isOwn ? 'justify-end' : 'justify-start'} mb-4">
             <div class="max-w-[75%] ${isOwn ? 'bg-cuhk-purple text-white' : 'bg-white text-gray-900 border border-gray-200'} rounded-2xl px-4 py-3 shadow-sm">
               ${!isOwn ? `<span class="text-xs font-semibold text-cuhk-purple mb-1 block">${data.user_name}</span>` : ''}
               <p class="text-sm">${escapeHtml(data.content)}</p>
