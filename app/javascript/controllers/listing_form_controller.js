@@ -8,6 +8,7 @@ export default class extends Controller {
   #ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
   #MAX_IMAGES = 5
   #mapsLoadedHandler = null
+  #debounceTimer = null
 
   connect() {
     if (window.google?.maps?.places) {
