@@ -22,7 +22,9 @@
             <%= order.status.titleize %>
           </span>
           <% if order.status == "pending" %>
-            <% if !local_assigns[:is_bought] %>
+            <% if local_assigns[:is_bought] && order.seller_confirmed_at.present? %>
+              <%= button_to "Mark as Received", confirm_order_path(order), method: :post, class: "text-sm text-green-600 hover:text-green-800" %>
+            <% elsif !local_assigns[:is_bought] %>
               <%= button_to "Mark as Delivered", confirm_order_path(order), method: :post, class: "text-sm text-green-600 hover:text-green-800" %>
             <% end %>
           <% elsif order.status == "delivered" && local_assigns[:is_bought] %>
@@ -63,7 +65,11 @@
           <% if local_assigns[:is_bought] %>
             <div class="inline-flex items-center px-3 py-2 rounded-md bg-amber-50 border border-amber-200">
               <svg class="w-4 h-4 text-amber-600 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
-              <span class="text-sm text-amber-800">Waiting for seller to confirm delivery…</span>
+              <% if order.seller_confirmed_at.present? %>
+                <span class="text-sm text-amber-800">Seller has confirmed delivery. Please mark as received after you get the item.</span>
+              <% else %>
+                <span class="text-sm text-amber-800">Waiting for seller to confirm delivery...</span>
+              <% end %>
             </div>
           <% end %>
         </div>

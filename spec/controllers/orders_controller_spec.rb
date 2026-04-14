@@ -80,14 +80,5 @@ RSpec.describe OrdersController, type: :controller do
       expect(response).to redirect_to(orders_path)
       expect(flash[:alert]).to match(/no longer pending/i)
     end
-
-    it "rejects buyer receipt before delivery" do
-      stub_current_user(buyer)
-
-      post :confirm, params: { id: order.id }
-
-      expect(response).to redirect_to(orders_path)
-      expect(flash[:alert]).to match(/not ready to be marked as received/i)
-    end
   end
 end

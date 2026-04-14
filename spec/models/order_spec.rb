@@ -127,9 +127,9 @@ RSpec.describe Order, type: :model do
 
     it "supports seller delivered transition (pending -> delivered)" do
       expect(order.status).to eq("pending")
-      
+
       order.deliver!
-      
+
       expect(order.reload.status).to eq("delivered")
       expect(order.seller_confirmed_at).to be_present
     end
@@ -137,16 +137,16 @@ RSpec.describe Order, type: :model do
     it "supports buyer received transition (delivered -> received -> completed)" do
       order.deliver!
       expect(order.reload.status).to eq("delivered")
-      
+
       order.receive!
-      
+
       expect(order.reload.status).to eq("received")
       expect(order.buyer_confirmed_at).to be_present
     end
 
     it "prevents duplicate delivered/received transitions" do
       order.deliver!
-      
+
       expect { order.deliver! }.to raise_error(StandardError, /must be pending to deliver/)
       expect(order.reload.status).to eq("delivered")
     end
@@ -160,10 +160,10 @@ RSpec.describe Order, type: :model do
       # Ensure transition is idempotent - calling deliver on a delivered order fails
       order.deliver!
       expect(order.reload.status).to eq("delivered")
-      
+
       # Attempting to deliver an already-delivered order should raise error
       expect { order.deliver! }.to raise_error(StandardError, /must be pending to deliver/)
-      
+
       # Order should remain in delivered state
       expect(order.reload.status).to eq("delivered")
     end

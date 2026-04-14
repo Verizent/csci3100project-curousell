@@ -415,9 +415,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[27].price,
   purchased_at: 10.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -427,9 +427,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[28].price,
   purchased_at: 9.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -439,9 +439,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[29].price,
   purchased_at: 8.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -451,9 +451,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[30].price,
   purchased_at: 7.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -463,9 +463,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[31].price,
   purchased_at: 6.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -475,9 +475,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[32].price,
   purchased_at: 5.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -487,9 +487,9 @@ Order.create!(
   status: 'pending',
   price_at_purchase: listings[33].price,
   purchased_at: 4.days.ago,
-  buyer_confirmed_at: Time.current,
+  buyer_confirmed_at: nil,
   seller_confirmed_at: nil,
-  notes: "Pending order not confirmed by seller"
+  notes: "Pending order awaiting confirmations"
 )
 
 Order.create!(
@@ -559,7 +559,7 @@ Order.create!(
 
 Order.create!(
   listing: listings[39],
-  buyer: users[1],
+  buyer: User.find_by!(email: "shawcollege1@link.cuhk.edu.hk"),
   seller: listings[39].user,
   status: 'completed',
   price_at_purchase: listings[39].price,
