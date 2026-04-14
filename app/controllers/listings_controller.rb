@@ -79,7 +79,7 @@ class ListingsController < ApplicationController
       redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed." and return
     end
 
-    if @listing.update(listing_params)
+    if @listing.update(listing_update_params)
       redirect_to @listing, notice: "Listing updated successfully."
     else
       render :edit
@@ -93,5 +93,9 @@ class ListingsController < ApplicationController
       :title, :description, :price, :negotiable, :location, :latitude, :longitude, :category, images: [],
       access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ] # _destroy is used to delete
     )
+  end
+
+  def listing_update_params
+    params.require(:listing).permit(:price)
   end
 end
