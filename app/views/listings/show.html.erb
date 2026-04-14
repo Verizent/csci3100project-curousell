@@ -136,6 +136,9 @@
               <span><%= @listing.location %></span>
             </div>
             <div class="rounded-xl overflow-hidden border border-gray-100 mt-2">
+              <% map_q = @listing.latitude.present? && @listing.longitude.present? \
+                           ? "#{@listing.latitude},#{@listing.longitude}" \
+                           : CGI.escape("#{@listing.location}, Hong Kong") %>
               <iframe
                 width="100%"
                 height="220"
@@ -143,7 +146,7 @@
                 loading="lazy"
                 allowfullscreen
                 referrerpolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps/embed/v1/place?key=<%= Rails.application.credentials.google_maps_api_key %>&q=<%= CGI.escape("#{@listing.location}, Hong Kong") %>">
+                src="https://www.google.com/maps/embed/v1/place?key=<%= Rails.application.credentials.google_maps_api_key %>&q=<%= map_q %>">
               </iframe>
             </div>
           <% end %>

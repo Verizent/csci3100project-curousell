@@ -92,10 +92,13 @@
         <%= form.label :location, "Meeting Place", class: "block text-sm font-medium text-gray-700 mb-1" %>
         <%= form.text_field :location,
               placeholder: "e.g. CUHK Library, Chung Chi MTR station…",
-              data: { action: "input->listing-form#previewLocation" },
+              autocomplete: "off",
+              data: { listing_form_target: "locationInput", action: "input->listing-form#locationChanged" },
               class: "block w-full px-4 py-3 border border-gray-300 rounded-lg text-sm
                       text-gray-900 placeholder-gray-400
                       focus:outline-none focus:ring-2 focus:ring-cuhk-purple focus:border-cuhk-purple" %>
+        <%= form.hidden_field :latitude,  data: { listing_form_target: "latInput" } %>
+        <%= form.hidden_field :longitude, data: { listing_form_target: "lngInput" } %>
 
         <div class="mt-2 rounded-xl overflow-hidden border border-gray-100">
           <div data-listing-form-target="mapPlaceholder"
@@ -210,3 +213,12 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  window.initMapsAutocomplete = function() {
+    document.dispatchEvent(new CustomEvent("google-maps-loaded"))
+  }
+</script>
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps_api_key %>&libraries=places&callback=initMapsAutocomplete">
+</script>
