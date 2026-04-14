@@ -23,6 +23,9 @@ class Conversation < ApplicationRecord
 
   # Check if user is a participant
   def participant?(user)
+    return false if user.nil?
+    # if the user is not logged in, the website will not allow them to access the chat page
+    # prevents any potential web crash
     sender_id == user.id || receiver_id == user.id
   end
 
