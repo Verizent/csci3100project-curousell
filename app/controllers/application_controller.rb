@@ -31,5 +31,7 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  alias_method :authenticate_user!, :require_login
+  def authenticate_user!
+    require_login
+  end
 end

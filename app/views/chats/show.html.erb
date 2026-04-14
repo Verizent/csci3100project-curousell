@@ -76,8 +76,8 @@
 <script type="module">
   import { createConsumer } from "@rails/actioncable"
 
-  // Create consumer with the user token for authentication
-  const consumer = createConsumer("ws://" + window.location.host + "/cable?user_token=" + encodeURIComponent("<%= session[:user_token] %>"));
+  // Create consumer - cookies are sent automatically for authentication
+  const consumer = createConsumer("/cable");
 
   const conversationId = <%= @conversation.id %>;
   

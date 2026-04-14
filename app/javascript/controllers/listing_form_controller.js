@@ -1,13 +1,64 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["mapPreview", "mapPlaceholder", "fileInput", "preview"]
+  static targets = ["mapPreview", "mapPlaceholder", "fileInput", "preview", "locationInput", "latInput", "lngInput"]
   static values  = { apiKey: String }
 
-  #debounceTimer = null
   #files = []
   #ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
   #MAX_IMAGES = 5
+  #mapsLoadedHandler = null
+
+  connect() {
+    if (window.google?.maps?.places) {
+      this.#initAutocomplete()
+    } else {
+      this.#mapsLoadedHandler = () => this.#initAutocomplete()
+      document.addEventListener("google-maps-loaded", this.#mapsLoadedHandler)
+    }
+  }
+
+  disconnect() {
+    if (this.#mapsLoadedHandler) {
+      document.removeEventListener("google-maps-loaded", this.#mapsLoadedHandler)
+      this.#mapsLoadedHandler = null
+    }
+  }
+
+  #initAutocomplete() {
+    const autocomplete = new google.maps.places.Autocomplete(this.locationInputTarget, {
+      fields: ["geometry", "formatted_address"]
+    })
+
+    autocomplete.addListener("place_changed", () => {
+      const place = autocomplete.getPlace()
+      if (!place.geometry?.location) {
+        this.latInputTarget.value = ""
+        this.lngInputTarget.value = ""
+        return
+      }
+      const lat = place.geometry.location.lat()
+      const lng = place.geometry.location.lng()
+      this.latInputTarget.value = lat
+      this.lngInputTarget.value = lng
+      this.#showMapPreview(lat, lng)
+    })
+  }
+
+  // Called when user types manually — clears pinned coordinates
+  locationChanged() {
+    this.latInputTarget.value = ""
+    this.lngInputTarget.value = ""
+    this.mapPreviewTarget.classList.add("hidden")
+    this.mapPlaceholderTarget.classList.remove("hidden")
+  }
+
+  #showMapPreview(lat, lng) {
+    const src = `https://www.google.com/maps/embed/v1/place?key=${this.apiKeyValue}&q=${lat},${lng}`
+    this.mapPreviewTarget.src = src
+    this.mapPreviewTarget.classList.remove("hidden")
+    this.mapPlaceholderTarget.classList.add("hidden")
+  }
 
   openFilePicker() {
     this.fileInputTarget.click()
@@ -78,6 +129,7 @@ export default class extends Controller {
     container.classList.toggle("flex", !empty)
   }
 
+<<<<<<< HEAD
   previewLocation(event) {
     const query = event.target.value.trim()
     clearTimeout(this.#debounceTimer)
@@ -96,6 +148,8 @@ export default class extends Controller {
     }, 600)
   }
 
+=======
+>>>>>>> main
   toggleFaculty(event) {
     const faculty = event.target.value
     const section = this.element.querySelector(`[data-faculty-section="${CSS.escape(faculty)}"]`)
