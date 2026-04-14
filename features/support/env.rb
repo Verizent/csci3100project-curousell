@@ -79,5 +79,6 @@ Cucumber::Rails::Database.javascript_strategy = :truncation
 Before do
   allow(OtpMailer).to receive_message_chain(:send_code, :deliver_later)
   allow(OtpMailer).to receive_message_chain(:send_2fa, :deliver_later)
+  allow(FeedbackMailer).to receive_message_chain(:feedback_email, :deliver_later)
   allow(CleanupUnverifiedUserJob).to receive_message_chain(:set, :perform_later)
 end
