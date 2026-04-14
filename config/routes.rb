@@ -44,4 +44,6 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
   mount ActionCable.server => "/cable"
+
+  match "/404", to: "errors#not_found", via: :all
 end

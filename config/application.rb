@@ -22,6 +22,7 @@ module Curousell
     # in config/environments, which are processed later.
     #
     config.time_zone = "Asia/Hong_Kong"
+    config.exceptions_app = self.routes
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end
