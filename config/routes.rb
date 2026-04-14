@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   root to: redirect("/home")
 
   get "/home" => "listings#index", as: :home
-  resources :listings, only: [ :index, :show, :new, :create, :edit, :update ]
+  resources :listings, only: [ :index, :show, :new, :create, :edit, :update, :destroy ]
   resources :feedback, only: [ :create ]
   resources :orders, only: [ :index, :show ] do
     member do

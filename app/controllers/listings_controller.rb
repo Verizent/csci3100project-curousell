@@ -1,5 +1,5 @@
 class ListingsController < ApplicationController
-  before_action :require_login, only: [ :new, :create, :edit, :update ]
+  before_action :require_login, only: [ :new, :create, :edit, :update, :destroy ]
 
 
   def index
@@ -50,7 +50,7 @@ class ListingsController < ApplicationController
   end
 
   def create
-    @listing = Listing.new(listing_params)
+    @listing = Listing.new(create_listing_params)
     @listing.user = current_user
 
     if @listing.save
@@ -68,6 +68,8 @@ class ListingsController < ApplicationController
     if @listing.status != "unsold"
       redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed." and return
     end
+
+    @delete_locked = delete_locked_by_confirmed_delivery?(@listing)
   end
 
   def update
@@ -79,19 +81,44 @@ class ListingsController < ApplicationController
       redirect_to listing_path(@listing), alert: "This listing cannot be edited while a transaction is in progress or completed." and return
     end
 
-    if @listing.update(listing_params)
+    if @listing.update(update_listing_params)
       redirect_to @listing, notice: "Listing updated successfully."
     else
       render :edit
     end
   end
 
+  def destroy
+    @listing = Listing.find(params[:id])
+
+    unless @listing.user == current_user
+      redirect_to home_path, alert: "You can only delete your own listings." and return
+    end
+
+    if delete_locked_by_confirmed_delivery?(@listing)
+      redirect_to listing_path(@listing), alert: "This listing cannot be deleted after delivery has been confirmed." and return
+    end
+
+    @listing.destroy
+    redirect_to home_path, notice: "Listing deleted successfully."
+  end
+
   private
 
-  def listing_params
+  def create_listing_params
     params.require(:listing).permit(
       :title, :description, :price, :negotiable, :location, :latitude, :longitude, :category, images: [],
-      access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ] # _destroy is used to delete
+      access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ]
     )
+  end
+
+  def update_listing_params
+    params.require(:listing).permit(:price)
+  end
+
+  def delete_locked_by_confirmed_delivery?(listing)
+    listing.orders.where.not(seller_confirmed_at: nil).or(
+      listing.orders.where.not(buyer_confirmed_at: nil)
+    ).exists?
   end
 end
