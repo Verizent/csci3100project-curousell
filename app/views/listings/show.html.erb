@@ -181,6 +181,7 @@
           <% if @listing.price.positive? %>
             <%= button_to payment_checkout_path(listing_id: @listing.id),
                   method: :post,
+                  form: { data: { turbo: false } },
                   class: "mt-5 w-full text-center bg-cuhk-gold text-cuhk-purple font-semibold py-3 rounded-xl
                           hover:brightness-105 transition-all cursor-pointer" do %>
               Buy Now &middot; HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
