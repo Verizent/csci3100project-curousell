@@ -97,23 +97,54 @@ RSpec.describe "Orders", type: :request do
 
   describe "planned authorization endpoints" do
     it "prevents viewing order details when user is neither buyer nor seller" do
-      skip("Not implemented: orders#show route/controller action does not exist yet")
+      stranger = create(:user)
+      sign_in_as(stranger)
+
+      get order_path(order)
+
+      expect(response).to redirect_to(orders_path)
+      expect(flash[:alert]).to match(/not authorized/i)
     end
 
     it "prevents cancelling someone else's order" do
-      skip("Not implemented: manual order cancellation endpoint does not exist yet")
-    end
+      stranger = create(:user)
+      sign_in_as(stranger)
 
-    it "protects admin-only order management endpoints" do
-      skip("Not implemented: no admin-only order endpoints are currently defined in routes")
+      post cancel_order_path(order)
+
+      expect(response).to redirect_to(orders_path)
+      expect(flash[:alert]).to match(/not authorized/i)
+      expect(order.reload.status).to eq("pending")
     end
 
     it "prevents buyers from ordering their own listing" do
-      skip("Not implemented: order creation endpoint/service is not present yet")
+      own_listing = create(:listing, user: buyer, status: "unsold")
+      sign_in_as(buyer)
+
+      expect {
+        post orders_path, params: { listing_id: own_listing.id }
+      }.not_to change(Order, :count)
+
+      expect(response).to redirect_to(listing_path(own_listing))
+      expect(flash[:alert]).to match(/cannot order your own listing/i)
     end
 
     it "prevents ordering sold or in_process listings" do
-      skip("Not implemented: order creation endpoint/service is not present yet")
+      sign_in_as(buyer)
+      sold_listing = create(:listing, user: seller, status: "sold")
+      in_process_listing = create(:listing, user: seller, status: "in_process")
+
+      expect {
+        post orders_path, params: { listing_id: sold_listing.id }
+      }.not_to change(Order, :count)
+      expect(response).to redirect_to(listing_path(sold_listing))
+      expect(flash[:alert]).to match(/no longer available/i)
+
+      expect {
+        post orders_path, params: { listing_id: in_process_listing.id }
+      }.not_to change(Order, :count)
+      expect(response).to redirect_to(listing_path(in_process_listing))
+      expect(flash[:alert]).to match(/no longer available/i)
     end
   end
 end

@@ -15,31 +15,24 @@ Given("the order is pending") do
 end
 
 When("the seller marks the order as delivered") do
-  @order.seller_confirm!
+  @order.deliver!
 end
 
 Then("the order status should be {string}") do |expected_status|
-  if expected_status == "delivered" && @order.status != "delivered"
-    raise Cucumber::Pending, "Delivered status is not implemented yet; app uses seller_confirmed_at while keeping status pending"
-  end
-
   expect(@order.reload.status).to eq(expected_status)
 end
 
 Then("the buyer should see the order as delivered") do
-  if @order.status != "delivered"
-    raise Cucumber::Pending, "Buyer-facing delivered status is not implemented as an explicit order status"
-  end
-
-  expect(@order.status).to eq("delivered")
+  expect(@order.reload.status).to eq("delivered")
 end
 
 Given("the seller has marked the order as delivered") do
-  @order.update!(seller_confirmed_at: Time.current)
+  @order.deliver!
 end
 
 When("the buyer marks the order as received") do
-  @order.buyer_confirm!
+  @order.receive!
+  @order.complete!
 end
 
 Then("the listing status should be {string}") do |status|

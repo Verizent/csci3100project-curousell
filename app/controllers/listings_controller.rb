@@ -1,6 +1,6 @@
 class ListingsController < ApplicationController
   before_action :require_login, only: [ :new, :create, :edit, :update ]
-
+  
 
   def index
     @query                = params[:q]
@@ -13,6 +13,7 @@ class ListingsController < ApplicationController
     restricted_sql = "EXISTS (SELECT 1 FROM listing_access_rules WHERE listing_id = listings.id)"
 
     @listings = Listing.includes(:access_rules).search(@query).visible_to(current_user).where(status: "unsold")
+    @listings = @listings.where.not(user_id: current_user.id) if current_user
     @listings = @listings.where(category: @filter_categories)                         if @filter_categories.any?
     @listings = @listings.where(price: 0)                                             if @filter_free
     @listings = @listings.where("price <= ?", @filter_max_price.to_i)                 if @filter_max_price
@@ -89,13 +90,8 @@ class ListingsController < ApplicationController
 
   def listing_params
     params.require(:listing).permit(
-      :title,
-      :description,
-      :price,
-      :category,
-      :location,
-      images: [],
-      access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ]
+      :title, :description, :price, :negotiable, :location, :category, images: [],
+      access_rules_attributes: [ :id, :_destroy, { colleges: [], departments: [], faculties: [] } ] # _destroy is used to delete
     )
   end
 end

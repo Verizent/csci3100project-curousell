@@ -3,6 +3,7 @@ class Order < ApplicationRecord
   belongs_to :buyer, class_name: "User"
   belongs_to :seller, class_name: "User"
 
+  validates :listing, :buyer, :seller, presence: true
   validates :status, inclusion: { in: %w[pending delivered received completed cancelled refunded] }
   validates :price_at_purchase, presence: true, numericality: { greater_than_or_equal_to: 0 }
 

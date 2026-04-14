@@ -49,9 +49,6 @@ RSpec.describe "ListingVisibilityRules", type: :request do
 
     get home_path
 
-    if response.body.include?(own.title)
-      skip("Not implemented: Listing.visible_to/current index scope does not exclude current_user's own listings")
-    end
     expect(response.body).not_to include(own.title)
   end
 end
