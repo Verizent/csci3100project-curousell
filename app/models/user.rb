@@ -2,7 +2,8 @@ class User < ApplicationRecord
   # Run before saving to database
   has_secure_password
   has_many :listings, foreign_key: :user_id, dependent: :destroy
-  has_many :buyer_orders, class_name: "Order", foreign_key: :buyer_id, dependent: :restrict_with_error
+  has_many :buyer_orders,  class_name: "Order", foreign_key: :buyer_id, dependent: :restrict_with_error
+  has_many :seller_orders, class_name: "Order", through: :listings, source: :orders
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false },
             format: { with: /\A[^@]+@(\w+\.)*cuhk\.edu\.hk\z/i, message: "must be a CUHK email address" }

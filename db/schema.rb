@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_14_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_14_000003) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -100,10 +100,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_000002) do
 
   create_table "orders", force: :cascade do |t|
     t.integer "amount_cents", null: false
+    t.string "auto_cancel_job_id"
+    t.datetime "buyer_confirmed_at"
     t.bigint "buyer_id", null: false
     t.datetime "created_at", null: false
     t.string "currency", default: "hkd", null: false
     t.bigint "listing_id", null: false
+    t.datetime "seller_confirmed_at"
     t.string "status", default: "pending", null: false
     t.string "stripe_checkout_session_id"
     t.string "stripe_payment_intent_id"

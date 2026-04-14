@@ -1,0 +1,71 @@
+<% content_for :title, "My Orders — CUrousell" %>
+
+<%
+  status_badge = ->(order) {
+    case order.status
+    when "pending"   then ["bg-amber-100 text-amber-700",  "Pending Payment"]
+    when "paid"      then ["bg-blue-100 text-blue-700",    "Awaiting Confirmation"]
+    when "completed" then ["bg-green-100 text-green-700",  "Completed"]
+    when "cancelled" then ["bg-gray-100 text-gray-500",    "Cancelled"]
+    when "failed"    then ["bg-red-100 text-red-600",      "Failed"]
+    when "refunded"  then ["bg-purple-100 text-purple-700","Refunded"]
+    else                  ["bg-gray-100 text-gray-500",    order.status.capitalize]
+    end
+  }
+%>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <h1 class="text-2xl font-bold text-gray-900 mb-8">My Orders</h1>
+
+  <%# Buying %>
+  <section class="mb-10">
+    <h2 class="text-lg font-semibold text-cuhk-purple mb-4">Buying</h2>
+    <% if @buying.empty? %>
+      <p class="text-sm text-gray-400">You haven't bought anything yet.</p>
+    <% else %>
+      <div class="space-y-3">
+        <% @buying.each do |order| %>
+          <% badge_class, badge_label = status_badge.call(order) %>
+          <%= link_to order_path(order), class: "block bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow" do %>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-900 truncate"><%= order.listing.title %></p>
+                <p class="text-xs text-gray-400 mt-0.5">Ordered <%= order.created_at.strftime("%d %b %Y") %></p>
+              </div>
+              <div class="flex items-center gap-3 flex-shrink-0">
+                <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(order.amount, precision: 0, delimiter: ",") %></span>
+                <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= badge_class %>"><%= badge_label %></span>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <%# Selling %>
+  <section>
+    <h2 class="text-lg font-semibold text-cuhk-purple mb-4">Selling</h2>
+    <% if @selling.empty? %>
+      <p class="text-sm text-gray-400">No orders on your listings yet.</p>
+    <% else %>
+      <div class="space-y-3">
+        <% @selling.each do |order| %>
+          <% badge_class, badge_label = status_badge.call(order) %>
+          <%= link_to order_path(order), class: "block bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow" do %>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-900 truncate"><%= order.listing.title %></p>
+                <p class="text-xs text-gray-400 mt-0.5">Buyer: <%= order.buyer.name %> &middot; <%= order.created_at.strftime("%d %b %Y") %></p>
+              </div>
+              <div class="flex items-center gap-3 flex-shrink-0">
+                <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(order.amount, precision: 0, delimiter: ",") %></span>
+                <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= badge_class %>"><%= badge_label %></span>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+</div>

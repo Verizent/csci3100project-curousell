@@ -5,9 +5,15 @@ Rails.application.routes.draw do
   resources :listings, only: [ :index, :show, :new, :create ]
   resources :feedback, only: [ :create ]
 
-  # Placeholder nav routes (pages to be built later)
-  get "/orders"  => "placeholder#orders",  as: :orders
-  get "/profile" => "account#profile",     as: :profile
+  # Orders
+  resources :orders, only: [ :index, :show ] do
+    member do
+      post :buyer_confirm
+      post :seller_confirm
+    end
+  end
+
+  get "/profile" => "account#profile", as: :profile
 
   # Chat routes
   resources :chats, only: [ :index, :show, :new ] do

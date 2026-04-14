@@ -1,0 +1,118 @@
+<% content_for :title, "Order ##{@order.id} — CUrousell" %>
+
+<%
+  is_buyer  = current_user == @order.buyer
+  is_seller = current_user == @order.seller
+
+  status_info = case @order.status
+  when "pending"   then { bg: "bg-amber-50",   text: "text-amber-700",   label: "Pending Payment",        note: "Waiting for payment to be confirmed." }
+  when "paid"      then { bg: "bg-blue-50",     text: "text-blue-700",    label: "Awaiting Confirmation",  note: "Both buyer and seller must confirm to complete the transaction. Auto-refund in 2 weeks if not confirmed." }
+  when "completed" then { bg: "bg-green-50",    text: "text-green-700",   label: "Completed",              note: "Transaction complete. Payment has been released to the seller." }
+  when "cancelled" then { bg: "bg-gray-50",     text: "text-gray-500",    label: "Cancelled",              note: "This order was cancelled." }
+  when "failed"    then { bg: "bg-red-50",      text: "text-red-600",     label: "Payment Failed",         note: "The payment did not go through." }
+  when "refunded"  then { bg: "bg-purple-50",   text: "text-purple-700",  label: "Refunded",               note: "This order was not confirmed within 2 weeks. Payment has been refunded." }
+  end
+%>
+
+<div class="max-w-lg mx-auto px-4 py-10">
+  <%= link_to orders_path, class: "inline-flex items-center gap-1.5 text-cuhk-purple hover:text-cuhk-purple-light text-sm font-medium mb-6 group" do %>
+    <svg class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+    Back to Orders
+  <% end %>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+    <%# Status header %>
+    <div class="<%= status_info[:bg] %> px-8 py-6 border-b border-gray-100">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs text-gray-400 font-medium mb-1">Order #<%= @order.id %></p>
+          <h1 class="text-lg font-bold <%= status_info[:text] %>"><%= status_info[:label] %></h1>
+        </div>
+        <span class="text-2xl font-bold text-gray-800">HK$<%= number_with_precision(@order.amount, precision: 0, delimiter: ",") %></span>
+      </div>
+      <p class="text-xs text-gray-500 mt-2"><%= status_info[:note] %></p>
+    </div>
+
+    <%# Order details %>
+    <div class="px-8 py-6 space-y-3 text-sm border-b border-gray-100">
+      <div class="flex justify-between">
+        <span class="text-gray-500">Item</span>
+        <%= link_to @order.listing.title, listing_path(@order.listing), class: "font-medium text-cuhk-purple hover:underline text-right max-w-xs" %>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Buyer</span>
+        <span class="font-medium text-gray-900"><%= @order.buyer.name %></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Seller</span>
+        <span class="font-medium text-gray-900"><%= @order.seller.name %></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">Ordered</span>
+        <span class="text-gray-700"><%= @order.created_at.strftime("%d %b %Y, %H:%M") %></span>
+      </div>
+    </div>
+
+    <%# Confirmation status (only when paid) %>
+    <% if @order.status == "paid" %>
+      <div class="px-8 py-5 space-y-3 border-b border-gray-100">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide">Confirmation</p>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-gray-600">Buyer confirmed receipt</span>
+          <% if @order.buyer_confirmed? %>
+            <span class="text-green-600 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <%= @order.buyer_confirmed_at.strftime("%d %b") %>
+            </span>
+          <% else %>
+            <span class="text-gray-400">Pending</span>
+          <% end %>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+          <span class="text-gray-600">Seller confirmed delivery</span>
+          <% if @order.seller_confirmed? %>
+            <span class="text-green-600 font-medium flex items-center gap-1">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <%= @order.seller_confirmed_at.strftime("%d %b") %>
+            </span>
+          <% else %>
+            <span class="text-gray-400">Pending</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# Action buttons %>
+    <div class="px-8 py-6 space-y-3">
+      <% if @order.status == "paid" && is_buyer && !@order.buyer_confirmed? %>
+        <%= button_to buyer_confirm_order_path(@order), method: :post,
+              class: "w-full text-center bg-cuhk-gold text-cuhk-purple font-semibold py-3 rounded-xl hover:brightness-105 transition-all cursor-pointer" do %>
+          I have received the item
+        <% end %>
+      <% end %>
+
+      <% if @order.status == "paid" && is_seller && !@order.seller_confirmed? %>
+        <%= button_to seller_confirm_order_path(@order), method: :post,
+              class: "w-full text-center bg-cuhk-purple text-white font-semibold py-3 rounded-xl hover:bg-cuhk-purple-dark transition-colors cursor-pointer" do %>
+          I have delivered the item
+        <% end %>
+      <% end %>
+
+      <% if @order.status == "paid" && is_buyer && @order.buyer_confirmed? && !@order.seller_confirmed? %>
+        <p class="text-center text-sm text-gray-400">Waiting for the seller to confirm delivery.</p>
+      <% end %>
+
+      <% if @order.status == "paid" && is_seller && @order.seller_confirmed? && !@order.buyer_confirmed? %>
+        <p class="text-center text-sm text-gray-400">Waiting for the buyer to confirm receipt.</p>
+      <% end %>
+
+      <%= link_to orders_path, class: "block text-center border border-gray-200 text-gray-500 font-medium py-2.5 rounded-xl hover:bg-gray-50 transition-colors text-sm" do %>
+        Back to Orders
+      <% end %>
+    </div>
+
+  </div>
+</div>
