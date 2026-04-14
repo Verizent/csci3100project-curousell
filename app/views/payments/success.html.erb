@@ -8,14 +8,14 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
       </div>
-      <h1 class="text-2xl font-bold text-green-700">Payment Successful</h1>
-      <p class="text-green-600 text-sm mt-1">Your order has been confirmed</p>
+      <h1 class="text-2xl font-bold text-green-700">Payment Submitted</h1>
+      <p class="text-green-600 text-sm mt-1">Your payment is being confirmed</p>
     </div>
 
     <div class="px-8 py-6 space-y-4">
       <div class="flex justify-between text-sm">
         <span class="text-gray-500">Item</span>
-        <span class="font-medium text-gray-900 text-right max-w-xs"><%= @order.product.title %></span>
+        <span class="font-medium text-gray-900 text-right max-w-xs"><%= @order.listing.title %></span>
       </div>
       <div class="flex justify-between text-sm">
         <span class="text-gray-500">Amount paid</span>
@@ -27,9 +27,11 @@
       </div>
       <div class="flex justify-between text-sm">
         <span class="text-gray-500">Status</span>
-        <span class="inline-flex items-center gap-1 text-green-700 font-medium">
-          <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>
-          Paid
+        <span class="inline-flex items-center gap-1 font-medium
+          <%= @order.status == 'paid' ? 'text-green-700' : 'text-amber-600' %>">
+          <span class="w-1.5 h-1.5 rounded-full inline-block
+            <%= @order.status == 'paid' ? 'bg-green-500' : 'bg-amber-400' %>"></span>
+          <%= @order.status == 'paid' ? 'Paid' : 'Processing' %>
         </span>
       </div>
     </div>

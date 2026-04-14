@@ -1,6 +1,6 @@
 class Order < ApplicationRecord
   belongs_to :buyer, class_name: "User"
-  belongs_to :product
+  belongs_to :listing
 
   validates :amount_cents, presence: true, numericality: { greater_than: 0 }
   validates :currency, presence: true
@@ -15,10 +15,11 @@ class Order < ApplicationRecord
 
   def mark_paid!(payment_intent_id:)
     update!(status: "paid", stripe_payment_intent_id: payment_intent_id)
-    product.sold!
+    listing.update!(status: "sold")
   end
 
   def mark_failed!
     update!(status: "failed")
+    listing.update!(status: "unsold") if listing.status == "in_process"
   end
 end

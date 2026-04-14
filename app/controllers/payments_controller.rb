@@ -3,26 +3,32 @@ class PaymentsController < ApplicationController
   before_action :require_login, only: [ :checkout, :success, :cancel ]
 
   def checkout
-    @product = Product.available.find(params[:product_id])
+    @listing = Listing.available.find(params[:listing_id])
+
+    if @listing.user == current_user
+      redirect_to listing_path(@listing), alert: "You cannot buy your own listing." and return
+    end
 
     order = Order.create!(
       buyer: current_user,
-      product: @product,
-      amount_cents: @product.price_cents,
-      currency: @product.currency,
+      listing: @listing,
+      amount_cents: @listing.price_cents,
+      currency: @listing.currency,
       status: "pending"
     )
+
+    @listing.update!(status: "in_process")
 
     session = Stripe::Checkout::Session.create(
       payment_method_types: [ "card" ],
       line_items: [ {
         price_data: {
-          currency: @product.currency,
+          currency: @listing.currency,
           product_data: {
-            name: @product.title,
-            description: @product.description.presence || "Item from CurouSell"
+            name: @listing.title,
+            description: @listing.description.presence || "Item from CUrousell"
           },
-          unit_amount: @product.price_cents
+          unit_amount: @listing.price_cents
         },
         quantity: 1
       } ],
@@ -34,6 +40,10 @@ class PaymentsController < ApplicationController
 
     order.update!(stripe_checkout_session_id: session.id)
     redirect_to session.url, allow_other_host: true
+  rescue Stripe::StripeError => e
+    order&.update!(status: "failed")
+    @listing.update!(status: "unsold")
+    redirect_to listing_path(@listing), alert: "Payment could not be initiated: #{e.message}"
   end
 
   def success
@@ -44,7 +54,10 @@ class PaymentsController < ApplicationController
 
   def cancel
     @order = current_user.buyer_orders.find(params[:order_id])
-    @order.update!(status: "cancelled") if @order.status == "pending"
+    if @order.status == "pending"
+      @order.update!(status: "cancelled")
+      @order.listing.update!(status: "unsold")
+    end
   rescue ActiveRecord::RecordNotFound
     redirect_to home_path, alert: "Order not found." and return
   end

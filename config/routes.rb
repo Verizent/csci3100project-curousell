@@ -28,16 +28,11 @@ Rails.application.routes.draw do
   delete "/account/signout" => "account#signout",        as: :account_signout
 
   # Payments
-  post "/payments/checkout/:product_id" => "payments#checkout", as: :payment_checkout
+  post "/payments/checkout/:listing_id" => "payments#checkout", as: :payment_checkout
   get  "/payments/success" => "payments#success", as: :payment_success
   get  "/payments/cancel" => "payments#cancel", as: :payment_cancel
   post "/payments/webhook" => "payments#webhook", as: :stripe_webhook
 
   get "up" => "rails/health#show", as: :rails_health_check
-<<<<<<< HEAD
-
-  match "*path", to: "errors#not_found", via: :all
-=======
   mount ActionCable.server => "/cable"
->>>>>>> origin/main
 end
