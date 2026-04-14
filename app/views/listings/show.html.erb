@@ -35,17 +35,24 @@
     <div class="grid grid-cols-1 md:grid-cols-2">
 
       <%# Images %>
-      <div class="bg-gray-50 flex flex-col items-center justify-center min-h-72 md:min-h-96">
+      <div class="bg-gray-50 flex flex-col items-center justify-center min-h-72 md:min-h-96"
+           data-controller="listing-gallery">
         <% if @listing.images.attached? %>
           <%= image_tag @listing.images.first.variant(resize_to_limit: [600, 600]),
                 class: "max-h-96 w-full object-contain",
-                alt: @listing.title %>
+                alt: @listing.title,
+                data: { listing_gallery_target: "mainImage" } %>
           <% if @listing.images.count > 1 %>
             <div class="flex gap-2 p-3 overflow-x-auto w-full">
               <% @listing.images.each_with_index do |img, i| %>
                 <%= image_tag img.variant(resize_to_fill: [80, 80]),
                       class: "w-20 h-20 object-cover rounded-lg border-2 #{ i == 0 ? 'border-cuhk-gold' : 'border-gray-200' } flex-shrink-0 cursor-pointer",
-                      alt: "#{@listing.title} photo #{i + 1}" %>
+                      alt: "#{@listing.title} photo #{i + 1}",
+                      data: {
+                        listing_gallery_target: "thumbnail",
+                        action: "click->listing-gallery#show",
+                        full_src: url_for(img.variant(resize_to_limit: [600, 600]))
+                      } %>
               <% end %>
             </div>
           <% end %>
@@ -79,13 +86,20 @@
           <%= @listing.title %>
         </h1>
 
-        <% if @listing.price.zero? %>
-          <p class="text-3xl font-bold text-green-600 mb-5">Free</p>
-        <% else %>
-          <p class="text-3xl font-bold text-cuhk-gold mb-5">
-            HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
-          </p>
-        <% end %>
+        <div class="flex items-baseline gap-3 mb-5">
+          <% if @listing.price.zero? %>
+            <p class="text-3xl font-bold text-green-600">Free</p>
+          <% else %>
+            <p class="text-3xl font-bold text-cuhk-gold">
+              HK$<%= number_with_precision(@listing.price, precision: 0, delimiter: ",") %>
+            </p>
+          <% end %>
+          <% if @listing.negotiable? %>
+            <span class="text-xs font-medium text-cuhk-purple border border-cuhk-purple-light rounded-full px-2 py-0.5">
+              Negotiable
+            </span>
+          <% end %>
+        </div>
 
         <% if @listing.description.present? %>
           <div class="text-gray-600 text-sm leading-relaxed mb-6 flex-1">
@@ -121,6 +135,17 @@
               </svg>
               <span><%= @listing.location %></span>
             </div>
+            <div class="rounded-xl overflow-hidden border border-gray-100 mt-2">
+              <iframe
+                width="100%"
+                height="220"
+                style="border:0"
+                loading="lazy"
+                allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed/v1/place?key=<%= Rails.application.credentials.google_maps_api_key %>&q=<%= CGI.escape("#{@listing.location}, Hong Kong") %>">
+              </iframe>
+            </div>
           <% end %>
           <div class="flex items-center gap-2">
             <svg class="w-4 h-4 text-cuhk-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,11 +170,15 @@
           </div>
         </div>
 
-        <% if @listing.status == "unsold" %>
-          <%= link_to chats_path,
+        <% if current_user == @listing.user %>
+          <div class="mt-5 block text-center bg-gray-100 text-gray-400 font-semibold py-3 rounded-xl cursor-not-allowed">
+            This is your listing
+          </div>
+        <% elsif @listing.status == "unsold" %>
+          <%= link_to new_chat_path(listing_id: @listing.id),
                 class: "mt-5 block text-center bg-cuhk-purple text-white font-semibold py-3 rounded-xl
                         hover:bg-cuhk-purple-dark transition-colors" do %>
-            Contact Seller
+            Chat with Seller
           <% end %>
         <% else %>
           <div class="mt-5 block text-center bg-gray-100 text-gray-400 font-semibold py-3 rounded-xl cursor-not-allowed">

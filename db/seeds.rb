@@ -151,9 +151,18 @@ LISTING_DATA = [
     access_rules: [ { colleges: [ "Morningside College" ] } ] },
   { title: "CW Chu College Desk Fan (hostel size)",    description: "Fits CW Chu hostel desk perfectly. Selling to Chu residents only.",                        category: "miscellaneous", price: 90,  location: "CW Chu College",
     access_rules: [ { colleges: [ "CW Chu College" ] } ] },
+  # Multiple colleges
+  { title: "Shaw College Hoodie (Size M)",             description: "Official Shaw College hoodie, worn twice. Open to Shaw and New Asia members.",             category: "clothing",      price: 120, location: "Shaw College",
+    access_rules: [ { colleges: [ "Shaw College", "New Asia College" ] } ] },
+  { title: "Chung Chi Chapel Concert Ticket (x2)",    description: "Two seats for the Chung Chi chapel concert. Open to Chung Chi and United College.",        category: "miscellaneous", price: 0,   location: "Chung Chi College",
+    access_rules: [ { colleges: [ "Chung Chi College", "United College" ] } ] },
+  { title: "United College Sports Jersey (Size L)",   description: "Inter-college games jersey. Open to UC, S.H. Ho, and CW Chu members.",                    category: "clothing",      price: 80,  location: "United College",
+    access_rules: [ { colleges: [ "United College", "S.H. Ho College", "CW Chu College" ] } ] },
+  { title: "S.H. Ho College Yearbook 2024",           description: "Official S.H. Ho College yearbook. Available to S.H. Ho and Wu Yee Sun members.",         category: "books",         price: 60,  location: "S.H. Ho College",
+    access_rules: [ { colleges: [ "S.H. Ho College", "Wu Yee Sun College" ] } ] },
   # Faculty-only restriction
   { title: "Chung Chi College Printed Notes Bundle",  description: "GE notes tailored for Arts and Social Science students.",                                  category: "books",         price: 45,  location: "Chung Chi College",
-    access_rules: [ { faculties: [ "Faculty of Arts", "Faculty of Social Science" ] } ] },
+    access_rules: [ { faculties: [ "Faculty of Arts", "Faculty of Social Sciences" ] } ] },
   { title: "New Asia College Blazer (Size S)",        description: "Official NAC blazer. For Engineering and Science students only.",                           category: "clothing",      price: 200, location: "New Asia College",
     access_rules: [ { faculties: [ "Faculty of Engineering", "Faculty of Science" ] } ] },
   # Department + faculty restriction
@@ -161,6 +170,12 @@ LISTING_DATA = [
     access_rules: [ { faculties: [ "Faculty of Engineering" ], departments: [ "Department of Computer Science and Engineering", "Department of Electronic Engineering" ] } ] },
   { title: "Lee Woo Sing College Tote Bag",           description: "Exclusive LWS tote. For Fine Arts and Music students in the Faculty of Arts.",             category: "accessories",   price: 0,   location: "Lee Woo Sing College",
     access_rules: [ { faculties: [ "Faculty of Arts" ], departments: [ "Department of Fine Arts", "Department of Music" ] } ] },
+  # Multi-rule listing (OR between rules)
+  { title: "Wu Yee Sun College Art Print",            description: "Limited WYS art print. For Fine Arts students in Arts faculty, or all Science students.",  category: "miscellaneous", price: 70,  location: "Wu Yee Sun College",
+    access_rules: [
+      { faculties: [ "Faculty of Arts" ],    departments: [ "Department of Fine Arts" ] },
+      { faculties: [ "Faculty of Science" ], departments: [] }
+    ] },
   # ── 2 college-exclusive listings per college ────────────────────────────────
   # Shaw College
   { title: "Shaw College Common Room Key Deposit",    description: "Transferable key deposit receipt for Shaw common room. Shaw residents only.",              category: "miscellaneous", price: 100, location: "Shaw College",

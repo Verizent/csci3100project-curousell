@@ -104,8 +104,23 @@ When("I submit an incorrect OTP {string} {int} times") do |code, times|
   end
 end
 
+Given("I am signed in as {string} with password {string}") do |email, password|
+  @user = User.find_by!(email: email)
+  visit account_signin_path
+  fill_in "Email Address", with: email
+  fill_in "Password", with: password
+  find_button("Sign In", disabled: :all).click
+  @user.reload
+  fill_in "otp_code", with: @user.otp_code
+  click_button "Verify Email"
+end
+
 When("I fill in {string} with {string}") do |field, value|
   fill_in field, with: value
+end
+
+When("I select {string} from {string}") do |value, field|
+  select value, from: field
 end
 
 When("I click {string}") do |button|
