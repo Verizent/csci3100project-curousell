@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   # Run before saving to database
   has_secure_password
+  has_many :listings, foreign_key: :user_id, dependent: :destroy
+  has_many :buyer_orders,  class_name: "Order", foreign_key: :buyer_id, dependent: :restrict_with_error
+  has_many :seller_orders, class_name: "Order", through: :listings, source: :orders
   validates :name, presence: true
   validates :email, presence: true, uniqueness: { case_sensitive: false },
             format: { with: /\A[^@]+@(\w+\.)*cuhk\.edu\.hk\z/i, message: "must be a CUHK email address" }
@@ -13,9 +16,6 @@ class User < ApplicationRecord
   has_many :sent_conversations, class_name: "Conversation", foreign_key: "sender_id", dependent: :destroy
   has_many :received_conversations, class_name: "Conversation", foreign_key: "receiver_id", dependent: :destroy
   has_many :messages, dependent: :destroy
-  has_many :purchases, class_name: "Order", foreign_key: "buyer_id", dependent: :destroy
-  has_many :sales, class_name: "Order", foreign_key: "seller_id", dependent: :destroy
-
   # All conversations (sent or received)
   def all_conversations
     Conversation.where("sender_id = ? OR receiver_id = ?", id, id)

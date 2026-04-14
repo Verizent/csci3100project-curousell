@@ -7,59 +7,52 @@ end
 
 Given("a buyer has purchased that listing") do
   @buyer = User.find_by!(email: "order_buyer@link.cuhk.edu.hk")
-  @order = create(:order, listing: @listing, seller: @seller, buyer: @buyer, status: "pending")
+  @listing.update!(status: "in_process")
+  @order = create(:order, listing: @listing, buyer: @buyer, status: "paid", stripe_payment_intent_id: "pi_test")
 end
 
-Given("the order is pending") do
-  expect(@order.status).to eq("pending")
-end
-
-When("the seller marks the order as delivered") do
-  @order.deliver!
+When("the seller confirms delivery") do
+  @order.confirm_by_seller!
 end
 
 Then("the order status should be {string}") do |expected_status|
   expect(@order.reload.status).to eq(expected_status)
 end
 
-Then("the buyer should see the order as delivered") do
-  expect(@order.reload.status).to eq("delivered")
+Then("the seller confirmed timestamp should be present") do
+  expect(@order.reload.seller_confirmed_at).to be_present
 end
 
-Given("the seller has marked the order as delivered") do
-  @order.deliver!
+Given("the seller has confirmed delivery") do
+  @order.confirm_by_seller!
 end
 
-When("the buyer marks the order as received") do
-  @order.receive!
-  @order.complete!
+When("the buyer confirms receipt") do
+  @order.confirm_by_buyer!
 end
 
 Then("the listing status should be {string}") do |status|
   expect(@listing.reload.status).to eq(status)
 end
 
-Given("a pending order exists") do
+Given("a paid order exists") do
   @seller = User.find_by!(email: "order_seller@link.cuhk.edu.hk")
   @buyer = User.find_by!(email: "order_buyer@link.cuhk.edu.hk")
-  @listing = create(:listing, user: @seller, status: "unsold", title: "Auto Cancel Item")
-  @order = create(:order, listing: @listing, seller: @seller, buyer: @buyer, status: "pending")
+  @listing = create(:listing, user: @seller, status: "in_process", title: "Auto Cancel Item")
+  @order = create(:order, listing: @listing, buyer: @buyer, status: "paid", stripe_payment_intent_id: "pi_test")
 end
 
 Given("the order was created 15 days ago") do
-  @order.update!(created_at: 15.days.ago, purchased_at: 15.days.ago)
+  @order.update!(created_at: 15.days.ago)
 end
 
 When("the auto-cancellation job runs") do
-  begin
-    CancelOldPendingOrdersJob.perform_now
-  rescue NoMethodError
-    @order.cancel!
-  end
+  allow(Stripe::Refund).to receive(:create)
+  AutoCancelOrderJob.perform_now(@order.id)
 end
 
-Then("the order status should become cancelled") do
-  expect(@order.reload.status).to eq("cancelled")
+Then("the order status should become {string}") do |expected_status|
+  expect(@order.reload.status).to eq(expected_status)
 end
 
 Then("the listing should reappear on the main page") do
@@ -111,8 +104,8 @@ end
 Given("an order exists between seller and buyer") do
   @seller = User.find_by!(email: "order_seller@link.cuhk.edu.hk")
   @buyer = User.find_by!(email: "order_buyer@link.cuhk.edu.hk")
-  @listing = create(:listing, user: @seller, status: "unsold", title: "Restricted Order Detail")
-  @order = create(:order, listing: @listing, seller: @seller, buyer: @buyer, status: "pending")
+  @listing = create(:listing, user: @seller, status: "in_process", title: "Restricted Order Detail")
+  @order = create(:order, listing: @listing, buyer: @buyer, status: "paid", stripe_payment_intent_id: "pi_test")
 end
 
 When("a third user tries to view that order detail") do

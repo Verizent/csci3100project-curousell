@@ -33,10 +33,11 @@ RSpec.describe "ListingVisibilityRules", type: :request do
   end
 
   it "shows listing again after cancellation resets status to unsold" do
-    listing = create(:listing, user: seller, status: "unsold", title: "Reappears After Cancel")
-    order = create(:order, listing: listing, seller: seller, buyer: viewer, status: "pending")
+    listing = create(:listing, user: seller, status: "in_process", title: "Reappears After Cancel")
+    order = create(:order, listing: listing, buyer: viewer, status: "paid", stripe_payment_intent_id: "pi_test")
 
-    order.cancel!
+    allow(Stripe::Refund).to receive(:create)
+    order.auto_cancel!
 
     get home_path
 

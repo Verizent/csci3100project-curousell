@@ -7,27 +7,26 @@ Feature: Order management lifecycle
     Given a verified user exists with email "order_seller@link.cuhk.edu.hk" and password "SecurePassword123!" and college "Shaw College"
     And a verified user exists with email "order_buyer@link.cuhk.edu.hk" and password "SecurePassword123!" and college "United College"
 
-  Scenario: Seller marks pending order as delivered
+  Scenario: Seller confirms delivery of an order
     Given a seller has a listing for sale
     And a buyer has purchased that listing
-    And the order is pending
-    When the seller marks the order as delivered
-    Then the order status should be "delivered"
-    And the buyer should see the order as delivered
+    When the seller confirms delivery
+    Then the order status should be "paid"
+    And the seller confirmed timestamp should be present
 
-  Scenario: Buyer marks delivered order as received
+  Scenario: Both parties confirm and order completes
     Given a seller has a listing for sale
     And a buyer has purchased that listing
-    And the seller has marked the order as delivered
-    When the buyer marks the order as received
+    And the seller has confirmed delivery
+    When the buyer confirms receipt
     Then the order status should be "completed"
     And the listing status should be "sold"
 
   Scenario: Order auto-cancels after 14 days
-    Given a pending order exists
+    Given a paid order exists
     And the order was created 15 days ago
     When the auto-cancellation job runs
-    Then the order status should become cancelled
+    Then the order status should become "refunded"
     And the listing should reappear on the main page
 
   Scenario: Main page only shows available listings

@@ -8,6 +8,7 @@ export default class extends Controller {
   #ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
   #MAX_IMAGES = 5
   #mapsLoadedHandler = null
+  #debounceTimer = null
 
   connect() {
     if (window.google?.maps?.places) {
@@ -129,7 +130,6 @@ export default class extends Controller {
     container.classList.toggle("flex", !empty)
   }
 
-<<<<<<< HEAD
   previewLocation(event) {
     const query = event.target.value.trim()
     clearTimeout(this.#debounceTimer)
@@ -148,8 +148,7 @@ export default class extends Controller {
     }, 600)
   }
 
-=======
->>>>>>> main
+
   toggleFaculty(event) {
     const faculty = event.target.value
     const section = this.element.querySelector(`[data-faculty-section="${CSS.escape(faculty)}"]`)

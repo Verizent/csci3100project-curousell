@@ -2,16 +2,20 @@ FactoryBot.define do
   factory :order do
     association :listing
     buyer { create(:user) }
-    seller { listing.user }
+    amount_cents { (listing.price * 100).round }
+    currency { "hkd" }
     status { "pending" }
-    price_at_purchase { listing.price }
-    purchased_at { Time.current }
+
+    trait :paid do
+      status { "paid" }
+      stripe_payment_intent_id { "pi_test_#{SecureRandom.hex(8)}" }
+      stripe_checkout_session_id { "cs_test_#{SecureRandom.hex(8)}" }
+    end
 
     trait :completed do
       status { "completed" }
       buyer_confirmed_at { Time.current }
       seller_confirmed_at { Time.current }
-      completed_at { Time.current }
     end
 
     trait :cancelled do
@@ -28,17 +32,6 @@ FactoryBot.define do
 
     trait :buyer_confirmed do
       buyer_confirmed_at { Time.current }
-    end
-
-    trait :old_pending do
-      status { "pending" }
-      purchased_at { 15.days.ago }
-      created_at { 15.days.ago }
-      updated_at { 15.days.ago }
-    end
-
-    trait :free_item do
-      price_at_purchase { 0 }
     end
   end
 end

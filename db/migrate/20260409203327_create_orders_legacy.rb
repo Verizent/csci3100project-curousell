@@ -1,10 +1,12 @@
-class CreateOrders < ActiveRecord::Migration[8.1]
+class CreateOrdersLegacy < ActiveRecord::Migration[8.1]
   def change
+    return if table_exists?(:orders)
+
     create_table :orders do |t|
       t.references :listing, null: false, foreign_key: true
       t.integer :buyer_id, null: false
       t.integer :seller_id, null: false
-      t.string :status, default: 'pending'
+      t.string :status, default: "pending"
       t.decimal :price_at_purchase, precision: 10, scale: 2
       t.datetime :purchased_at
       t.datetime :completed_at

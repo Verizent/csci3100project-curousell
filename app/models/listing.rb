@@ -1,7 +1,7 @@
 class Listing < ApplicationRecord
   belongs_to :user
   has_many_attached :images
-  has_many :orders
+  has_many :orders, dependent: :destroy
   has_many :access_rules, class_name: "ListingAccessRule", dependent: :destroy
   accepts_nested_attributes_for :access_rules,
     allow_destroy: true,
@@ -97,6 +97,7 @@ class Listing < ApplicationRecord
   validates :category, inclusion: { in: CATEGORIES }
   validates :status,   inclusion: { in: STATUSES }
 
+  scope :available, -> { where(status: "unsold") }
   scope :by_category, ->(cat) { where(category: cat) if cat.present? }
   scope :by_status,   ->(s)   { where(status: s) if s.present? }
   scope :visible_to,  ->(user) {
@@ -118,6 +119,18 @@ class Listing < ApplicationRecord
       user.faculty
     ))
   }
+
+  def price_cents
+    (price * 100).round
+  end
+
+  def currency
+    "hkd"
+  end
+
+  def seller
+    user
+  end
 
   def restricted?
     access_rules.loaded? ? access_rules.any? : access_rules.exists?
