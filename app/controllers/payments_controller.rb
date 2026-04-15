@@ -33,6 +33,7 @@ class PaymentsController < ApplicationController
         quantity: 1
       } ],
       mode: "payment",
+      expires_at: 1.hour.from_now.to_i,
       success_url: payment_success_url(order_id: order.id),
       cancel_url: payment_cancel_url(order_id: order.id),
       metadata: { order_id: order.id }
