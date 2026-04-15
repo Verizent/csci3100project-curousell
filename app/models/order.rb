@@ -11,6 +11,7 @@ class Order < ApplicationRecord
   scope :pending,   -> { where(status: "pending") }
   scope :paid,      -> { where(status: "paid") }
   scope :completed, -> { where(status: "completed") }
+  scope :expired,   -> { pending.where("created_at < ?", 1.hour.ago) }
 
   def amount
     amount_cents / 100.0
@@ -43,6 +44,12 @@ class Order < ApplicationRecord
     return if seller_confirmed?
     update!(seller_confirmed_at: Time.current)
     complete_if_both_confirmed!
+  end
+
+  def cancel!
+    return unless status == "pending"
+    update!(status: "cancelled")
+    listing.update!(status: "unsold")
   end
 
   def mark_failed!

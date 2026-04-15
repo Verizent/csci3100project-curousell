@@ -1,29 +1,37 @@
 require "rails_helper"
 
-RSpec.describe AutoCancelOrderJob, type: :job do
+RSpec.describe CancelOldPendingOrdersJob, type: :job do
   describe "#perform" do
-    it "refunds a paid order and reverts listing to unsold" do
+    it "cancels pending orders older than 1 hour and reverts listing to unsold" do
       listing = create(:listing, status: "in_process")
-      order = create(:order, listing: listing, status: "paid", stripe_payment_intent_id: "pi_test")
+      order = create(:order, listing: listing, status: "pending", created_at: 2.hours.ago)
 
-      allow(Stripe::Refund).to receive(:create)
+      described_class.perform_now
 
-      described_class.perform_now(order.id)
-
-      expect(order.reload.status).to eq("refunded")
+      expect(order.reload.status).to eq("cancelled")
       expect(listing.reload.status).to eq("unsold")
     end
 
-    it "does nothing if order is already completed" do
-      order = create(:order, :completed)
+    it "does not cancel pending orders created within the last hour" do
+      listing = create(:listing, status: "in_process")
+      order = create(:order, listing: listing, status: "pending", created_at: 30.minutes.ago)
 
-      described_class.perform_now(order.id)
+      described_class.perform_now
 
-      expect(order.reload.status).to eq("completed")
+      expect(order.reload.status).to eq("pending")
+      expect(listing.reload.status).to eq("in_process")
     end
 
-    it "does nothing if order does not exist" do
-      expect { described_class.perform_now(-1) }.not_to raise_error
+    it "does not affect paid orders" do
+      order = create(:order, :paid, created_at: 2.hours.ago)
+
+      described_class.perform_now
+
+      expect(order.reload.status).to eq("paid")
+    end
+
+    it "does nothing when there are no expired orders" do
+      expect { described_class.perform_now }.not_to raise_error
     end
   end
 end
