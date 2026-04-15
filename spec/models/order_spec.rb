@@ -94,6 +94,43 @@ RSpec.describe Order, type: :model do
     end
   end
 
+  describe ".expired scope" do
+    it "includes pending orders older than 1 hour" do
+      order = create(:order, status: "pending", created_at: 2.hours.ago)
+      expect(Order.expired).to include(order)
+    end
+
+    it "excludes pending orders created within the last hour" do
+      order = create(:order, status: "pending", created_at: 30.minutes.ago)
+      expect(Order.expired).not_to include(order)
+    end
+
+    it "excludes non-pending orders regardless of age" do
+      paid_order = create(:order, :paid, created_at: 2.hours.ago)
+      expect(Order.expired).not_to include(paid_order)
+    end
+  end
+
+  describe "#cancel!" do
+    it "cancels a pending order and reverts listing to unsold" do
+      listing = create(:listing, status: "in_process")
+      order = create(:order, listing: listing, status: "pending")
+
+      order.cancel!
+
+      expect(order.reload.status).to eq("cancelled")
+      expect(listing.reload.status).to eq("unsold")
+    end
+
+    it "does nothing if order is not pending" do
+      order = create(:order, :paid)
+
+      order.cancel!
+
+      expect(order.reload.status).to eq("paid")
+    end
+  end
+
   describe "#mark_failed!" do
     it "marks order as failed and reverts listing to unsold" do
       listing = create(:listing, status: "in_process")
