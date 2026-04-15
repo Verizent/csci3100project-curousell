@@ -26,18 +26,24 @@
       <div class="space-y-3">
         <% @buying.each do |order| %>
           <% badge_class, badge_label = status_badge.call(order) %>
-          <%= link_to order_path(order), class: "block bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow" do %>
+          <div class="bg-white rounded-xl border border-gray-100 shadow-sm px-5 py-4 hover:shadow-md transition-shadow">
             <div class="flex items-center justify-between gap-4">
-              <div class="flex-1 min-w-0">
-                <p class="font-medium text-gray-900 truncate"><%= order.listing.title %></p>
-                <p class="text-xs text-gray-400 mt-0.5">Ordered <%= order.created_at.strftime("%d %b %Y") %></p>
-              </div>
-              <div class="flex items-center gap-3 flex-shrink-0">
-                <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(order.amount, precision: 0, delimiter: ",") %></span>
-                <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= badge_class %>"><%= badge_label %></span>
-              </div>
+              <%= link_to order_path(order), class: "flex items-center justify-between gap-4 flex-1 min-w-0" do %>
+                <div class="flex-1 min-w-0">
+                  <p class="font-medium text-gray-900 truncate"><%= order.listing.title %></p>
+                  <p class="text-xs text-gray-400 mt-0.5">Ordered <%= order.created_at.strftime("%d %b %Y") %></p>
+                </div>
+                <div class="flex items-center gap-3 flex-shrink-0">
+                  <span class="text-sm font-semibold text-gray-700">HK$<%= number_with_precision(order.amount, precision: 0, delimiter: ",") %></span>
+                  <span class="text-xs font-medium px-2.5 py-1 rounded-full <%= badge_class %>"><%= badge_label %></span>
+                </div>
+              <% end %>
+              <% if order.status == "pending" %>
+                <%= link_to "Continue Payment", payment_resume_path(order),
+                      class: "inline-flex items-center px-3 py-1 rounded-md text-xs font-semibold text-cuhk-purple bg-cuhk-gold hover:brightness-105 transition-all flex-shrink-0" %>
+              <% end %>
             </div>
-          <% end %>
+          </div>
         <% end %>
       </div>
     <% end %>

@@ -1,6 +1,6 @@
 class PaymentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: :webhook
-  before_action :require_login, only: [ :checkout, :claim, :success, :cancel ]
+  before_action :require_login, only: [ :checkout, :claim, :resume, :success, :cancel ]
 
   def checkout
     @listing = Listing.available.find(params[:listing_id])
@@ -44,6 +44,50 @@ class PaymentsController < ApplicationController
     order&.update!(status: "failed")
     @listing.update!(status: "unsold")
     redirect_to listing_path(@listing), alert: "Payment could not be initiated: #{e.message}"
+  end
+
+  def resume
+    @order = current_user.buyer_orders.find(params[:order_id])
+
+    unless @order.status == "pending"
+      redirect_to order_path(@order), alert: "This order is no longer awaiting payment." and return
+    end
+
+    # Try to reuse existing Stripe session if still open
+    if @order.stripe_checkout_session_id.present?
+      stripe_session = Stripe::Checkout::Session.retrieve(@order.stripe_checkout_session_id)
+      if stripe_session.status == "open"
+        redirect_to stripe_session.url, allow_other_host: true and return
+      end
+    end
+
+    # Create a fresh Stripe session for the same order
+    listing = @order.listing
+    session = Stripe::Checkout::Session.create(
+      payment_method_types: [ "card" ],
+      line_items: [ {
+        price_data: {
+          currency: @order.currency,
+          product_data: {
+            name: listing.title,
+            description: listing.description.presence || "Item from CUrousell"
+          },
+          unit_amount: @order.amount_cents
+        },
+        quantity: 1
+      } ],
+      mode: "payment",
+      success_url: payment_success_url(order_id: @order.id),
+      cancel_url: payment_cancel_url(order_id: @order.id),
+      metadata: { order_id: @order.id }
+    )
+
+    @order.update!(stripe_checkout_session_id: session.id)
+    redirect_to session.url, allow_other_host: true
+  rescue ActiveRecord::RecordNotFound
+    redirect_to orders_path, alert: "Order not found."
+  rescue Stripe::StripeError => e
+    redirect_to order_path(@order), alert: "Could not resume payment: #{e.message}"
   end
 
   def claim
