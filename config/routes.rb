@@ -38,6 +38,8 @@ Rails.application.routes.draw do
 
   # Payments
   post "/payments/checkout/:listing_id" => "payments#checkout", as: :payment_checkout
+  post "/payments/claim/:listing_id"    => "payments#claim",    as: :payment_claim
+  get  "/payments/resume/:order_id"     => "payments#resume",   as: :payment_resume
   get  "/payments/success" => "payments#success", as: :payment_success
   get  "/payments/cancel" => "payments#cancel", as: :payment_cancel
   post "/payments/webhook" => "payments#webhook", as: :stripe_webhook
