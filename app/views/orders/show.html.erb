@@ -87,13 +87,6 @@
 
     <%# Action buttons %>
     <div class="px-8 py-6 space-y-3">
-      <% if @order.status == "pending" && is_buyer %>
-        <%= link_to payment_resume_path(@order),
-              class: "block w-full text-center bg-cuhk-gold text-cuhk-purple font-semibold py-3 rounded-xl hover:brightness-105 transition-all" do %>
-          Continue Payment
-        <% end %>
-      <% end %>
-
       <% if @order.status == "paid" && is_buyer && !@order.buyer_confirmed? %>
         <%= button_to buyer_confirm_order_path(@order), method: :post,
               class: "w-full text-center bg-cuhk-gold text-cuhk-purple font-semibold py-3 rounded-xl hover:brightness-105 transition-all cursor-pointer" do %>
