@@ -186,6 +186,7 @@
           <% else %>
             <%= button_to "Buy Now", payment_checkout_path(@listing),
                   method: :post,
+                  data: { turbo: false },
                   class: "mt-5 w-full text-center bg-cuhk-gold text-white font-semibold py-3 rounded-xl
                           hover:opacity-90 transition-colors cursor-pointer" %>
           <% end %>
